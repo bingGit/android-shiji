@@ -1,0 +1,16 @@
+.DS_Store
+/build/
+.gradle/
+.idea/
+*.iml
+local.properties
+release-signing.properties
+keystores/
+gradle/gradle-daemon-jvm.properties
+app/build/
+
+# Local agent planning notes
+task_plan.md
+findings.md
+progress.md
+
