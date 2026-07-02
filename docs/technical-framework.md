@@ -39,21 +39,36 @@ app/src/main/java/com/bing/androidvoiceflow/
 - `VoiceFlowError`
 - `ProviderConfig`
 
+`AndroidPcmAudioRecorder.kt` 目前提供：
+
+- 基于 `AudioRecord` 的 PCM16 mono 音频采集。
+- 默认 24 kHz、400 ms chunk。
+- 实时 RMS 音量流，用于 UI 波形。
+- `readChunk()` 作为后续 realtime session 的音频分片来源。
+
 `MainActivity.kt` 目前提供：
 
 - 录音权限请求。
-- 录音 / 停止 / final transcript 状态流转。
-- partial transcript 模拟更新。
-- final transcript 自动复制到剪贴板。
+- 录音 / 停止状态流转。
+- 本地音频采集统计和音量波形。
+- 有 final transcript 时自动复制到剪贴板。
 - 总结、润色、改写三个后处理入口。
 - Provider 配置表单。
 - 最近历史列表。
 
 ## 下一步建议
 
-1. 将当前模拟录音替换为 `AudioRecord` 采集 PCM16 mono 音频。
-2. 实现 OpenAI-compatible Realtime WebSocket provider。
+1. 实现 OpenAI-compatible Realtime WebSocket provider。
+2. 将 `AndroidPcmAudioRecorder.readChunk()` 输出接入 realtime session 的 `sendAudioChunk()`。
 3. 将 Provider 配置持久化到 DataStore，并用 Android Keystore 或加密存储保护 API Key。
 4. 将历史记录持久化为 Room 或轻量 JSON。
 5. 增加 typed error 到 UI 的映射和重试入口。
 
+## 2026-07-02 M2 录音层
+
+本轮已从模拟波形切换到真实本地录音：
+
+- `AndroidPcmAudioRecorder` 负责启动、读取和释放 `AudioRecord`。
+- UI 通过 `audioLevels` 显示真实 RMS 音量。
+- UI 通过 `readChunk()` 统计已经采集的 PCM 分片数量、时长和字节量。
+- 在 realtime provider 未接入前，停止录音不会创建假的 transcript，也不会把采集状态误复制到剪贴板。

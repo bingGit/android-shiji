@@ -61,17 +61,21 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.bing.androidvoiceflow.audio.AndroidPcmAudioRecorder
 import com.bing.androidvoiceflow.core.ProviderConfig
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,6 +136,7 @@ private fun AndroidVoiceFlowApp() {
 private fun VoiceFlowScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val audioRecorder = remember { AndroidPcmAudioRecorder() }
 
     var providerName by remember { mutableStateOf("OpenAI-compatible Realtime") }
     var baseUrl by remember { mutableStateOf("https://api.openai.com/v1/realtime") }
@@ -154,6 +159,8 @@ private fun VoiceFlowScreen() {
     var copiedNotice by remember { mutableStateOf("") }
     var amplitude by remember { mutableStateOf(0.08f) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
+    var capturedAudioBytes by remember { mutableStateOf(0L) }
+    var capturedChunkCount by remember { mutableStateOf(0) }
     var history by remember { mutableStateOf<List<TranscriptHistoryItem>>(emptyList()) }
 
     fun config(): ProviderConfig {
@@ -186,21 +193,31 @@ private fun VoiceFlowScreen() {
     }
 
     fun finishRecording() {
+        val currentConfig = config()
         recordingJob?.cancel()
         recordingJob = null
         status = VoiceFlowStatus.Finalizing
         connectionStatus = "正在生成最终文本"
         scope.launch {
             delay(650)
-            val finalText = partialTranscript.trim()
+            val finalText = finalTranscript.trim()
             if (finalText.isBlank()) {
-                fail(
-                    message = "最终转写为空",
-                    hint = "请确认录音中有人声，或重试一次。"
-                )
+                val capturedSeconds = audioDurationSeconds(capturedAudioBytes, currentConfig)
+                status = VoiceFlowStatus.Completed
+                connectionStatus = if (capturedAudioBytes > 0) {
+                    "本地音频采集完成"
+                } else {
+                    "未采集到音频"
+                }
+                partialTranscript = if (capturedAudioBytes > 0) {
+                    "已采集 ${formatDuration(capturedSeconds)} PCM16 音频，${capturedChunkCount} 个分片，约 ${formatAudioBytes(capturedAudioBytes)}。实时转写 provider 尚未接入，所以本次没有 final transcript。"
+                } else {
+                    "没有读到麦克风音频，请检查麦克风权限或设备输入。"
+                }
+                copiedNotice = ""
+                amplitude = 0.06f
                 return@launch
             }
-            finalTranscript = finalText
             postProcessTitle = ""
             postProcessResult = ""
             status = VoiceFlowStatus.Completed
@@ -222,49 +239,55 @@ private fun VoiceFlowScreen() {
 
     fun startRecording() {
         val currentConfig = config()
-        if (currentConfig.apiKey.isBlank()) {
-            fail(
-                message = "API Key 为空",
-                hint = "请先在设置中填写 API Key。当前版本不会真的发送音频，但会保留正式 provider 的必要校验。"
-            )
-            return
-        }
-
         errorMessage = ""
         recoveryHint = ""
         copiedNotice = ""
-        partialTranscript = ""
+        partialTranscript = "正在采集 ${currentConfig.audioFormat.sampleRateHz} Hz PCM16 mono 音频。实时转写 provider 下一步接入。"
         finalTranscript = ""
         postProcessTitle = ""
         postProcessResult = ""
+        capturedAudioBytes = 0L
+        capturedChunkCount = 0
         status = VoiceFlowStatus.Connecting
-        connectionStatus = "正在连接 ${currentConfig.providerName}"
+        connectionStatus = "正在启动麦克风"
 
         recordingJob?.cancel()
         recordingJob = scope.launch {
-            delay(500)
-            status = VoiceFlowStatus.Recording
-            connectionStatus = "实时连接已建立"
-            val chunks = listOf(
-                "今天先把 Android VoiceFlow 的第一版骨架搭起来。",
-                "主流程是点击开始说话，界面实时显示 partial transcript。",
-                "停止录音后生成 final transcript，并自动复制到剪贴板。",
-                "后面再接入真正的 OpenAI-compatible Realtime provider。",
-                "同时保留总结、润色和自动改写三个后处理入口。"
-            )
-            for (chunk in chunks) {
-                if (!isActive) return@launch
-                amplitude = Random.nextFloat().coerceIn(0.25f, 0.95f)
-                partialTranscript = if (partialTranscript.isBlank()) {
-                    chunk
+            try {
+                audioRecorder.start(currentConfig.audioFormat)
+                status = VoiceFlowStatus.Recording
+                connectionStatus = if (currentConfig.apiKey.isBlank()) {
+                    "本地音频采集中，provider 未连接"
                 } else {
-                    "$partialTranscript\n$chunk"
+                    "本地音频采集中，等待接入 ${currentConfig.providerName}"
                 }
-                delay(850)
-            }
-            while (isActive) {
-                amplitude = Random.nextFloat().coerceIn(0.12f, 0.8f)
-                delay(380)
+                val levelJob = launch {
+                    audioRecorder.audioLevels.collect { level ->
+                        amplitude = level.coerceIn(0.02f, 1f)
+                    }
+                }
+                while (isActive) {
+                    val chunk = audioRecorder.readChunk()
+                    capturedAudioBytes += chunk.size
+                    capturedChunkCount += 1
+                    val capturedSeconds = audioDurationSeconds(capturedAudioBytes, currentConfig)
+                    connectionStatus = "已采集 ${formatDuration(capturedSeconds)}，${capturedChunkCount} 个分片"
+                    partialTranscript = "麦克风采集中：${formatDuration(capturedSeconds)}，约 ${formatAudioBytes(capturedAudioBytes)}。下一步会把这些 PCM chunk 发送给实时转写 session。"
+                }
+                levelJob.cancel()
+            } catch (_: ClosedReceiveChannelException) {
+                // Stopping the recorder closes the chunk channel.
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                fail(
+                    message = "麦克风不可用",
+                    hint = error.message ?: "请确认设备麦克风可用，并重新授权后再试。"
+                )
+            } finally {
+                withContext(NonCancellable) {
+                    audioRecorder.stop()
+                }
             }
         }
     }
@@ -294,11 +317,11 @@ private fun VoiceFlowScreen() {
     }
 
     fun runPostProcess(action: PostProcessAction) {
-        val sourceText = finalTranscript.ifBlank { partialTranscript }.trim()
+        val sourceText = finalTranscript.trim()
         if (sourceText.isBlank()) {
             fail(
                 message = "没有可处理的转写文本",
-                hint = "请先完成一次录音转写。"
+                hint = "当前版本已接入本地音频采集，实时转写 provider 接入后才会生成可处理文本。"
             )
             return
         }
@@ -340,6 +363,7 @@ private fun VoiceFlowScreen() {
             copiedNotice = copiedNotice,
             errorMessage = errorMessage,
             recoveryHint = recoveryHint,
+            hasTranscript = finalTranscript.isNotBlank(),
             onPrimaryAction = {
                 when (status) {
                     VoiceFlowStatus.Recording,
@@ -469,10 +493,15 @@ private fun RecorderPanel(
     copiedNotice: String,
     errorMessage: String,
     recoveryHint: String,
+    hasTranscript: Boolean,
     onPrimaryAction: () -> Unit,
     onCopyTranscript: () -> Unit,
     onPostProcess: (PostProcessAction) -> Unit
 ) {
+    val primaryActionEnabled = status != VoiceFlowStatus.RequestingPermission &&
+        status != VoiceFlowStatus.Finalizing &&
+        status != VoiceFlowStatus.PostProcessing
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -500,7 +529,10 @@ private fun RecorderPanel(
                         color = Color(0xFF687069)
                     )
                 }
-                Button(onClick = onPrimaryAction) {
+                Button(
+                    enabled = primaryActionEnabled,
+                    onClick = onPrimaryAction
+                ) {
                     Text(
                         text = if (status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting) {
                             "停止"
@@ -546,27 +578,28 @@ private fun RecorderPanel(
             ) {
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
+                    enabled = hasTranscript,
                     onClick = onCopyTranscript
                 ) {
                     Text("复制")
                 }
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
-                    enabled = transcript.isNotBlank() && status != VoiceFlowStatus.PostProcessing,
+                    enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
                     onClick = { onPostProcess(PostProcessAction.Summarize) }
                 ) {
                     Text("总结")
                 }
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
-                    enabled = transcript.isNotBlank() && status != VoiceFlowStatus.PostProcessing,
+                    enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
                     onClick = { onPostProcess(PostProcessAction.Polish) }
                 ) {
                     Text("润色")
                 }
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
-                    enabled = transcript.isNotBlank() && status != VoiceFlowStatus.PostProcessing,
+                    enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
                     onClick = { onPostProcess(PostProcessAction.Rewrite) }
                 ) {
                     Text("改写")
@@ -955,7 +988,30 @@ private fun rewriteText(text: String): String {
     return "记录：\n$cleaned\n\n下一步：确认真实 Realtime provider、音频采样配置和后处理 prompt。"
 }
 
+private fun audioDurationSeconds(bytes: Long, config: ProviderConfig): Float {
+    val bytesPerSample = 2
+    val bytesPerSecond = config.audioFormat.sampleRateHz *
+        config.audioFormat.channelCount *
+        bytesPerSample
+    if (bytesPerSecond <= 0) return 0f
+    return bytes / bytesPerSecond.toFloat()
+}
+
+private fun formatDuration(seconds: Float): String {
+    return if (seconds < 10f) {
+        String.format(Locale.getDefault(), "%.1f 秒", seconds)
+    } else {
+        "${seconds.toInt()} 秒"
+    }
+}
+
+private fun formatAudioBytes(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+    val kib = bytes / 1024f
+    if (kib < 1024f) return String.format(Locale.getDefault(), "%.1f KB", kib)
+    return String.format(Locale.getDefault(), "%.2f MB", kib / 1024f)
+}
+
 private fun formatDisplayTime(timestamp: Long): String {
     return SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(timestamp))
 }
-

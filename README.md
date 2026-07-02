@@ -10,9 +10,10 @@ Android VoiceFlow 是一个面向 Android 的实时语音转文字工具。第�
 - 单模块 `:app`。
 - 录音权限声明和运行时权限请求。
 - VoiceFlow 核心接口抽象。
-- 主界面录音状态、partial/final transcript、剪贴板复制、后处理、Provider 设置和最近历史。
+- `AudioRecord` 本地 PCM16 mono 音频采集。
+- 主界面录音状态、音量波形、采集统计、剪贴板复制、后处理、Provider 设置和最近历史。
 
-真实音频采集和 Realtime provider 尚未接入；当前主流程用模拟 session 占位，方便先确认产品状态机和界面结构。
+Realtime provider 尚未接入；当前录音主流程会真实打开麦克风并读取 PCM chunk，但不会伪装生成 transcript。下一步会把这些音频分片接入 WebSocket 实时转写 session。
 
 ## 技术基线
 
@@ -26,6 +27,12 @@ Android VoiceFlow 是一个面向 Android 的实时语音转文字工具。第�
 
 与 Mobile Git Sync 相同的是 Android/Kotlin/Compose 壳；不同的是业务核心。Android VoiceFlow 不复用 JGit、Termux、WebView 编辑器和后台 Git 同步逻辑。
 
+## 当前里程碑
+
+- M1：Android 项目骨架与 VoiceFlow 主界面已完成。
+- M2：本地麦克风采集已接入，默认使用 PCM16、mono、24 kHz、400 ms chunk。
+- M3：实时转写 provider 待接入。
+
 ## 本地构建
 
 ```bash
@@ -37,4 +44,3 @@ Android VoiceFlow 是一个面向 Android 的实时语音转文字工具。第�
 ```bash
 ./gradlew :app:assembleDebug
 ```
-
