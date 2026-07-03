@@ -1,5 +1,6 @@
 package com.bing.androidvoiceflow.provider
 
+import android.util.Log
 import com.bing.androidvoiceflow.core.ConnectionTestResult
 import com.bing.androidvoiceflow.core.FinalTranscript
 import com.bing.androidvoiceflow.core.ProviderConfig
@@ -20,12 +21,15 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString.Companion.toByteString
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.InetAddress
 import java.net.URI
 import java.net.UnknownHostException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
+private const val ALIYUN_PROVIDER_TAG = "AliyunParaformer"
 
 class AliyunParaformerRealtimeProvider(
     private val client: OkHttpClient = OkHttpClient.Builder()
@@ -142,7 +146,14 @@ private class AliyunParaformerRealtimeSession(
                     return
                 }
                 socket = webSocket
-                webSocket.send(runTaskMessage().toString())
+                val runTaskMessage = runTaskMessage()
+                Log.d(
+                    ALIYUN_PROVIDER_TAG,
+                    "send run-task endpoint=${endpointUrls[endpointIndex]}, taskId=$taskId, " +
+                        "model=${config.realtimeModel.ifBlank { "paraformer-realtime-v2" }}, " +
+                        "sampleRate=${config.audioFormat.sampleRateHz}, workspaceSet=${config.aliyunWorkspaceIdForHeader().isNotBlank()}"
+                )
+                webSocket.send(runTaskMessage.toString())
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -180,6 +191,7 @@ private class AliyunParaformerRealtimeSession(
                 val header = json.optJSONObject("header")
                 when (val event = header?.optString("event")) {
                     "task-started" -> {
+                        Log.d(ALIYUN_PROVIDER_TAG, "task-started taskId=$taskId")
                         if (!taskStarted.isCompleted) taskStarted.complete(Unit)
                         eventStream.tryEmit(TranscriptionEvent.Connected(config.providerName))
                     }
@@ -188,8 +200,22 @@ private class AliyunParaformerRealtimeSession(
                     "task-failed" -> {
                         val code = header.optString("error_code")
                         val message = header.optString("error_message").ifBlank { "阿里云实时识别任务失败" }
-                        val detail = if (code.isNotBlank()) "$message ($code)" else message
+                        val attributes = header.optJSONObject("attributes")
+                        val requestId = attributes?.optString("request_id")
+                            ?.takeIf { it.isNotBlank() }
+                            ?: attributes?.optString("requestId")?.takeIf { it.isNotBlank() }
+                        val detail = buildString {
+                            append(if (code.isNotBlank()) "$message ($code)" else message)
+                            append("\nTask ID: $taskId")
+                            if (!requestId.isNullOrBlank()) {
+                                append("\nRequest ID: $requestId")
+                            }
+                        }
+                        Log.e(ALIYUN_PROVIDER_TAG, "task-failed $detail raw=$text")
                         eventStream.tryEmit(TranscriptionEvent.Failed(VoiceFlowError.ProviderRejected(detail)))
+                        if (!taskStarted.isCompleted) {
+                            taskStarted.completeExceptionally(IllegalStateException(detail))
+                        }
                         if (!taskFinished.isCompleted) {
                             taskFinished.completeExceptionally(IllegalStateException(detail))
                         }
@@ -256,7 +282,7 @@ private class AliyunParaformerRealtimeSession(
                             .put("format", "pcm")
                             .put("sample_rate", config.audioFormat.sampleRateHz)
                             .put("disfluency_removal_enabled", false)
-                            .put("language_hints", listOf("zh"))
+                            .put("language_hints", JSONArray().put("zh"))
                     )
                     .put("input", JSONObject())
             )
