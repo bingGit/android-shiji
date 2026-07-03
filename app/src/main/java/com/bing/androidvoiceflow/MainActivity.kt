@@ -166,6 +166,16 @@ private data class IdeaCard(
     val isFavorite: Boolean = false
 )
 
+private class CaptureStats {
+    var audioBytes: Long = 0L
+    var chunkCount: Int = 0
+
+    fun reset() {
+        audioBytes = 0L
+        chunkCount = 0
+    }
+}
+
 private val AppColorScheme = lightColorScheme(
     primary = Color(0xFF1B6B63),
     onPrimary = Color.White,
@@ -225,8 +235,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var amplitude by remember { mutableStateOf(0.08f) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
     var activeSession by remember { mutableStateOf<RealtimeSession?>(null) }
-    var capturedAudioBytes by remember { mutableStateOf(0L) }
-    var capturedChunkCount by remember { mutableStateOf(0) }
+    val captureStats = remember { CaptureStats() }
     var ideaCards by remember { mutableStateOf<List<IdeaCard>>(emptyList()) }
     var currentIdeaCardId by remember { mutableStateOf<Long?>(null) }
     var selectedIdeaCardId by remember { mutableStateOf<Long?>(null) }
@@ -344,7 +353,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             originalTranscript = finalText,
             createdAt = now,
             updatedAt = now,
-            durationMs = (audioDurationSeconds(capturedAudioBytes, currentConfig) * 1000).toLong(),
+            durationMs = (audioDurationSeconds(captureStats.audioBytes, currentConfig) * 1000).toLong(),
             realtimeModel = currentConfig.realtimeModel
         )
     }
@@ -361,15 +370,15 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 val transcript = session?.commit()
                 val finalText = transcript?.text?.trim().orEmpty().ifBlank { finalTranscript.trim() }
                 if (finalText.isBlank()) {
-                    val capturedSeconds = audioDurationSeconds(capturedAudioBytes, currentConfig)
+                    val capturedSeconds = audioDurationSeconds(captureStats.audioBytes, currentConfig)
                     status = VoiceFlowStatus.Completed
-                    connectionStatus = if (capturedAudioBytes > 0) {
+                    connectionStatus = if (captureStats.audioBytes > 0L) {
                         "转写结果为空"
                     } else {
                         "未采集到音频"
                     }
-                    partialTranscript = if (capturedAudioBytes > 0) {
-                        "已采集 ${formatDuration(capturedSeconds)} PCM16 音频，${capturedChunkCount} 个分片，约 ${formatAudioBytes(capturedAudioBytes)}，但 provider 没有返回最终文本。"
+                    partialTranscript = if (captureStats.audioBytes > 0L) {
+                        "已采集 ${formatDuration(capturedSeconds)} PCM16 音频，${captureStats.chunkCount} 个分片，约 ${formatAudioBytes(captureStats.audioBytes)}，但 provider 没有返回最终文本。"
                     } else {
                         "没有读到麦克风音频，请检查麦克风权限或设备输入。"
                     }
@@ -418,8 +427,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         postProcessResult = ""
         selectedIdeaCardId = null
         currentIdeaCardId = null
-        capturedAudioBytes = 0L
-        capturedChunkCount = 0
+        captureStats.reset()
         status = VoiceFlowStatus.Connecting
         connectionStatus = "正在连接实时转写 provider"
 
@@ -463,13 +471,13 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 }
                 while (isActive) {
                     val chunk = audioRecorder.readChunk()
-                    capturedAudioBytes += chunk.size
-                    capturedChunkCount += 1
+                    captureStats.audioBytes += chunk.size
+                    captureStats.chunkCount += 1
                     session.sendAudioChunk(chunk)
                     if (partialTranscript.isBlank()) {
-                        val capturedSeconds = audioDurationSeconds(capturedAudioBytes, currentConfig)
+                        val capturedSeconds = audioDurationSeconds(captureStats.audioBytes, currentConfig)
                         connectionStatus = "已发送 ${formatDuration(capturedSeconds)} 音频，等待转写"
-                        partialTranscript = "正在实时转写：已发送约 ${formatAudioBytes(capturedAudioBytes)} 音频。"
+                        partialTranscript = "正在实时转写：已发送约 ${formatAudioBytes(captureStats.audioBytes)} 音频。"
                     }
                 }
             } catch (_: ClosedReceiveChannelException) {
