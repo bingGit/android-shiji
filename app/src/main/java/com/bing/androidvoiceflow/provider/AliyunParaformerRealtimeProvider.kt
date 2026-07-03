@@ -14,17 +14,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import okhttp3.Dns
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString.Companion.toByteString
 import org.json.JSONObject
+import java.net.InetAddress
+import java.net.URI
+import java.net.UnknownHostException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class AliyunParaformerRealtimeProvider(
     private val client: OkHttpClient = OkHttpClient.Builder()
+        .dns(AliyunFallbackDns())
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(0, TimeUnit.SECONDS)
         .writeTimeout(20, TimeUnit.SECONDS)
@@ -42,10 +47,21 @@ class AliyunParaformerRealtimeProvider(
     override suspend fun testConnection(config: ProviderConfig): ConnectionTestResult {
         return try {
             validateAliyunConfig(config)
+            val endpoints = config.aliyunWebSocketUrls()
+            val dnsSummary = withContext(Dispatchers.IO) {
+                endpoints.joinToString(separator = "\n") { endpoint ->
+                    val host = URI(endpoint).host.orEmpty()
+                    val addresses = runCatching { client.dns.lookup(host) }
+                        .getOrDefault(emptyList())
+                        .joinToString { it.hostAddress ?: it.hostName }
+                        .ifBlank { "未解析" }
+                    "WebSocket: $endpoint\nDNS: $addresses"
+                }
+            }
             ConnectionTestResult(
                 success = true,
                 summary = "阿里云 Paraformer 配置完整",
-                detail = config.aliyunWebSocketUrls().joinToString(separator = "\n") { "WebSocket: $it" }
+                detail = dnsSummary
             )
         } catch (error: Exception) {
             ConnectionTestResult(
@@ -263,6 +279,31 @@ private class AliyunParaformerRealtimeSession(
 }
 
 private const val ALIYUN_LEGACY_WEBSOCKET_URL = "wss://dashscope.aliyuncs.com/api-ws/v1/inference"
+private val ALIYUN_DASHSCOPE_FALLBACK_IPS = listOf(
+    "8.152.159.24",
+    "39.96.198.249",
+    "39.96.213.166",
+    "8.140.217.18"
+)
+private val ALIYUN_MAAS_FALLBACK_IPS = listOf(
+    "101.201.58.201",
+    "47.94.20.201"
+)
+
+private class AliyunFallbackDns : Dns {
+    override fun lookup(hostname: String): List<InetAddress> {
+        return try {
+            Dns.SYSTEM.lookup(hostname)
+        } catch (error: UnknownHostException) {
+            val fallbackIps = when {
+                hostname.equals("dashscope.aliyuncs.com", ignoreCase = true) -> ALIYUN_DASHSCOPE_FALLBACK_IPS
+                hostname.endsWith(".cn-beijing.maas.aliyuncs.com", ignoreCase = true) -> ALIYUN_MAAS_FALLBACK_IPS
+                else -> throw error
+            }
+            fallbackIps.mapNotNull { it.toInetAddressOrNull(hostname) }.ifEmpty { throw error }
+        }
+    }
+}
 
 private fun validateAliyunConfig(config: ProviderConfig) {
     require(config.apiKey.isNotBlank()) { "阿里云 API Key 为空" }
@@ -328,6 +369,13 @@ private fun String.withAliyunInferencePath(): String {
     val query = if (queryStart >= 0) substring(queryStart) else ""
     if (urlWithoutQuery.contains("/api-ws/v1/inference")) return this
     return urlWithoutQuery.removeSuffix("/") + "/api-ws/v1/inference" + query
+}
+
+private fun String.toInetAddressOrNull(hostname: String): InetAddress? {
+    return runCatching {
+        val address = split(".").map { it.toInt().toByte() }.toByteArray()
+        InetAddress.getByAddress(hostname, address)
+    }.getOrNull()
 }
 
 private fun Response.toAliyunFailureMessage(): String {
