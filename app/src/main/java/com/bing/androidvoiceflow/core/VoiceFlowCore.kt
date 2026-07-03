@@ -2,6 +2,11 @@ package com.bing.androidvoiceflow.core
 
 import kotlinx.coroutines.flow.Flow
 
+enum class RealtimeProviderProtocol {
+    OpenAiRealtime,
+    AliyunParaformer
+}
+
 data class AudioFormatConfig(
     val encoding: String = "PCM16",
     val channelCount: Int = 1,
@@ -10,13 +15,20 @@ data class AudioFormatConfig(
 )
 
 data class ProviderConfig(
+    val realtimeProtocol: RealtimeProviderProtocol,
     val providerName: String,
     val baseUrl: String,
     val apiKey: String,
     val realtimeModel: String,
+    val aliyunWorkspaceId: String,
+    val aliyunRegion: String,
+    val postProcessProviderName: String,
+    val postProcessBaseUrl: String,
+    val postProcessApiKey: String,
     val postProcessModel: String,
     val streamingEnabled: Boolean,
     val prompt: String,
+    val postProcessPrompt: String,
     val hotwords: List<String>,
     val maxRecordingSeconds: Int,
     val audioFormat: AudioFormatConfig = AudioFormatConfig()
