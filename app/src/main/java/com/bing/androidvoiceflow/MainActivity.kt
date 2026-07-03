@@ -219,6 +219,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var capturedAudioBytes by remember { mutableStateOf(0L) }
     var capturedChunkCount by remember { mutableStateOf(0) }
     var ideaCards by remember { mutableStateOf<List<IdeaCard>>(emptyList()) }
+    var currentIdeaCardId by remember { mutableStateOf<Long?>(null) }
     var selectedIdeaCardId by remember { mutableStateOf<Long?>(null) }
     var settingsLoaded by remember { mutableStateOf(false) }
 
@@ -362,12 +363,16 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                         "没有读到麦克风音频，请检查麦克风权限或设备输入。"
                     }
                     copiedNotice = ""
+                    errorMessage = ""
+                    recoveryHint = ""
                     amplitude = 0.06f
                     return@launch
                 }
                 finalTranscript = finalText
                 postProcessTitle = ""
                 postProcessResult = ""
+                errorMessage = ""
+                recoveryHint = ""
                 status = VoiceFlowStatus.Completed
                 connectionStatus = "已保存为灵感卡片"
                 amplitude = 0.06f
@@ -376,7 +381,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 }
                 val ideaCard = createIdeaCard(finalText, currentConfig)
                 ideaCards = listOf(ideaCard) + ideaCards.take(19)
-                selectedIdeaCardId = ideaCard.id
+                currentIdeaCardId = ideaCard.id
+                selectedIdeaCardId = null
             } catch (error: Exception) {
                 fail(
                     message = "实时转写提交失败",
@@ -399,6 +405,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         postProcessTitle = ""
         postProcessResult = ""
         selectedIdeaCardId = null
+        currentIdeaCardId = null
         capturedAudioBytes = 0L
         capturedChunkCount = 0
         status = VoiceFlowStatus.Connecting
@@ -497,8 +504,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     }
 
     fun appendProcessingResult(action: PostProcessAction, result: String) {
-        val targetCard = selectedIdeaCard
-        if (targetCard == null) return
+        val targetCardId = selectedIdeaCardId ?: currentIdeaCardId ?: return
         val now = System.currentTimeMillis()
         val processingResult = ProcessingResult(
             id = now,
@@ -509,7 +515,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             model = postProcessModel
         )
         ideaCards = ideaCards.map { card ->
-            if (card.id == targetCard.id) {
+            if (card.id == targetCardId) {
                 card.copy(
                     updatedAt = now,
                     processingResults = listOf(processingResult) + card.processingResults
@@ -532,6 +538,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         status = VoiceFlowStatus.PostProcessing
         postProcessTitle = action.resultTitle
         postProcessResult = ""
+        errorMessage = ""
+        recoveryHint = ""
         copiedNotice = ""
         scope.launch {
             delay(500)
@@ -541,6 +549,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 PostProcessAction.Rewrite -> rewriteText(sourceText)
             }
             postProcessResult = result
+            errorMessage = ""
+            recoveryHint = ""
             status = VoiceFlowStatus.Completed
             appendProcessingResult(action, result)
         }
@@ -623,6 +633,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             onDelete = { item ->
                 ideaCards = ideaCards.filterNot { it.id == item.id }
                 if (selectedIdeaCardId == item.id) selectedIdeaCardId = null
+                if (currentIdeaCardId == item.id) currentIdeaCardId = null
             }
         )
         SettingsPanel(
@@ -862,7 +873,7 @@ private fun RecorderPanel(
                 )
             }
 
-            if (errorMessage.isNotBlank()) {
+            if (status == VoiceFlowStatus.Failed && errorMessage.isNotBlank()) {
                 ErrorPanel(message = errorMessage, hint = recoveryHint)
             }
 
