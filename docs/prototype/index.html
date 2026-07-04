@@ -512,7 +512,90 @@
 
     .settings-list {
       display: grid;
+      gap: 14px;
+    }
+
+    .setting-block {
+      display: grid;
       gap: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--field);
+      border: 1px solid rgba(23, 33, 28, .06);
+    }
+
+    .setting-block h4 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .setting-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .segmented button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      border-color: var(--green);
+      background: var(--green-2);
+      color: var(--green);
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .switch {
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--green);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .field textarea {
+      width: 100%;
+      min-height: 78px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      resize: vertical;
     }
 
     .field {
@@ -790,19 +873,98 @@
         ${topChrome('配置你的转写和后处理模型', '设置')}
         <section class="panel record-panel settings-list">
           <h3 class="section-title">Provider 设置</h3>
-          <div class="field">
-            <label>实时转写模型</label>
-            <input value="paraformer-realtime-v2">
+
+          <div class="setting-block">
+            <h4>实时转写协议</h4>
+            <div class="segmented">
+              <button class="active">阿里云百炼</button>
+              <button>OpenAI Realtime</button>
+            </div>
+            <p>优先填写 Workspace ID；如果使用完整 WebSocket URL，可以留空 Workspace ID。</p>
           </div>
-          <div class="field">
-            <label>后处理 Base URL</label>
-            <input value="https://relay.example.com/v1">
+
+          <div class="setting-block">
+            <h4>实时语音转写</h4>
+            <p>接入阿里云百炼 Paraformer 实时语音识别。</p>
+            <div class="field">
+              <label>Provider 名称</label>
+              <input value="阿里云 Paraformer">
+            </div>
+            <div class="field">
+              <label>完整 WebSocket URL（可选）</label>
+              <input value="">
+            </div>
+            <div class="field">
+              <label>API Key</label>
+              <input value="••••••••••••••••">
+            </div>
+            <div class="field">
+              <label>实时转写模型</label>
+              <input value="paraformer-realtime-v2">
+            </div>
+            <button class="ghost" data-action="test-realtime">测试实时语音转写连接</button>
           </div>
-          <div class="field">
-            <label>后处理文本模型</label>
-            <input value="gpt-4o-mini">
+
+          <div class="setting-block">
+            <h4>阿里云百炼参数</h4>
+            <p>官方端点会由 Workspace ID 自动生成：wss://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api-ws/v1/inference</p>
+            <div class="field">
+              <label>Workspace ID</label>
+              <input value="llm-voice-workspace">
+            </div>
+            <div class="field">
+              <label>Region</label>
+              <input value="cn-beijing">
+            </div>
           </div>
-          <button class="primary" data-action="test">测试后处理连接</button>
+
+          <div class="setting-block">
+            <div class="setting-row">
+              <div>
+                <h4>启用流式转写</h4>
+                <p>关闭后可作为录完上传 provider 的扩展入口。</p>
+              </div>
+              <div class="switch" aria-label="enabled"></div>
+            </div>
+            <div class="field">
+              <label>最大录音时长（秒）</label>
+              <input value="120">
+            </div>
+            <div class="field">
+              <label>实时转写 prompt</label>
+              <textarea>请把用户语音实时转写为简洁准确的中文文本。</textarea>
+            </div>
+            <div class="field">
+              <label>热词 / 术语表</label>
+              <input value="VoiceFlow, Obsidian, Android">
+            </div>
+          </div>
+
+          <div class="setting-block">
+            <h4>后续文本处理</h4>
+            <p>用于润色、提炼要点、整理改写，可以走另一个文本模型中转站。</p>
+            <div class="field">
+              <label>Provider 名称</label>
+              <input value="OpenAI-compatible Text">
+            </div>
+            <div class="field">
+              <label>Base URL</label>
+              <input value="https://relay.example.com/v1">
+            </div>
+            <div class="field">
+              <label>API Key</label>
+              <input value="••••••••••••••••">
+            </div>
+            <div class="field">
+              <label>后处理文本模型</label>
+              <input value="gpt-4o-mini">
+            </div>
+            <button class="primary" data-action="test">测试后续文本处理连接</button>
+            <div class="field">
+              <label>后处理 prompt</label>
+              <textarea>请保留原意，把口述内容整理为适合创作者继续使用的中文文本。</textarea>
+            </div>
+          </div>
         </section>
       `;
     }
@@ -970,6 +1132,10 @@
 
       if (target.dataset.action === 'test') {
         showToast('后处理连接测试成功');
+      }
+
+      if (target.dataset.action === 'test-realtime') {
+        showToast('实时语音转写连接测试成功');
       }
     });
 
