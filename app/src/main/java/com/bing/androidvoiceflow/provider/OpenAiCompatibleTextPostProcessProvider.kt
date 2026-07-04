@@ -1,5 +1,6 @@
 package com.bing.androidvoiceflow.provider
 
+import com.bing.androidvoiceflow.core.ConnectionTestResult
 import com.bing.androidvoiceflow.core.ProviderConfig
 import com.bing.androidvoiceflow.core.TextPostProcessProvider
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,7 @@ import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 class OpenAiCompatibleTextPostProcessProvider(
-    private val client: OkHttpClient = OkHttpClient.Builder()
+    internal val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(20, TimeUnit.SECONDS)
@@ -28,39 +29,36 @@ class OpenAiCompatibleTextPostProcessProvider(
         validateConfig(config)
         require(text.isNotBlank()) { "没有可处理的转写文本" }
 
-        val requestJson = JSONObject()
-            .put("model", config.postProcessModel.trim())
-            .put("temperature", 0.4)
-            .put(
-                "messages",
-                JSONArray()
-                    .put(
-                        JSONObject()
-                            .put("role", "system")
-                            .put("content", systemPrompt(config, actionTitle, actionInstruction))
-                    )
-                    .put(
-                        JSONObject()
-                            .put("role", "user")
-                            .put("content", text.trim())
-                    )
+        val requestJson = chatCompletionRequest(
+            model = config.postProcessModel.trim(),
+            systemPrompt = systemPrompt(config, actionTitle, actionInstruction),
+            userText = text.trim()
+        )
+
+        return executeChatCompletion(config, requestJson).content
+    }
+
+    suspend fun testConnection(config: ProviderConfig): ConnectionTestResult {
+        return try {
+            validateConfig(config)
+            val requestJson = chatCompletionRequest(
+                model = config.postProcessModel.trim(),
+                systemPrompt = "你是一个连接测试助手。只回复 OK。",
+                userText = "请回复 OK。",
+                maxTokens = 16
             )
-
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url(config.postProcessBaseUrl.chatCompletionsUrl())
-                .addHeader("Authorization", "Bearer ${config.postProcessApiKey}")
-                .addHeader("Content-Type", JSON_MEDIA_TYPE.toString())
-                .post(requestJson.toString().toRequestBody(JSON_MEDIA_TYPE))
-                .build()
-
-            client.newCall(request).execute().use { response ->
-                val body = response.body?.string().orEmpty()
-                if (!response.isSuccessful) {
-                    throw IllegalStateException(body.extractProviderErrorMessage(response.code, response.message))
-                }
-                body.extractAssistantContent()
-            }
+            val response = executeChatCompletion(config, requestJson)
+            ConnectionTestResult(
+                success = true,
+                summary = "后处理连接测试成功",
+                detail = "Endpoint: ${response.endpoint}\nModel: ${config.postProcessModel}\nResponse: ${response.content.take(80)}"
+            )
+        } catch (error: Exception) {
+            ConnectionTestResult(
+                success = false,
+                summary = "后处理连接测试失败",
+                detail = error.message
+            )
         }
     }
 
@@ -94,12 +92,89 @@ class OpenAiCompatibleTextPostProcessProvider(
 
 private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
+private data class ChatCompletionResponse(
+    val content: String,
+    val endpoint: String
+)
+
 private fun validateConfig(config: ProviderConfig) {
     when {
         config.postProcessApiKey.isBlank() -> error("后处理 API Key 为空")
         config.postProcessBaseUrl.isBlank() -> error("后处理 Base URL 为空")
         config.postProcessModel.isBlank() -> error("后处理文本模型为空")
     }
+}
+
+private suspend fun OpenAiCompatibleTextPostProcessProvider.executeChatCompletion(
+    config: ProviderConfig,
+    requestJson: JSONObject
+): ChatCompletionResponse {
+    return withContext(Dispatchers.IO) {
+        val candidateUrls = config.postProcessBaseUrl.chatCompletionUrlCandidates()
+        var lastFailure: String? = null
+
+        for (endpoint in candidateUrls) {
+            val request = Request.Builder()
+                .url(endpoint)
+                .addHeader("Authorization", "Bearer ${config.postProcessApiKey}")
+                .addHeader("Content-Type", JSON_MEDIA_TYPE.toString())
+                .post(requestJson.toString().toRequestBody(JSON_MEDIA_TYPE))
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                val body = response.body?.string().orEmpty()
+                if (response.isSuccessful) {
+                    return@withContext ChatCompletionResponse(
+                        content = body.extractAssistantContent(),
+                        endpoint = endpoint
+                    )
+                }
+
+                lastFailure = body.extractProviderErrorMessage(
+                    code = response.code,
+                    message = response.message,
+                    endpoint = endpoint
+                )
+                if (response.code != 404) {
+                    throw IllegalStateException(lastFailure)
+                }
+            }
+        }
+
+        throw IllegalStateException(
+            lastFailure ?: "后处理请求失败：没有可用的 Chat Completions Endpoint"
+        )
+    }
+}
+
+private fun chatCompletionRequest(
+    model: String,
+    systemPrompt: String,
+    userText: String,
+    maxTokens: Int? = null
+): JSONObject {
+    return JSONObject()
+        .put("model", model)
+        .put("temperature", 0.4)
+        .apply {
+            if (maxTokens != null) {
+                put("max_tokens", maxTokens)
+            }
+        }
+        .put(
+            "messages",
+            JSONArray()
+                .put(
+                    JSONObject()
+                        .put("role", "system")
+                        .put("content", systemPrompt)
+                )
+                .put(
+                    JSONObject()
+                        .put("role", "user")
+                        .put("content", userText)
+                )
+        )
 }
 
 private fun systemPrompt(
@@ -120,13 +195,39 @@ private fun systemPrompt(
     }
 }
 
-private fun String.chatCompletionsUrl(): String {
+private fun String.chatCompletionUrlCandidates(): List<String> {
     val trimmed = trim().removeSuffix("/")
-    return if (trimmed.endsWith("/chat/completions")) {
-        trimmed
-    } else {
-        "$trimmed/chat/completions"
+    if (trimmed.isBlank()) return emptyList()
+    val normalized = when {
+        trimmed.startsWith("https://") || trimmed.startsWith("http://") -> trimmed
+        else -> "https://$trimmed"
     }
+    val base = normalized.withoutKnownOpenAiEndpoint()
+    val candidates = linkedSetOf<String>()
+
+    if (normalized.endsWith("/chat/completions")) {
+        candidates += normalized
+    }
+    if (!base.endsWith("/v1")) {
+        candidates += "$base/v1/chat/completions"
+    }
+    candidates += "$base/chat/completions"
+
+    return candidates.toList()
+}
+
+private fun String.withoutKnownOpenAiEndpoint(): String {
+    val knownSuffixes = listOf(
+        "/chat/completions",
+        "/realtime",
+        "/responses",
+        "/audio/transcriptions",
+        "/audio/speech",
+        "/models"
+    )
+    return knownSuffixes.fold(this) { current, suffix ->
+        current.removeSuffix(suffix)
+    }.removeSuffix("/")
 }
 
 private fun String.extractAssistantContent(): String {
@@ -138,7 +239,11 @@ private fun String.extractAssistantContent(): String {
     return content
 }
 
-private fun String.extractProviderErrorMessage(code: Int, message: String): String {
+private fun String.extractProviderErrorMessage(
+    code: Int,
+    message: String,
+    endpoint: String
+): String {
     val providerMessage = runCatching {
         val json = JSONObject(this)
         json.optJSONObject("error")?.optString("message")
@@ -147,6 +252,7 @@ private fun String.extractProviderErrorMessage(code: Int, message: String): Stri
     }.getOrNull()
     return listOfNotNull(
         "后处理请求失败：HTTP $code $message",
+        "Endpoint: $endpoint",
         providerMessage?.let { "服务端返回：$it" }
     ).joinToString("\n")
 }

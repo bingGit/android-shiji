@@ -811,11 +811,14 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                         }
                     },
                     onTestPostProcessConnection = {
-                        connectionStatus = when {
-                            postProcessApiKey.isBlank() -> "后处理连接测试失败：API Key 为空"
-                            postProcessBaseUrl.isBlank() -> "后处理连接测试失败：Base URL 为空"
-                            postProcessModel.isBlank() -> "后处理连接测试失败：文本模型为空"
-                            else -> "后处理配置完整：${postProcessProviderName} / ${postProcessModel}"
+                        scope.launch {
+                            connectionStatus = "正在测试后处理模型连接"
+                            val result = textPostProcessProvider.testConnection(config())
+                            connectionStatus = if (result.success) {
+                                result.detail ?: result.summary
+                            } else {
+                                listOfNotNull(result.summary, result.detail).joinToString("：")
+                            }
                         }
                     }
                 )
