@@ -649,6 +649,11 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 }
             }
             VoiceFlowTab.Cards -> {
+                val visibleIdeaCards = if (selectedIdeaCard == null) {
+                    ideaCards
+                } else {
+                    ideaCards.filterNot { it.id == selectedIdeaCard.id }
+                }
                 selectedIdeaCard?.let { card ->
                     IdeaCardDetailPanel(
                         card = card,
@@ -663,21 +668,23 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                         onPostProcess = ::runPostProcess
                     )
                 }
-                IdeaCardsPanel(
-                    ideaCards = ideaCards,
-                    selectedIdeaCardId = selectedIdeaCardId,
-                    onSelect = { selectedIdeaCardId = it.id },
-                    onCopy = { item ->
-                        val copied = copyText("VoiceFlow idea", item.originalTranscript)
-                        copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
-                    },
-                    onDelete = { item ->
-                        val nextCards = ideaCards.filterNot { it.id == item.id }
-                        ideaCards = nextCards
-                        if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
-                        if (currentIdeaCardId == item.id) currentIdeaCardId = null
-                    }
-                )
+                if (visibleIdeaCards.isNotEmpty() || selectedIdeaCard == null) {
+                    IdeaCardsPanel(
+                        ideaCards = visibleIdeaCards,
+                        selectedIdeaCardId = selectedIdeaCardId,
+                        onSelect = { selectedIdeaCardId = it.id },
+                        onCopy = { item ->
+                            val copied = copyText("VoiceFlow idea", item.originalTranscript)
+                            copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+                        },
+                        onDelete = { item ->
+                            val nextCards = ideaCards.filterNot { it.id == item.id }
+                            ideaCards = nextCards
+                            if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
+                            if (currentIdeaCardId == item.id) currentIdeaCardId = null
+                        }
+                    )
+                }
             }
             VoiceFlowTab.Settings -> {
                 SettingsPanel(
