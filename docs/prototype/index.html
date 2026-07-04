@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Android VoiceFlow Interaction Prototype</title>
+  <style>
+    :root {
+      --ink: #17211c;
+      --muted: #66726b;
+      --line: #dfe6dd;
+      --paper: #fbfbf4;
+      --panel: #ffffff;
+      --field: #f5f8f2;
+      --green: #17685e;
+      --green-2: #dceee8;
+      --blue: #375da8;
+      --amber: #a36809;
+      --red: #b3261e;
+      --shadow: 0 28px 70px rgba(23, 33, 28, .18);
+      --phone-w: 390px;
+      --phone-h: 844px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(23, 104, 94, .12), transparent 34%),
+        radial-gradient(circle at 78% 14%, rgba(199, 157, 82, .18), transparent 28%),
+        #eef1e8;
+      font-family: ui-serif, "Songti SC", "Noto Serif CJK SC", Georgia, serif;
+    }
+
+    button,
+    textarea,
+    input {
+      font: inherit;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(280px, 420px) minmax(var(--phone-w), 1fr);
+      gap: 40px;
+      align-items: center;
+      min-height: 100vh;
+      padding: 36px clamp(20px, 5vw, 72px);
+    }
+
+    .brief {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .brief h1 {
+      margin: 0;
+      max-width: 10ch;
+      font-size: clamp(42px, 6vw, 74px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    .brief p {
+      margin: 0;
+      max-width: 34em;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .brief-panel {
+      width: min(100%, 390px);
+      padding: 18px;
+      border: 1px solid rgba(23, 33, 28, .12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .62);
+      backdrop-filter: blur(16px);
+    }
+
+    .brief-panel strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .scenario {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .scenario.active {
+      border-color: var(--green);
+      background: var(--green-2);
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .phone-wrap {
+      display: grid;
+      place-items: center;
+      min-width: var(--phone-w);
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      overflow: hidden;
+      border: 10px solid #1b241f;
+      border-radius: 38px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .screen {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background:
+        linear-gradient(180deg, #fafbf3 0%, #f3f5ee 100%);
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand h2 {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .quick {
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 12px;
+      background: var(--green);
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      max-width: 100%;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #eae7da;
+      color: #455148;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .panel {
+      border: 1px solid rgba(23, 33, 28, .08);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 8px 22px rgba(23, 33, 28, .05);
+    }
+
+    .record-panel {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-head h3,
+    .section-title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .subtle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .primary {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 14px;
+      background: var(--green);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ghost,
+    .tool {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .ghost:disabled,
+    .tool:disabled,
+    .primary:disabled {
+      opacity: .5;
+      cursor: progress;
+    }
+
+    .wave {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 2px;
+    }
+
+    .bar {
+      flex: 1;
+      min-width: 4px;
+      border-radius: 99px;
+      background: var(--green);
+      transform-origin: center;
+      opacity: .92;
+    }
+
+    .transcript,
+    .note-body {
+      border-radius: 8px;
+      background: var(--field);
+      padding: 15px;
+      color: #233029;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .placeholder {
+      color: #7c867d;
+    }
+
+    .result-card {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .result-meta,
+    .card-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .editable {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fffdf8;
+      color: var(--ink);
+      line-height: 1.65;
+      outline: none;
+    }
+
+    .editable:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(23, 104, 94, .13);
+    }
+
+    .row-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .processing {
+      border: 1px dashed rgba(23, 104, 94, .35);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(220, 238, 232, .5);
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .idea-row {
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid rgba(23, 33, 28, .1);
+      cursor: pointer;
+    }
+
+    .idea-row.active {
+      border-color: var(--green);
+      background: #edf6f1;
+    }
+
+    .idea-row h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .idea-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .note-title {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 21px;
+      font-weight: 800;
+      outline: none;
+      padding: 0;
+    }
+
+    .dock {
+      border-top: 1px solid rgba(23, 33, 28, .09);
+      background: rgba(255, 255, 255, .96);
+      padding: 10px 14px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dock.show {
+      display: flex;
+    }
+
+    .dock-row {
+      display: grid;
+      grid-template-columns: .8fr 1.1fr 1.1fr .8fr;
+      gap: 8px;
+    }
+
+    .more-grid {
+      display: none;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .more-grid.show {
+      display: grid;
+    }
+
+    .nav {
+      height: 76px;
+      border-top: 1px solid rgba(23, 33, 28, .08);
+      background: #fff;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 6px 12px 10px;
+      gap: 8px;
+    }
+
+    .nav button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav button span {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      font-size: 12px;
+    }
+
+    .nav button.active {
+      background: var(--green-2);
+      color: var(--green);
+    }
+
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -100%;
+      padding: 18px;
+      background: #fff;
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -20px 40px rgba(23, 33, 28, .22);
+      transition: bottom .22s ease;
+      z-index: 4;
+    }
+
+    .sheet.open {
+      bottom: 0;
+    }
+
+    .sheet h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(23, 33, 28, .25);
+      z-index: 3;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    .settings-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 44px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 96px;
+      transform: translateX(-50%) translateY(12px);
+      max-width: 300px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: #1b241f;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+      z-index: 5;
+      font-size: 13px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 880px) {
+      .stage {
+        grid-template-columns: 1fr;
+        place-items: center;
+        padding: 24px 12px;
+      }
+
+      .brief {
+        width: min(100%, var(--phone-w));
+      }
+
+      .brief h1 {
+        max-width: 14ch;
+        font-size: 38px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      :root {
+        --phone-w: min(100vw, 390px);
+        --phone-h: 100vh;
+      }
+
+      .stage {
+        padding: 0;
+        gap: 0;
+      }
+
+      .brief {
+        display: none;
+      }
+
+      .phone {
+        width: 100vw;
+        height: 100vh;
+        border: 0;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <aside class="brief">
+      <div>
+        <h1>VoiceFlow Prototype</h1>
+        <p>这是一个可点击的 HTML 交互原型，用来验证下一轮 Android VoiceFlow 体验：底部操作、生成中状态、可编辑结果、笔记式卡片详情，以及记录和卡片之间的工作流。</p>
+      </div>
+      <section class="brief-panel">
+        <strong>场景切换</strong>
+        <div class="scenario-grid">
+          <button class="scenario active" data-scenario="record">记录完成</button>
+          <button class="scenario" data-scenario="editing">编辑结果</button>
+          <button class="scenario" data-scenario="cards">卡片列表</button>
+          <button class="scenario" data-scenario="detail">卡片详情</button>
+        </div>
+      </section>
+      <p>建议先点“润色表达”或“提炼要点”，再点“更多”，然后进入卡片详情查看结果是否更像一条可继续加工的笔记。</p>
+    </aside>
+
+    <section class="phone-wrap" aria-label="Android VoiceFlow prototype">
+      <div class="phone">
+        <div class="screen">
+          <div id="content" class="content"></div>
+          <div id="dock" class="dock"></div>
+          <nav class="nav" aria-label="main navigation">
+            <button data-tab="record" class="active"><span>R</span>记录</button>
+            <button data-tab="cards"><span>C</span>卡片</button>
+            <button data-tab="settings"><span>S</span>设置</button>
+          </nav>
+        </div>
+        <div id="overlay" class="overlay"></div>
+        <div id="sheet" class="sheet"></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const actions = {
+      polish: { label: '润色表达', title: '润色版本' },
+      summarize: { label: '提炼要点', title: '要点摘要' },
+      rewrite: { label: '整理成文', title: '成文版本' },
+      viewpoint: { label: '提炼观点', title: '核心观点' },
+      title: { label: '生成标题', title: '标题候选' },
+      xhs: { label: '小红书风格', title: '小红书版本' },
+      video: { label: '口播稿', title: '短视频口播稿' }
+    };
+
+    const sampleOriginal = '我今天想到一个点：AI 工具真正改变的可能不是效率，而是表达门槛。以前很多人脑子里有想法，但是没法组织成文字，所以最后就没有输出。现在语音说出来以后，可以马上变成文本，再继续润色和整理。';
+
+    const sampleResult = 'AI 工具真正改变的，不只是效率，而是表达门槛。\n\n过去，很多人并不是没有想法，而是缺少把想法组织成文字的能力。一个念头如果不能被记录、整理和表达，往往很快就消失了。\n\n语音记录加上后续润色，让创作者可以先把粗糙想法抓住，再慢慢加工成可发布、可复用的内容资产。';
+
+    let state = {
+      tab: 'record',
+      scenario: 'record',
+      recording: false,
+      runningAction: null,
+      moreOpen: false,
+      selectedCard: 0,
+      results: [
+        { id: 1, type: 'polish', title: '润色版本', content: sampleResult, edited: true }
+      ],
+      cards: [
+        {
+          title: 'AI 工具改变的是表达门槛',
+          time: '今天 16:42',
+          status: '已润色 / 已提炼',
+          text: sampleOriginal
+        },
+        {
+          title: '把播客选题拆成三段结构',
+          time: '今天 11:08',
+          status: '未处理',
+          text: '这个选题可以先从一个反常识观点开始，然后讲一个真实例子，最后落到行动建议。'
+        }
+      ]
+    };
+
+    const content = document.querySelector('#content');
+    const dock = document.querySelector('#dock');
+    const sheet = document.querySelector('#sheet');
+    const overlay = document.querySelector('#overlay');
+    const toast = document.querySelector('#toast');
+
+    function topChrome(subtitle = '创作者语音灵感捕捉入口', status = '记录完成，可继续加工') {
+      return `
+        <div class="topbar">
+          <div class="brand">
+            <h2>Android VoiceFlow</h2>
+            <small>${subtitle}</small>
+          </div>
+          <button class="quick" data-action="quick">快速记录</button>
+        </div>
+        <div class="status"><span class="dot"></span>${status}</div>
+      `;
+    }
+
+    function render() {
+      document.querySelectorAll('.nav button').forEach(button => {
+        button.classList.toggle('active', button.dataset.tab === state.tab);
+      });
+      document.querySelectorAll('.scenario').forEach(button => {
+        button.classList.toggle('active', button.dataset.scenario === state.scenario);
+      });
+
+      if (state.tab === 'record') renderRecord();
+      if (state.tab === 'cards') renderCards();
+      if (state.tab === 'detail') renderDetail();
+      if (state.tab === 'settings') renderSettings();
+      renderDock();
+    }
+
+    function renderRecord() {
+      const hasResults = state.results.length > 0 || state.runningAction;
+      content.innerHTML = `
+        ${topChrome(state.recording ? '正在听你说，先别急着整理' : '先记下来，稍后整理成内容', state.recording ? '正在录音' : '记录完成，可继续加工')}
+        <section class="panel record-panel">
+          <div class="panel-head">
+            <div>
+              <h3>${state.recording ? '正在听...' : '这条灵感已保存'}</h3>
+              <p class="subtle">${state.recording ? '实时转写中' : '底部操作栏会跟随当前内容'}</p>
+            </div>
+            <button class="primary" data-action="record-toggle">${state.recording ? '停止并保存' : '重新记录'}</button>
+          </div>
+          <div class="wave">${waveBars()}</div>
+          <div class="transcript">${state.recording ? 'AI 工具真正改变的可能不是效率，而是...' : sampleOriginal}</div>
+        </section>
+        ${hasResults ? renderResults() : ''}
+      `;
+    }
+
+    function renderResults() {
+      const running = state.runningAction ? `
+        <div class="processing">${actions[state.runningAction].label}生成中...</div>
+      ` : '';
+      const cards = state.results.map(result => `
+        <section class="panel result-card" data-result="${result.id}">
+          <div>
+            <h3 class="section-title">${result.title}</h3>
+            <div class="result-meta">gpt-4o-mini · ${result.edited ? '已编辑' : 'AI 原始结果'}</div>
+          </div>
+          <textarea class="editable" data-edit="${result.id}">${escapeHtml(result.content)}</textarea>
+          <div class="row-actions">
+            <button class="ghost" data-copy-result="${result.id}">复制</button>
+            <button class="ghost" data-regenerate="${result.type}">重新生成</button>
+            <button class="ghost" data-delete-result="${result.id}">删除</button>
+          </div>
+        </section>
+      `).join('');
+      return running + cards;
+    }
+
+    function renderCards() {
+      content.innerHTML = `
+        ${topChrome('灵感笔记库', '最近灵感')}
+        <section class="cards-list">
+          ${state.cards.map((card, index) => `
+            <article class="idea-row ${index === state.selectedCard ? 'active' : ''}" data-open-card="${index}">
+              <h3>${card.title}</h3>
+              <div class="card-meta">${card.time} · ${card.status}</div>
+              <p>${card.text}</p>
+            </article>
+          `).join('')}
+        </section>
+      `;
+    }
+
+    function renderDetail() {
+      const card = state.cards[state.selectedCard];
+      content.innerHTML = `
+        ${topChrome('卡片详情', '打开一条灵感笔记')}
+        <section class="panel record-panel">
+          <div class="note-header">
+            <div>
+              <input class="note-title" value="${card.title}" data-title-edit>
+              <div class="card-meta">${card.time} · ${card.status}</div>
+            </div>
+            <button class="ghost" data-delete-card>删除</button>
+          </div>
+          <div class="note-body">${card.text}</div>
+        </section>
+        ${renderResults()}
+      `;
+    }
+
+    function renderSettings() {
+      content.innerHTML = `
+        ${topChrome('配置你的转写和后处理模型', '设置')}
+        <section class="panel record-panel settings-list">
+          <h3 class="section-title">Provider 设置</h3>
+          <div class="field">
+            <label>实时转写模型</label>
+            <input value="paraformer-realtime-v2">
+          </div>
+          <div class="field">
+            <label>后处理 Base URL</label>
+            <input value="https://relay.example.com/v1">
+          </div>
+          <div class="field">
+            <label>后处理文本模型</label>
+            <input value="gpt-4o-mini">
+          </div>
+          <button class="primary" data-action="test">测试后处理连接</button>
+        </section>
+      `;
+    }
+
+    function renderDock() {
+      const canDock = state.tab === 'record' || state.tab === 'detail';
+      dock.classList.toggle('show', canDock);
+      if (!canDock) {
+        dock.innerHTML = '';
+        return;
+      }
+      const disabled = state.runningAction ? 'disabled' : '';
+      dock.innerHTML = `
+        <div class="more-grid ${state.moreOpen ? 'show' : ''}">
+          <button class="tool" ${disabled} data-run="rewrite">整理成文</button>
+          <button class="tool" ${disabled} data-run="viewpoint">提炼观点</button>
+          <button class="tool" ${disabled} data-run="title">生成标题</button>
+          <button class="tool" ${disabled} data-run="xhs">小红书风格</button>
+          <button class="tool" ${disabled} data-run="video">口播稿</button>
+        </div>
+        <div class="dock-row">
+          <button class="ghost" ${disabled} data-copy-original>复制</button>
+          <button class="tool" ${disabled} data-run="polish">${state.runningAction === 'polish' ? '生成中...' : '润色表达'}</button>
+          <button class="tool" ${disabled} data-run="summarize">${state.runningAction === 'summarize' ? '生成中...' : '提炼要点'}</button>
+          <button class="ghost" ${disabled} data-more>${state.moreOpen ? '收起' : '更多'}</button>
+        </div>
+      `;
+    }
+
+    function openMoreSheet() {
+      overlay.classList.add('show');
+      sheet.classList.add('open');
+      sheet.innerHTML = `
+        <h3>更多处理方式</h3>
+        <div class="sheet-grid">
+          <button class="tool" data-run="rewrite">整理成文</button>
+          <button class="tool" data-run="viewpoint">提炼观点</button>
+          <button class="tool" data-run="title">生成标题</button>
+          <button class="tool" data-run="xhs">小红书风格</button>
+          <button class="tool" data-run="video">口播稿</button>
+        </div>
+      `;
+    }
+
+    function closeSheet() {
+      overlay.classList.remove('show');
+      sheet.classList.remove('open');
+    }
+
+    function runAction(type) {
+      closeSheet();
+      state.moreOpen = false;
+      state.runningAction = type;
+      render();
+      setTimeout(() => {
+        state.results.unshift({
+          id: Date.now(),
+          type,
+          title: actions[type].title,
+          content: buildResult(type),
+          edited: false
+        });
+        state.runningAction = null;
+        state.scenario = 'editing';
+        render();
+        showToast(`${actions[type].title} 已生成，可直接编辑`);
+      }, 850);
+    }
+
+    function buildResult(type) {
+      if (type === 'summarize') {
+        return '- AI 工具降低了表达门槛\n- 语音记录让想法先被保存下来\n- 后续润色把口语内容变成可发布草稿\n- 创作者可以把碎片灵感沉淀成内容资产';
+      }
+      if (type === 'title') {
+        return '1. AI 真正改变的是表达门槛\n2. 为什么语音记录会成为创作者的新入口\n3. 想法不是少了，而是以前没被保存下来\n4. 从口述到成稿，AI 帮创作者跨过哪一步';
+      }
+      return sampleResult;
+    }
+
+    function waveBars() {
+      const values = state.recording ? [18, 31, 24, 45, 33, 52, 28, 39, 20, 34, 25, 44] : [12, 18, 14, 22, 16, 24, 13, 19, 11, 16, 12, 20];
+      return values.map(height => `<span class="bar" style="height:${height}px"></span>`).join('');
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1300);
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      }[char]));
+    }
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button, article');
+      if (!target) return;
+
+      if (target.dataset.scenario) {
+        state.scenario = target.dataset.scenario;
+        if (state.scenario === 'record') state.tab = 'record';
+        if (state.scenario === 'editing') state.tab = 'record';
+        if (state.scenario === 'cards') state.tab = 'cards';
+        if (state.scenario === 'detail') state.tab = 'detail';
+        render();
+      }
+
+      if (target.dataset.tab) {
+        state.tab = target.dataset.tab;
+        if (state.tab === 'record') state.scenario = 'record';
+        if (state.tab === 'cards') state.scenario = 'cards';
+        if (state.tab === 'settings') state.scenario = 'settings';
+        render();
+      }
+
+      if (target.dataset.action === 'record-toggle' || target.dataset.action === 'quick') {
+        state.recording = !state.recording;
+        if (!state.recording) showToast('灵感已保存为卡片');
+        render();
+      }
+
+      if (target.dataset.more !== undefined) {
+        state.moreOpen = !state.moreOpen;
+        render();
+      }
+
+      if (target.dataset.run) {
+        runAction(target.dataset.run);
+      }
+
+      if (target.dataset.copyOriginal !== undefined) {
+        showToast('原文已复制');
+      }
+
+      if (target.dataset.copyResult) {
+        showToast('处理结果已复制');
+      }
+
+      if (target.dataset.deleteResult) {
+        state.results = state.results.filter(result => String(result.id) !== target.dataset.deleteResult);
+        render();
+        showToast('处理版本已删除');
+      }
+
+      if (target.dataset.regenerate) {
+        runAction(target.dataset.regenerate);
+      }
+
+      if (target.dataset.openCard) {
+        state.selectedCard = Number(target.dataset.openCard);
+        state.tab = 'detail';
+        state.scenario = 'detail';
+        render();
+      }
+
+      if (target.dataset.deleteCard !== undefined) {
+        showToast('这里会二次确认删除卡片');
+      }
+
+      if (target.dataset.action === 'test') {
+        showToast('后处理连接测试成功');
+      }
+    });
+
+    document.addEventListener('input', event => {
+      if (event.target.dataset.edit) {
+        const result = state.results.find(item => String(item.id) === event.target.dataset.edit);
+        if (result) {
+          result.content = event.target.value;
+          result.edited = true;
+        }
+      }
+      if (event.target.dataset.titleEdit !== undefined) {
+        state.cards[state.selectedCard].title = event.target.value;
+      }
+    });
+
+    overlay.addEventListener('click', closeSheet);
+
+    render();
+  </script>
+</body>
+</html>
