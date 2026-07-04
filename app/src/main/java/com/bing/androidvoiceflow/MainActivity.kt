@@ -16,6 +16,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -600,8 +601,14 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             selectedTab = selectedTab,
             onTabSelected = { nextTab ->
                 selectedTab = nextTab
-                if (nextTab == VoiceFlowTab.Record) {
-                    selectedIdeaCardId = null
+                when (nextTab) {
+                    VoiceFlowTab.Record -> selectedIdeaCardId = null
+                    VoiceFlowTab.Cards -> {
+                        if (selectedIdeaCardId == null) {
+                            selectedIdeaCardId = currentIdeaCardId ?: ideaCards.firstOrNull()?.id
+                        }
+                    }
+                    VoiceFlowTab.Settings -> Unit
                 }
             }
         )
@@ -665,8 +672,9 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                         copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
                     },
                     onDelete = { item ->
-                        ideaCards = ideaCards.filterNot { it.id == item.id }
-                        if (selectedIdeaCardId == item.id) selectedIdeaCardId = null
+                        val nextCards = ideaCards.filterNot { it.id == item.id }
+                        ideaCards = nextCards
+                        if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
                         if (currentIdeaCardId == item.id) currentIdeaCardId = null
                     }
                 )
@@ -1616,6 +1624,7 @@ private fun IdeaCardRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(background)
+            .clickable(onClick = onSelect)
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -1639,9 +1648,6 @@ private fun IdeaCardRow(
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                TextButton(onClick = onSelect) {
-                    Text(if (isSelected) "已打开" else "打开")
-                }
                 TextButton(onClick = onCopy) {
                     Text("复制")
                 }
