@@ -284,6 +284,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var amplitude by remember { mutableStateOf(0.08f) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
     var activeSession by remember { mutableStateOf<RealtimeSession?>(null) }
+    var runningPostProcessAction by remember { mutableStateOf<PostProcessAction?>(null) }
+    var morePostProcessActionsExpanded by remember { mutableStateOf(false) }
     val captureStats = remember { CaptureStats() }
     var ideaCards by remember { mutableStateOf<List<IdeaCard>>(emptyList()) }
     var currentIdeaCardId by remember { mutableStateOf<Long?>(null) }
@@ -294,6 +296,11 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     val activeTranscript = selectedIdeaCard?.originalTranscript ?: finalTranscript.trim()
     val recordTranscript = finalTranscript.ifBlank { partialTranscript }
     val actionableRecordTranscript = finalTranscript.trim()
+    val canUsePostProcessDock = when (selectedTab) {
+        VoiceFlowTab.Record -> actionableRecordTranscript.isNotBlank()
+        VoiceFlowTab.Cards -> selectedIdeaCard != null
+        VoiceFlowTab.Settings -> false
+    }
 
     LaunchedEffect(Unit) {
         val settings = context.settingsDataStore.data.first()
@@ -597,6 +604,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     }
 
     fun runPostProcess(action: PostProcessAction) {
+        if (runningPostProcessAction != null) return
         val sourceText = activeTranscript.trim()
         if (sourceText.isBlank()) {
             fail(
@@ -611,6 +619,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         errorMessage = ""
         recoveryHint = ""
         copiedNotice = ""
+        runningPostProcessAction = action
+        morePostProcessActionsExpanded = false
         scope.launch {
             try {
                 val result = textPostProcessProvider.process(
@@ -630,12 +640,15 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                     message = "后处理生成失败",
                     hint = error.message ?: "请检查后处理 API Key、Base URL 和文本模型是否可用。"
                 )
+            } finally {
+                runningPostProcessAction = null
             }
         }
     }
 
     fun selectTab(nextTab: VoiceFlowTab) {
         selectedTab = nextTab
+        morePostProcessActionsExpanded = false
         when (nextTab) {
             VoiceFlowTab.Record -> selectedIdeaCardId = null
             VoiceFlowTab.Cards -> {
@@ -680,19 +693,13 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                         copiedNotice = copiedNotice,
                         errorMessage = errorMessage,
                         recoveryHint = recoveryHint,
-                        hasTranscript = actionableRecordTranscript.isNotBlank(),
                         onPrimaryAction = {
                             when (status) {
                                 VoiceFlowStatus.Recording,
                                 VoiceFlowStatus.Connecting -> finishRecording()
                                 else -> requestStartRecording()
                             }
-                        },
-                        onCopyTranscript = {
-                            val copied = copyText("VoiceFlow idea transcript", actionableRecordTranscript)
-                            copiedNotice = if (copied) "原始灵感已复制到剪贴板" else "没有可复制的文本"
-                        },
-                        onPostProcess = ::runPostProcess
+                        }
                     )
                     if (postProcessTitle.isNotBlank() || status == VoiceFlowStatus.PostProcessing) {
                         PostProcessPanel(
@@ -715,15 +722,10 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                     selectedIdeaCard?.let { card ->
                         IdeaCardDetailPanel(
                             card = card,
-                            onCopyOriginal = {
-                                val copied = copyText("VoiceFlow idea", card.originalTranscript)
-                                copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
-                            },
                             onCopyResult = { result ->
                                 val copied = copyText("VoiceFlow ${result.title}", result.content)
                                 copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
-                            },
-                            onPostProcess = ::runPostProcess
+                            }
                         )
                     }
                     if (visibleIdeaCards.isNotEmpty() || selectedIdeaCard == null) {
@@ -827,6 +829,18 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                     )
                 }
             }
+        }
+        if (canUsePostProcessDock) {
+            PostProcessDock(
+                expanded = morePostProcessActionsExpanded,
+                runningAction = runningPostProcessAction,
+                onToggleExpanded = { morePostProcessActionsExpanded = !morePostProcessActionsExpanded },
+                onCopyOriginal = {
+                    val copied = copyText("VoiceFlow idea transcript", activeTranscript.trim())
+                    copiedNotice = if (copied) "原始灵感已复制到剪贴板" else "没有可复制的文本"
+                },
+                onPostProcess = ::runPostProcess
+            )
         }
         VoiceFlowBottomNavigation(
             selectedTab = selectedTab,
@@ -954,10 +968,7 @@ private fun RecorderPanel(
     copiedNotice: String,
     errorMessage: String,
     recoveryHint: String,
-    hasTranscript: Boolean,
-    onPrimaryAction: () -> Unit,
-    onCopyTranscript: () -> Unit,
-    onPostProcess: (PostProcessAction) -> Unit
+    onPrimaryAction: () -> Unit
 ) {
     val primaryActionEnabled = status != VoiceFlowStatus.RequestingPermission &&
         status != VoiceFlowStatus.Finalizing &&
@@ -1039,17 +1050,6 @@ private fun RecorderPanel(
                 )
             }
 
-            OutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                enabled = hasTranscript,
-                onClick = onCopyTranscript
-            ) {
-                Text("复制原文")
-            }
-            PostProcessActionGrid(
-                enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
-                onPostProcess = onPostProcess
-            )
         }
     }
 }
@@ -1177,9 +1177,7 @@ private fun PostProcessPanel(
 @Composable
 private fun IdeaCardDetailPanel(
     card: IdeaCard,
-    onCopyOriginal: () -> Unit,
-    onCopyResult: (ProcessingResult) -> Unit,
-    onPostProcess: (PostProcessAction) -> Unit
+    onCopyResult: (ProcessingResult) -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -1208,9 +1206,6 @@ private fun IdeaCardDetailPanel(
                         color = Color(0xFF687069)
                     )
                 }
-                TextButton(onClick = onCopyOriginal) {
-                    Text("复制原文")
-                }
             }
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -1224,10 +1219,6 @@ private fun IdeaCardDetailPanel(
                     color = Color(0xFF1F2924)
                 )
             }
-            PostProcessActionGrid(
-                enabled = true,
-                onPostProcess = onPostProcess
-            )
             if (card.processingResults.isNotEmpty()) {
                 Text(
                     text = "处理版本",
@@ -1248,34 +1239,114 @@ private fun IdeaCardDetailPanel(
 }
 
 @Composable
+private fun PostProcessDock(
+    expanded: Boolean,
+    runningAction: PostProcessAction?,
+    onToggleExpanded: () -> Unit,
+    onCopyOriginal: () -> Unit,
+    onPostProcess: (PostProcessAction) -> Unit
+) {
+    val primaryActions = listOf(PostProcessAction.Polish, PostProcessAction.Summarize)
+    val moreActions = PostProcessAction.entries.filterNot { it in primaryActions }
+    val actionsEnabled = runningAction == null
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        tonalElevation = 3.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            if (expanded) {
+                PostProcessActionGrid(
+                    actions = moreActions,
+                    runningAction = runningAction,
+                    onPostProcess = onPostProcess
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(0.9f),
+                    enabled = actionsEnabled,
+                    onClick = onCopyOriginal
+                ) {
+                    Text("复制", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                PostProcessActionButton(
+                    modifier = Modifier.weight(1.1f),
+                    action = PostProcessAction.Polish,
+                    runningAction = runningAction,
+                    onPostProcess = onPostProcess
+                )
+                PostProcessActionButton(
+                    modifier = Modifier.weight(1.1f),
+                    action = PostProcessAction.Summarize,
+                    runningAction = runningAction,
+                    onPostProcess = onPostProcess
+                )
+                OutlinedButton(
+                    modifier = Modifier.weight(0.9f),
+                    enabled = actionsEnabled,
+                    onClick = onToggleExpanded
+                ) {
+                    Text(if (expanded) "收起" else "更多", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun PostProcessActionGrid(
-    enabled: Boolean,
+    actions: List<PostProcessAction>,
+    runningAction: PostProcessAction?,
     onPostProcess: (PostProcessAction) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        PostProcessAction.entries.chunked(2).forEach { rowActions ->
+        actions.chunked(2).forEach { rowActions ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 rowActions.forEach { action ->
-                    OutlinedButton(
+                    PostProcessActionButton(
                         modifier = Modifier.weight(1f),
-                        enabled = enabled,
-                        onClick = { onPostProcess(action) }
-                    ) {
-                        Text(
-                            text = action.label,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                        action = action,
+                        runningAction = runningAction,
+                        onPostProcess = onPostProcess
+                    )
                 }
                 if (rowActions.size == 1) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PostProcessActionButton(
+    modifier: Modifier,
+    action: PostProcessAction,
+    runningAction: PostProcessAction?,
+    onPostProcess: (PostProcessAction) -> Unit
+) {
+    val isRunning = runningAction == action
+    OutlinedButton(
+        modifier = modifier,
+        enabled = runningAction == null,
+        onClick = { onPostProcess(action) }
+    ) {
+        Text(
+            text = if (isRunning) "生成中..." else action.label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
