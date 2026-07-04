@@ -199,7 +199,8 @@ private data class ProcessingResult(
     val title: String,
     val content: String,
     val createdAt: Long,
-    val model: String
+    val model: String,
+    val isEdited: Boolean = false
 )
 
 private data class IdeaCard(
@@ -293,6 +294,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var settingsLoaded by remember { mutableStateOf(false) }
 
     val selectedIdeaCard = ideaCards.firstOrNull { it.id == selectedIdeaCardId }
+    val currentIdeaCard = ideaCards.firstOrNull { it.id == currentIdeaCardId }
+    val recordProcessingResults = currentIdeaCard?.processingResults.orEmpty()
     val activeTranscript = selectedIdeaCard?.originalTranscript ?: finalTranscript.trim()
     val recordTranscript = finalTranscript.ifBlank { partialTranscript }
     val actionableRecordTranscript = finalTranscript.trim()
@@ -603,6 +606,38 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         }
     }
 
+    fun updateProcessingResult(resultId: Long, nextContent: String) {
+        ideaCards = ideaCards.map { card ->
+            val nextResults = card.processingResults.map { result ->
+                if (result.id == resultId) {
+                    result.copy(content = nextContent, isEdited = true)
+                } else {
+                    result
+                }
+            }
+            if (nextResults == card.processingResults) {
+                card
+            } else {
+                card.copy(updatedAt = System.currentTimeMillis(), processingResults = nextResults)
+            }
+        }
+    }
+
+    fun deleteProcessingResult(resultId: Long) {
+        ideaCards = ideaCards.map { card ->
+            val nextResults = card.processingResults.filterNot { it.id == resultId }
+            if (nextResults.size == card.processingResults.size) {
+                card
+            } else {
+                card.copy(updatedAt = System.currentTimeMillis(), processingResults = nextResults)
+            }
+        }
+        if (postProcessResult.isNotBlank()) {
+            postProcessTitle = ""
+            postProcessResult = ""
+        }
+    }
+
     fun runPostProcess(action: PostProcessAction) {
         if (runningPostProcessAction != null) return
         val sourceText = activeTranscript.trim()
@@ -651,11 +686,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         morePostProcessActionsExpanded = false
         when (nextTab) {
             VoiceFlowTab.Record -> selectedIdeaCardId = null
-            VoiceFlowTab.Cards -> {
-                if (selectedIdeaCardId == null) {
-                    selectedIdeaCardId = currentIdeaCardId ?: ideaCards.firstOrNull()?.id
-                }
-            }
+            VoiceFlowTab.Cards -> Unit
             VoiceFlowTab.Settings -> Unit
         }
     }
@@ -701,36 +732,45 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                             }
                         }
                     )
-                    if (postProcessTitle.isNotBlank() || status == VoiceFlowStatus.PostProcessing) {
-                        PostProcessPanel(
-                            title = postProcessTitle,
-                            result = postProcessResult,
-                            isLoading = status == VoiceFlowStatus.PostProcessing,
-                            onCopy = {
-                                val copied = copyText("VoiceFlow $postProcessTitle", postProcessResult)
-                                copiedNotice = if (copied) "$postProcessTitle 已复制" else "没有可复制的后处理结果"
-                            }
+                    if (recordProcessingResults.isNotEmpty() || runningPostProcessAction != null) {
+                        ProcessingResultsPanel(
+                            results = recordProcessingResults,
+                            runningAction = runningPostProcessAction,
+                            onCopyResult = { result ->
+                                val copied = copyText("VoiceFlow ${result.title}", result.content)
+                                copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
+                            },
+                            onContentChange = ::updateProcessingResult,
+                            onDeleteResult = ::deleteProcessingResult
                         )
                     }
                 }
                 VoiceFlowTab.Cards -> {
-                    val visibleIdeaCards = if (selectedIdeaCard == null) {
-                        ideaCards
-                    } else {
-                        ideaCards.filterNot { it.id == selectedIdeaCard.id }
-                    }
                     selectedIdeaCard?.let { card ->
                         IdeaCardDetailPanel(
                             card = card,
+                            runningAction = runningPostProcessAction,
+                            onBack = { selectedIdeaCardId = null },
+                            onCopyOriginal = {
+                                val copied = copyText("VoiceFlow idea", card.originalTranscript)
+                                copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+                            },
                             onCopyResult = { result ->
                                 val copied = copyText("VoiceFlow ${result.title}", result.content)
                                 copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
+                            },
+                            onContentChange = ::updateProcessingResult,
+                            onDeleteResult = ::deleteProcessingResult,
+                            onDeleteCard = {
+                                ideaCards = ideaCards.filterNot { it.id == card.id }
+                                if (currentIdeaCardId == card.id) currentIdeaCardId = null
+                                selectedIdeaCardId = null
+                                copiedNotice = "灵感卡片已删除"
                             }
                         )
-                    }
-                    if (visibleIdeaCards.isNotEmpty() || selectedIdeaCard == null) {
+                    } ?: run {
                         IdeaCardsPanel(
-                            ideaCards = visibleIdeaCards,
+                            ideaCards = ideaCards,
                             selectedIdeaCardId = selectedIdeaCardId,
                             onSelect = { selectedIdeaCardId = it.id },
                             onCopy = { item ->
@@ -1132,52 +1172,15 @@ private fun Waveform(amplitude: Float) {
 }
 
 @Composable
-private fun PostProcessPanel(
-    title: String,
-    result: String,
-    isLoading: Boolean,
-    onCopy: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        tonalElevation = 1.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = title.ifBlank { "二次处理" },
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                TextButton(
-                    enabled = result.isNotBlank(),
-                    onClick = onCopy
-                ) {
-                    Text("复制结果")
-                }
-            }
-            Text(
-                text = if (isLoading) "正在生成..." else result,
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (result.isBlank()) Color(0xFF7B827B) else Color(0xFF1F2924)
-            )
-        }
-    }
-}
-
-@Composable
 private fun IdeaCardDetailPanel(
     card: IdeaCard,
-    onCopyResult: (ProcessingResult) -> Unit
+    runningAction: PostProcessAction?,
+    onBack: () -> Unit,
+    onCopyOriginal: () -> Unit,
+    onCopyResult: (ProcessingResult) -> Unit,
+    onContentChange: (Long, String) -> Unit,
+    onDeleteResult: (Long) -> Unit,
+    onDeleteCard: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -1189,6 +1192,9 @@ private fun IdeaCardDetailPanel(
             modifier = Modifier.padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            TextButton(onClick = onBack) {
+                Text("返回卡片列表")
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1206,6 +1212,9 @@ private fun IdeaCardDetailPanel(
                         color = Color(0xFF687069)
                     )
                 }
+                TextButton(onClick = onDeleteCard) {
+                    Text("删除")
+                }
             }
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -1219,22 +1228,67 @@ private fun IdeaCardDetailPanel(
                     color = Color(0xFF1F2924)
                 )
             }
-            if (card.processingResults.isNotEmpty()) {
-                Text(
-                    text = "处理版本",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    card.processingResults.forEach { result ->
-                        ProcessingResultRow(
-                            result = result,
-                            onCopy = { onCopyResult(result) }
-                        )
-                    }
-                }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onCopyOriginal
+            ) {
+                Text("复制原文")
             }
+            ProcessingResultsPanel(
+                results = card.processingResults,
+                runningAction = runningAction,
+                onCopyResult = onCopyResult,
+                onContentChange = onContentChange,
+                onDeleteResult = onDeleteResult
+            )
         }
+    }
+}
+
+@Composable
+private fun ProcessingResultsPanel(
+    results: List<ProcessingResult>,
+    runningAction: PostProcessAction?,
+    onCopyResult: (ProcessingResult) -> Unit,
+    onContentChange: (Long, String) -> Unit,
+    onDeleteResult: (Long) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (runningAction != null) {
+            ProcessingPlaceholder(action = runningAction)
+        }
+        if (results.isNotEmpty()) {
+            Text(
+                text = "处理版本",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        results.forEach { result ->
+            ProcessingResultRow(
+                result = result,
+                onCopy = { onCopyResult(result) },
+                onContentChange = { onContentChange(result.id, it) },
+                onDelete = { onDeleteResult(result.id) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProcessingPlaceholder(action: PostProcessAction) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        color = Color(0xFFDDEFE8)
+    ) {
+        Text(
+            modifier = Modifier.padding(14.dp),
+            text = "${action.label}生成中...",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -1351,7 +1405,12 @@ private fun PostProcessActionButton(
 }
 
 @Composable
-private fun ProcessingResultRow(result: ProcessingResult, onCopy: () -> Unit) {
+private fun ProcessingResultRow(
+    result: ProcessingResult,
+    onCopy: () -> Unit,
+    onContentChange: (String) -> Unit,
+    onDelete: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -1369,18 +1428,26 @@ private fun ProcessingResultRow(result: ProcessingResult, onCopy: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(result.title, fontWeight = FontWeight.SemiBold)
                     Text(
-                        text = "${formatDisplayTime(result.createdAt)} · ${result.model}",
+                        text = "${formatDisplayTime(result.createdAt)} · ${result.model} · ${if (result.isEdited) "已编辑" else "AI 原始结果"}",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color(0xFF687069)
                     )
                 }
-                TextButton(onClick = onCopy) {
-                    Text("复制")
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    TextButton(onClick = onCopy) {
+                        Text("复制")
+                    }
+                    TextButton(onClick = onDelete) {
+                        Text("删除")
+                    }
                 }
             }
-            Text(
-                text = result.content,
-                style = MaterialTheme.typography.bodyMedium
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = result.content,
+                onValueChange = onContentChange,
+                minLines = 4,
+                label = { Text("可编辑草稿") }
             )
         }
     }
