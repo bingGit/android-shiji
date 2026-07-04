@@ -74,12 +74,12 @@ import com.bing.androidvoiceflow.core.ProviderConfig
 import com.bing.androidvoiceflow.core.RealtimeProviderProtocol
 import com.bing.androidvoiceflow.core.RealtimeSession
 import com.bing.androidvoiceflow.core.TranscriptionEvent
+import com.bing.androidvoiceflow.provider.OpenAiCompatibleTextPostProcessProvider
 import com.bing.androidvoiceflow.provider.RealtimeProviderFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -140,10 +140,56 @@ private enum class VoiceFlowTab(val label: String) {
     Settings("设置")
 }
 
-private enum class PostProcessAction(val label: String, val resultTitle: String) {
-    Summarize("提炼要点", "要点摘要"),
-    Polish("润色表达", "润色版本"),
-    Rewrite("整理改写", "成文版本")
+private enum class PostProcessAction(
+    val label: String,
+    val resultTitle: String,
+    val instruction: String
+) {
+    Summarize(
+        label = "提炼要点",
+        resultTitle = "要点摘要",
+        instruction = "把口述内容整理成 3 到 6 条要点，保留具体信息和判断，不添加原文没有的结论。"
+    ),
+    Polish(
+        label = "润色表达",
+        resultTitle = "润色版本",
+        instruction = "保留原意，去掉口语停顿和重复，让表达更自然、清楚、有节奏。"
+    ),
+    Rewrite(
+        label = "整理成文",
+        resultTitle = "成文版本",
+        instruction = "把碎片口述整理成一段可继续编辑的创作草稿，结构清楚，语气自然。"
+    ),
+    ExtractViewpoint(
+        label = "提炼观点",
+        resultTitle = "核心观点",
+        instruction = "从原文中提炼一个最核心的观点，并补充 2 到 4 条支撑理由。"
+    ),
+    GenerateTitle(
+        label = "生成标题",
+        resultTitle = "标题候选",
+        instruction = "基于原文生成 8 个中文标题候选，兼顾清晰、冲突感和传播性。"
+    ),
+    ExpandArticle(
+        label = "扩写段落",
+        resultTitle = "文章段落",
+        instruction = "把原始灵感扩写成 2 到 4 段文章正文，保留原意，并让段落之间有递进关系。"
+    ),
+    Xiaohongshu(
+        label = "小红书风格",
+        resultTitle = "小红书版本",
+        instruction = "把原文改写成小红书笔记草稿，包含吸引人的开头、分段正文和可复制的表达。"
+    ),
+    WeChatOpening(
+        label = "公众号开头",
+        resultTitle = "公众号开头",
+        instruction = "把原文改写成公众号文章开头，用一个具体问题或判断切入，引出后续展开。"
+    ),
+    ShortVideoScript(
+        label = "口播稿",
+        resultTitle = "短视频口播稿",
+        instruction = "把原文改写成短视频口播稿，句子短，节奏明确，适合直接朗读。"
+    )
 }
 
 private data class ProcessingResult(
@@ -204,6 +250,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     val scope = rememberCoroutineScope()
     val audioRecorder = remember { AndroidPcmAudioRecorder() }
     val realtimeProviderFactory = remember { RealtimeProviderFactory() }
+    val textPostProcessProvider = remember { OpenAiCompatibleTextPostProcessProvider() }
 
     var realtimeProtocol by remember { mutableStateOf(RealtimeProviderProtocol.AliyunParaformer) }
     var providerName by remember { mutableStateOf("阿里云 Paraformer") }
@@ -564,17 +611,25 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         recoveryHint = ""
         copiedNotice = ""
         scope.launch {
-            delay(500)
-            val result = when (action) {
-                PostProcessAction.Summarize -> summarizeText(sourceText)
-                PostProcessAction.Polish -> polishText(sourceText)
-                PostProcessAction.Rewrite -> rewriteText(sourceText)
+            try {
+                val result = textPostProcessProvider.process(
+                    text = sourceText,
+                    config = config(),
+                    actionTitle = action.resultTitle,
+                    actionInstruction = action.instruction
+                )
+                postProcessResult = result
+                errorMessage = ""
+                recoveryHint = ""
+                status = VoiceFlowStatus.Completed
+                appendProcessingResult(action, result)
+            } catch (error: Exception) {
+                postProcessResult = ""
+                fail(
+                    message = "后处理生成失败",
+                    hint = error.message ?: "请检查后处理 API Key、Base URL 和文本模型是否可用。"
+                )
             }
-            postProcessResult = result
-            errorMessage = ""
-            recoveryHint = ""
-            status = VoiceFlowStatus.Completed
-            appendProcessingResult(action, result)
         }
     }
 
@@ -972,39 +1027,17 @@ private fun RecorderPanel(
                 )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    enabled = hasTranscript,
-                    onClick = onCopyTranscript
-                ) {
-                    Text("复制原文")
-                }
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
-                    onClick = { onPostProcess(PostProcessAction.Summarize) }
-                ) {
-                    Text("提炼要点")
-                }
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
-                    onClick = { onPostProcess(PostProcessAction.Polish) }
-                ) {
-                    Text("润色表达")
-                }
-            }
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
-                onClick = { onPostProcess(PostProcessAction.Rewrite) }
+                enabled = hasTranscript,
+                onClick = onCopyTranscript
             ) {
-                Text("整理改写成文")
+                Text("复制原文")
             }
+            PostProcessActionGrid(
+                enabled = hasTranscript && status != VoiceFlowStatus.PostProcessing,
+                onPostProcess = onPostProcess
+            )
         }
     }
 }
@@ -1179,19 +1212,10 @@ private fun IdeaCardDetailPanel(
                     color = Color(0xFF1F2924)
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                PostProcessAction.entries.forEach { action ->
-                    OutlinedButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = { onPostProcess(action) }
-                    ) {
-                        Text(action.label, maxLines = 1)
-                    }
-                }
-            }
+            PostProcessActionGrid(
+                enabled = true,
+                onPostProcess = onPostProcess
+            )
             if (card.processingResults.isNotEmpty()) {
                 Text(
                     text = "处理版本",
@@ -1205,6 +1229,38 @@ private fun IdeaCardDetailPanel(
                             onCopy = { onCopyResult(result) }
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PostProcessActionGrid(
+    enabled: Boolean,
+    onPostProcess: (PostProcessAction) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        PostProcessAction.entries.chunked(2).forEach { rowActions ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                rowActions.forEach { action ->
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = enabled,
+                        onClick = { onPostProcess(action) }
+                    ) {
+                        Text(
+                            text = action.label,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                if (rowActions.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -1732,32 +1788,6 @@ private fun generateIdeaTitle(text: String): String {
         .orEmpty()
     val candidate = if (firstSentence.length in 6..28) firstSentence else cleaned
     return candidate.take(28)
-}
-
-private fun summarizeText(text: String): String {
-    val sentences = text
-        .split(Regex("[。！？!?\\n]+"))
-        .map { it.trim() }
-        .filter { it.isNotBlank() }
-        .take(4)
-    if (sentences.isEmpty()) return text.take(120)
-    return sentences.joinToString(separator = "\n") { "- $it" }
-}
-
-private fun polishText(text: String): String {
-    return text
-        .replace("然后", "随后")
-        .replace("就是", "")
-        .replace("这个", "这项")
-        .lineSequence()
-        .map { it.trim() }
-        .filter { it.isNotBlank() }
-        .joinToString(separator = "\n")
-}
-
-private fun rewriteText(text: String): String {
-    val cleaned = polishText(text)
-    return "创作草稿：\n$cleaned\n\n下一步：补充一个具体例子，再提炼一个更有冲突感的标题。"
 }
 
 private fun audioDurationSeconds(bytes: Long, config: ProviderConfig): Float {

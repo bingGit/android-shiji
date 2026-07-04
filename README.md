@@ -12,8 +12,9 @@ Android VoiceFlow 是一个面向 Android 的实时语音转文字工具。第�
 - VoiceFlow 核心接口抽象。
 - `AudioRecord` 本地 PCM16 mono 音频采集。
 - 主界面录音状态、音量波形、采集统计、剪贴板复制、后处理、Provider 设置和最近历史。
+- OpenAI-compatible 文本模型后处理，用于提炼要点、润色表达、整理成文和创作者内容改写。
 
-Realtime provider 尚未接入；当前录音主流程会真实打开麦克风并读取 PCM chunk，但不会伪装生成 transcript。下一步会把这些音频分片接入 WebSocket 实时转写 session。
+Realtime provider 已有 OpenAI-compatible Realtime 和阿里云 Paraformer WebSocket 初版；当前录音主流程会真实打开麦克风、读取 PCM chunk，并发送给所选实时转写 provider。
 
 ## 技术基线
 
@@ -31,7 +32,8 @@ Realtime provider 尚未接入；当前录音主流程会真实打开麦克风�
 
 - M1：Android 项目骨架与 VoiceFlow 主界面已完成。
 - M2：本地麦克风采集已接入，默认使用 PCM16、mono、24 kHz、400 ms chunk。
-- M3：实时转写 provider 待接入。
+- M3：OpenAI-compatible Realtime 和阿里云 Paraformer 实时转写 provider 已接入初版。
+- M4：后续文本处理已接入 OpenAI-compatible Chat Completions，并扩展创作者常用处理动作。
 
 ## 本地构建
 
