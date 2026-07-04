@@ -4,6 +4,12 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -37,6 +43,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -85,6 +92,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -112,6 +121,7 @@ private object SettingsKeys {
     val Prompt = stringPreferencesKey("prompt")
     val PostProcessPrompt = stringPreferencesKey("post_process_prompt")
     val Hotwords = stringPreferencesKey("hotwords")
+    val IdeaCardsJson = stringPreferencesKey("idea_cards_json")
 }
 
 class MainActivity : ComponentActivity() {
@@ -291,6 +301,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var ideaCards by remember { mutableStateOf<List<IdeaCard>>(emptyList()) }
     var currentIdeaCardId by remember { mutableStateOf<Long?>(null) }
     var selectedIdeaCardId by remember { mutableStateOf<Long?>(null) }
+    var pendingDeleteCard by remember { mutableStateOf<IdeaCard?>(null) }
+    var pendingDeleteResult by remember { mutableStateOf<ProcessingResult?>(null) }
     var settingsLoaded by remember { mutableStateOf(false) }
 
     val selectedIdeaCard = ideaCards.firstOrNull { it.id == selectedIdeaCardId }
@@ -325,7 +337,19 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         prompt = settings[SettingsKeys.Prompt] ?: prompt
         postProcessPrompt = settings[SettingsKeys.PostProcessPrompt] ?: postProcessPrompt
         hotwords = settings[SettingsKeys.Hotwords] ?: hotwords
+        val savedCards = settings[SettingsKeys.IdeaCardsJson]
+            ?.let(::decodeIdeaCards)
+            .orEmpty()
+        ideaCards = savedCards
+        currentIdeaCardId = savedCards.firstOrNull()?.id
         settingsLoaded = true
+    }
+
+    LaunchedEffect(settingsLoaded, ideaCards) {
+        if (!settingsLoaded) return@LaunchedEffect
+        context.settingsDataStore.edit { settings ->
+            settings[SettingsKeys.IdeaCardsJson] = encodeIdeaCards(ideaCards)
+        }
     }
 
     LaunchedEffect(
@@ -638,6 +662,14 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         }
     }
 
+    fun deleteIdeaCard(cardId: Long) {
+        val nextCards = ideaCards.filterNot { it.id == cardId }
+        ideaCards = nextCards
+        if (selectedIdeaCardId == cardId) selectedIdeaCardId = null
+        if (currentIdeaCardId == cardId) currentIdeaCardId = nextCards.firstOrNull()?.id
+        copiedNotice = "灵感卡片已删除"
+    }
+
     fun runPostProcess(action: PostProcessAction) {
         if (runningPostProcessAction != null) return
         val sourceText = activeTranscript.trim()
@@ -711,8 +743,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             Header(
                 status = status,
                 connectionStatus = connectionStatus,
-                quickRecordMode = quickRecordMode,
-                onEnterQuickRecord = { requestStartRecording() }
+                quickRecordMode = quickRecordMode
             )
             when (selectedTab) {
                 VoiceFlowTab.Record -> {
@@ -741,7 +772,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                                 copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
                             },
                             onContentChange = ::updateProcessingResult,
-                            onDeleteResult = ::deleteProcessingResult
+                            onDeleteResult = { pendingDeleteResult = it }
                         )
                     }
                 }
@@ -760,13 +791,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                                 copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
                             },
                             onContentChange = ::updateProcessingResult,
-                            onDeleteResult = ::deleteProcessingResult,
-                            onDeleteCard = {
-                                ideaCards = ideaCards.filterNot { it.id == card.id }
-                                if (currentIdeaCardId == card.id) currentIdeaCardId = null
-                                selectedIdeaCardId = null
-                                copiedNotice = "灵感卡片已删除"
-                            }
+                            onDeleteResult = { pendingDeleteResult = it },
+                            onDeleteCard = { pendingDeleteCard = card }
                         )
                     } ?: run {
                         IdeaCardsPanel(
@@ -777,12 +803,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                                 val copied = copyText("VoiceFlow idea", item.originalTranscript)
                                 copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
                             },
-                            onDelete = { item ->
-                                val nextCards = ideaCards.filterNot { it.id == item.id }
-                                ideaCards = nextCards
-                                if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
-                                if (currentIdeaCardId == item.id) currentIdeaCardId = null
-                            }
+                            onDelete = { item -> pendingDeleteCard = item }
                         )
                     }
                 }
@@ -887,14 +908,38 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             onTabSelected = ::selectTab
         )
     }
+
+    pendingDeleteCard?.let { card ->
+        ConfirmDeleteDialog(
+            title = "删除这条灵感？",
+            message = "“${card.title}”及其所有处理版本会被删除。",
+            onDismiss = { pendingDeleteCard = null },
+            onConfirm = {
+                deleteIdeaCard(card.id)
+                pendingDeleteCard = null
+            }
+        )
+    }
+
+    pendingDeleteResult?.let { result ->
+        ConfirmDeleteDialog(
+            title = "删除这个处理版本？",
+            message = "“${result.title}”会从当前灵感中移除。",
+            onDismiss = { pendingDeleteResult = null },
+            onConfirm = {
+                deleteProcessingResult(result.id)
+                pendingDeleteResult = null
+                copiedNotice = "处理版本已删除"
+            }
+        )
+    }
 }
 
 @Composable
 private fun Header(
     status: VoiceFlowStatus,
     connectionStatus: String,
-    quickRecordMode: Boolean,
-    onEnterQuickRecord: () -> Unit
+    quickRecordMode: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -921,16 +966,35 @@ private fun Header(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (!quickRecordMode) {
-                TextButton(onClick = onEnterQuickRecord) {
-                    Text("快速记录")
-                }
-            }
         }
         if (status != VoiceFlowStatus.Failed) {
             StatusBadge(status = status, connectionStatus = connectionStatus)
         }
     }
+}
+
+@Composable
+private fun ConfirmDeleteDialog(
+    title: String,
+    message: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("确认删除")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
 }
 
 @Composable
@@ -1013,11 +1077,27 @@ private fun RecorderPanel(
     val primaryActionEnabled = status != VoiceFlowStatus.RequestingPermission &&
         status != VoiceFlowStatus.Finalizing &&
         status != VoiceFlowStatus.PostProcessing
+    val isActivelyRecording = status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting
+    val pulseTransition = rememberInfiniteTransition(label = "recordingPulse")
+    val pulseAlpha by pulseTransition.animateFloat(
+        initialValue = 0.35f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 760),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "recordingPulseAlpha"
+    )
+    val panelShape = RoundedCornerShape(8.dp)
+    val panelColor = if (isActivelyRecording) Color(0xFFEAF4EF) else Color.White
+    val panelBorderColor = if (isActivelyRecording) Color(0xFF1B6B63) else Color.Transparent
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, panelBorderColor, panelShape),
+        shape = panelShape,
+        color = panelColor,
         tonalElevation = 1.dp
     ) {
         Column(
@@ -1047,32 +1127,64 @@ private fun RecorderPanel(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Button(
-                    enabled = primaryActionEnabled,
-                    onClick = onPrimaryAction
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = if (status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting) {
-                            "停止并保存"
-                        } else {
-                            "记录灵感"
+                    if (isActivelyRecording) {
+                        Surface(
+                            shape = RoundedCornerShape(999.dp),
+                            color = Color.White
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF1B6B63).copy(alpha = pulseAlpha))
+                                )
+                                Text(
+                                    text = "实时采集中",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color(0xFF1B6B63),
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
-                    )
+                    }
+                    Button(
+                        enabled = primaryActionEnabled,
+                        onClick = onPrimaryAction
+                    ) {
+                        Text(
+                            text = if (isActivelyRecording) {
+                                "停止并保存"
+                            } else {
+                                "记录灵感"
+                            }
+                        )
+                    }
                 }
             }
 
-            Waveform(amplitude = amplitude)
+            Waveform(amplitude = amplitude, active = isActivelyRecording)
 
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 180.dp),
                 shape = RoundedCornerShape(8.dp),
-                color = Color(0xFFF8FAF7)
+                color = if (isActivelyRecording) Color.White else Color(0xFFF8FAF7)
             ) {
                 Text(
                     modifier = Modifier.padding(16.dp),
-                    text = transcript.ifBlank { "点击“记录灵感”，先把想法说出来。" },
+                    text = transcript.ifBlank {
+                        if (isActivelyRecording) "正在听你说话..." else "点击“记录灵感”，先把想法说出来。"
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                     color = if (transcript.isBlank()) Color(0xFF7B827B) else Color(0xFF1F2924)
                 )
@@ -1139,7 +1251,7 @@ private fun ErrorPanel(message: String, hint: String) {
 }
 
 @Composable
-private fun Waveform(amplitude: Float) {
+private fun Waveform(amplitude: Float, active: Boolean) {
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
@@ -1150,7 +1262,7 @@ private fun Waveform(amplitude: Float) {
         val barWidth = max(3.dp.toPx(), (size.width - gap * (bars - 1)) / bars)
         val centerY = size.height / 2f
         drawLine(
-            color = Color(0xFFE2E6DE),
+            color = if (active) Color(0xFFC7DDD5) else Color(0xFFE2E6DE),
             start = Offset(0f, centerY),
             end = Offset(size.width, centerY),
             strokeWidth = 1.dp.toPx(),
@@ -1162,7 +1274,7 @@ private fun Waveform(amplitude: Float) {
             val height = (size.height * localLevel).coerceAtLeast(6.dp.toPx())
             val x = index * (barWidth + gap)
             drawRoundRect(
-                color = Color(0xFF1B6B63),
+                color = if (active) Color(0xFF1B6B63) else Color(0xFF769087),
                 topLeft = Offset(x, centerY - height / 2f),
                 size = Size(barWidth, height),
                 cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
@@ -1179,7 +1291,7 @@ private fun IdeaCardDetailPanel(
     onCopyOriginal: () -> Unit,
     onCopyResult: (ProcessingResult) -> Unit,
     onContentChange: (Long, String) -> Unit,
-    onDeleteResult: (Long) -> Unit,
+    onDeleteResult: (ProcessingResult) -> Unit,
     onDeleteCard: () -> Unit
 ) {
     Surface(
@@ -1251,7 +1363,7 @@ private fun ProcessingResultsPanel(
     runningAction: PostProcessAction?,
     onCopyResult: (ProcessingResult) -> Unit,
     onContentChange: (Long, String) -> Unit,
-    onDeleteResult: (Long) -> Unit
+    onDeleteResult: (ProcessingResult) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (runningAction != null) {
@@ -1269,7 +1381,7 @@ private fun ProcessingResultsPanel(
                 result = result,
                 onCopy = { onCopyResult(result) },
                 onContentChange = { onContentChange(result.id, it) },
-                onDelete = { onDeleteResult(result.id) }
+                onDelete = { onDeleteResult(result) }
             )
         }
     }
@@ -1320,35 +1432,34 @@ private fun PostProcessDock(
                     onPostProcess = onPostProcess
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(0.9f),
-                    enabled = actionsEnabled,
-                    onClick = onCopyOriginal
-                ) {
-                    Text("复制", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 PostProcessActionButton(
-                    modifier = Modifier.weight(1.1f),
+                    modifier = Modifier.weight(1f),
                     action = PostProcessAction.Polish,
                     runningAction = runningAction,
                     onPostProcess = onPostProcess
                 )
                 PostProcessActionButton(
-                    modifier = Modifier.weight(1.1f),
+                    modifier = Modifier.weight(1f),
                     action = PostProcessAction.Summarize,
                     runningAction = runningAction,
                     onPostProcess = onPostProcess
                 )
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(
-                    modifier = Modifier.weight(0.9f),
+                    modifier = Modifier.weight(1f),
+                    enabled = actionsEnabled,
+                    onClick = onCopyOriginal
+                ) {
+                    Text("复制原文")
+                }
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
                     enabled = actionsEnabled,
                     onClick = onToggleExpanded
                 ) {
-                    Text(if (expanded) "收起" else "更多", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(if (expanded) "收起更多" else "更多操作")
                 }
             }
         }
@@ -1398,8 +1509,7 @@ private fun PostProcessActionButton(
     ) {
         Text(
             text = if (isRunning) "生成中..." else action.label,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1
         )
     }
 }
@@ -1922,6 +2032,81 @@ private fun IdeaCard.statusLabel(): String {
     if (processingResults.isEmpty()) return "未处理"
     val labels = processingResults.map { it.type.label }.distinct()
     return labels.joinToString(" / ")
+}
+
+private fun encodeIdeaCards(cards: List<IdeaCard>): String {
+    val array = JSONArray()
+    cards.forEach { card ->
+        val resultsArray = JSONArray()
+        card.processingResults.forEach { result ->
+            resultsArray.put(
+                JSONObject()
+                    .put("id", result.id)
+                    .put("type", result.type.name)
+                    .put("title", result.title)
+                    .put("content", result.content)
+                    .put("createdAt", result.createdAt)
+                    .put("model", result.model)
+                    .put("isEdited", result.isEdited)
+            )
+        }
+        array.put(
+            JSONObject()
+                .put("id", card.id)
+                .put("title", card.title)
+                .put("originalTranscript", card.originalTranscript)
+                .put("createdAt", card.createdAt)
+                .put("updatedAt", card.updatedAt)
+                .put("durationMs", card.durationMs)
+                .put("realtimeModel", card.realtimeModel)
+                .put("isFavorite", card.isFavorite)
+                .put("processingResults", resultsArray)
+        )
+    }
+    return array.toString()
+}
+
+private fun decodeIdeaCards(raw: String): List<IdeaCard> {
+    return runCatching {
+        val array = JSONArray(raw)
+        val cards = mutableListOf<IdeaCard>()
+        for (index in 0 until array.length()) {
+            val cardObject = array.getJSONObject(index)
+            val resultsArray = cardObject.optJSONArray("processingResults") ?: JSONArray()
+            val results = mutableListOf<ProcessingResult>()
+            for (resultIndex in 0 until resultsArray.length()) {
+                val resultObject = resultsArray.getJSONObject(resultIndex)
+                val action = runCatching {
+                    PostProcessAction.valueOf(resultObject.optString("type", PostProcessAction.Summarize.name))
+                }.getOrDefault(PostProcessAction.Summarize)
+                results.add(
+                    ProcessingResult(
+                        id = resultObject.optLong("id", 0L),
+                        type = action,
+                        title = resultObject.optString("title", action.resultTitle),
+                        content = resultObject.optString("content"),
+                        createdAt = resultObject.optLong("createdAt", 0L),
+                        model = resultObject.optString("model"),
+                        isEdited = resultObject.optBoolean("isEdited", false)
+                    )
+                )
+            }
+            cards.add(
+                IdeaCard(
+                    id = cardObject.optLong("id", 0L),
+                    title = cardObject.optString("title", "未命名灵感"),
+                    originalTranscript = cardObject.optString("originalTranscript"),
+                    createdAt = cardObject.optLong("createdAt", 0L),
+                    updatedAt = cardObject.optLong("updatedAt", 0L),
+                    durationMs = cardObject.optLong("durationMs", 0L),
+                    realtimeModel = cardObject.optString("realtimeModel"),
+                    processingResults = results,
+                    isFavorite = cardObject.optBoolean("isFavorite", false)
+                )
+            )
+        }
+        cards
+    }.getOrDefault(emptyList())
 }
 
 private fun generateIdeaTitle(text: String): String {
