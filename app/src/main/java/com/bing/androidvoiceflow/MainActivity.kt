@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,12 +39,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.lightColorScheme
@@ -134,10 +135,10 @@ private enum class VoiceFlowStatus {
     Failed
 }
 
-private enum class VoiceFlowTab(val label: String) {
-    Record("记录"),
-    Cards("卡片"),
-    Settings("设置")
+private enum class VoiceFlowTab(val label: String, val navMark: String) {
+    Record("记录", "R"),
+    Cards("卡片", "C"),
+    Settings("设置", "S")
 }
 
 private enum class PostProcessAction(
@@ -633,6 +634,19 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         }
     }
 
+    fun selectTab(nextTab: VoiceFlowTab) {
+        selectedTab = nextTab
+        when (nextTab) {
+            VoiceFlowTab.Record -> selectedIdeaCardId = null
+            VoiceFlowTab.Cards -> {
+                if (selectedIdeaCardId == null) {
+                    selectedIdeaCardId = currentIdeaCardId ?: ideaCards.firstOrNull()?.id
+                }
+            }
+            VoiceFlowTab.Settings -> Unit
+        }
+    }
+
     LaunchedEffect(initialQuickRecordMode) {
         if (initialQuickRecordMode) {
             requestStartRecording()
@@ -642,188 +656,182 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Header(
-            status = status,
-            connectionStatus = connectionStatus,
-            quickRecordMode = quickRecordMode,
-            onEnterQuickRecord = { requestStartRecording() }
-        )
-        VoiceFlowTabs(
-            selectedTab = selectedTab,
-            onTabSelected = { nextTab ->
-                selectedTab = nextTab
-                when (nextTab) {
-                    VoiceFlowTab.Record -> selectedIdeaCardId = null
-                    VoiceFlowTab.Cards -> {
-                        if (selectedIdeaCardId == null) {
-                            selectedIdeaCardId = currentIdeaCardId ?: ideaCards.firstOrNull()?.id
-                        }
-                    }
-                    VoiceFlowTab.Settings -> Unit
-                }
-            }
-        )
-        when (selectedTab) {
-            VoiceFlowTab.Record -> {
-                RecorderPanel(
-                    status = status,
-                    connectionStatus = connectionStatus,
-                    amplitude = amplitude,
-                    transcript = recordTranscript,
-                    copiedNotice = copiedNotice,
-                    errorMessage = errorMessage,
-                    recoveryHint = recoveryHint,
-                    hasTranscript = actionableRecordTranscript.isNotBlank(),
-                    onPrimaryAction = {
-                        when (status) {
-                            VoiceFlowStatus.Recording,
-                            VoiceFlowStatus.Connecting -> finishRecording()
-                            else -> requestStartRecording()
-                        }
-                    },
-                    onCopyTranscript = {
-                        val copied = copyText("VoiceFlow idea transcript", actionableRecordTranscript)
-                        copiedNotice = if (copied) "原始灵感已复制到剪贴板" else "没有可复制的文本"
-                    },
-                    onPostProcess = ::runPostProcess
-                )
-                if (postProcessTitle.isNotBlank() || status == VoiceFlowStatus.PostProcessing) {
-                    PostProcessPanel(
-                        title = postProcessTitle,
-                        result = postProcessResult,
-                        isLoading = status == VoiceFlowStatus.PostProcessing,
-                        onCopy = {
-                            val copied = copyText("VoiceFlow $postProcessTitle", postProcessResult)
-                            copiedNotice = if (copied) "$postProcessTitle 已复制" else "没有可复制的后处理结果"
-                        }
-                    )
-                }
-            }
-            VoiceFlowTab.Cards -> {
-                val visibleIdeaCards = if (selectedIdeaCard == null) {
-                    ideaCards
-                } else {
-                    ideaCards.filterNot { it.id == selectedIdeaCard.id }
-                }
-                selectedIdeaCard?.let { card ->
-                    IdeaCardDetailPanel(
-                        card = card,
-                        onCopyOriginal = {
-                            val copied = copyText("VoiceFlow idea", card.originalTranscript)
-                            copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
+            Header(
+                status = status,
+                connectionStatus = connectionStatus,
+                quickRecordMode = quickRecordMode,
+                onEnterQuickRecord = { requestStartRecording() }
+            )
+            when (selectedTab) {
+                VoiceFlowTab.Record -> {
+                    RecorderPanel(
+                        status = status,
+                        connectionStatus = connectionStatus,
+                        amplitude = amplitude,
+                        transcript = recordTranscript,
+                        copiedNotice = copiedNotice,
+                        errorMessage = errorMessage,
+                        recoveryHint = recoveryHint,
+                        hasTranscript = actionableRecordTranscript.isNotBlank(),
+                        onPrimaryAction = {
+                            when (status) {
+                                VoiceFlowStatus.Recording,
+                                VoiceFlowStatus.Connecting -> finishRecording()
+                                else -> requestStartRecording()
+                            }
                         },
-                        onCopyResult = { result ->
-                            val copied = copyText("VoiceFlow ${result.title}", result.content)
-                            copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
+                        onCopyTranscript = {
+                            val copied = copyText("VoiceFlow idea transcript", actionableRecordTranscript)
+                            copiedNotice = if (copied) "原始灵感已复制到剪贴板" else "没有可复制的文本"
                         },
                         onPostProcess = ::runPostProcess
                     )
+                    if (postProcessTitle.isNotBlank() || status == VoiceFlowStatus.PostProcessing) {
+                        PostProcessPanel(
+                            title = postProcessTitle,
+                            result = postProcessResult,
+                            isLoading = status == VoiceFlowStatus.PostProcessing,
+                            onCopy = {
+                                val copied = copyText("VoiceFlow $postProcessTitle", postProcessResult)
+                                copiedNotice = if (copied) "$postProcessTitle 已复制" else "没有可复制的后处理结果"
+                            }
+                        )
+                    }
                 }
-                if (visibleIdeaCards.isNotEmpty() || selectedIdeaCard == null) {
-                    IdeaCardsPanel(
-                        ideaCards = visibleIdeaCards,
-                        selectedIdeaCardId = selectedIdeaCardId,
-                        onSelect = { selectedIdeaCardId = it.id },
-                        onCopy = { item ->
-                            val copied = copyText("VoiceFlow idea", item.originalTranscript)
-                            copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+                VoiceFlowTab.Cards -> {
+                    val visibleIdeaCards = if (selectedIdeaCard == null) {
+                        ideaCards
+                    } else {
+                        ideaCards.filterNot { it.id == selectedIdeaCard.id }
+                    }
+                    selectedIdeaCard?.let { card ->
+                        IdeaCardDetailPanel(
+                            card = card,
+                            onCopyOriginal = {
+                                val copied = copyText("VoiceFlow idea", card.originalTranscript)
+                                copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+                            },
+                            onCopyResult = { result ->
+                                val copied = copyText("VoiceFlow ${result.title}", result.content)
+                                copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
+                            },
+                            onPostProcess = ::runPostProcess
+                        )
+                    }
+                    if (visibleIdeaCards.isNotEmpty() || selectedIdeaCard == null) {
+                        IdeaCardsPanel(
+                            ideaCards = visibleIdeaCards,
+                            selectedIdeaCardId = selectedIdeaCardId,
+                            onSelect = { selectedIdeaCardId = it.id },
+                            onCopy = { item ->
+                                val copied = copyText("VoiceFlow idea", item.originalTranscript)
+                                copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
+                            },
+                            onDelete = { item ->
+                                val nextCards = ideaCards.filterNot { it.id == item.id }
+                                ideaCards = nextCards
+                                if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
+                                if (currentIdeaCardId == item.id) currentIdeaCardId = null
+                            }
+                        )
+                    }
+                }
+                VoiceFlowTab.Settings -> {
+                    SettingsPanel(
+                        realtimeProtocol = realtimeProtocol,
+                        onRealtimeProtocolChange = { nextProtocol ->
+                            realtimeProtocol = nextProtocol
+                            when (nextProtocol) {
+                                RealtimeProviderProtocol.AliyunParaformer -> {
+                                    if (providerName.isBlank() || providerName.contains("OpenAI", ignoreCase = true)) {
+                                        providerName = "阿里云 Paraformer"
+                                    }
+                                    if (realtimeModel.isBlank() || realtimeModel.startsWith("gpt", ignoreCase = true)) {
+                                        realtimeModel = "paraformer-realtime-v2"
+                                    }
+                                }
+                                RealtimeProviderProtocol.OpenAiRealtime -> {
+                                    if (providerName.isBlank() || providerName.contains("阿里云")) {
+                                        providerName = "OpenAI-compatible Realtime"
+                                    }
+                                    if (realtimeModel.isBlank() || realtimeModel.startsWith("paraformer")) {
+                                        realtimeModel = "gpt-realtime"
+                                    }
+                                    if (baseUrl.isBlank()) {
+                                        baseUrl = "https://api.openai.com/v1/realtime"
+                                    }
+                                }
+                            }
                         },
-                        onDelete = { item ->
-                            val nextCards = ideaCards.filterNot { it.id == item.id }
-                            ideaCards = nextCards
-                            if (selectedIdeaCardId == item.id) selectedIdeaCardId = nextCards.firstOrNull()?.id
-                            if (currentIdeaCardId == item.id) currentIdeaCardId = null
+                        providerName = providerName,
+                        onProviderNameChange = { providerName = it },
+                        baseUrl = baseUrl,
+                        onBaseUrlChange = { baseUrl = it },
+                        apiKey = apiKey,
+                        onApiKeyChange = { apiKey = it },
+                        realtimeModel = realtimeModel,
+                        onRealtimeModelChange = { realtimeModel = it },
+                        aliyunWorkspaceId = aliyunWorkspaceId,
+                        onAliyunWorkspaceIdChange = { aliyunWorkspaceId = it.trim() },
+                        aliyunRegion = aliyunRegion,
+                        onAliyunRegionChange = { aliyunRegion = it.trim() },
+                        postProcessProviderName = postProcessProviderName,
+                        onPostProcessProviderNameChange = { postProcessProviderName = it },
+                        postProcessBaseUrl = postProcessBaseUrl,
+                        onPostProcessBaseUrlChange = { postProcessBaseUrl = it },
+                        postProcessApiKey = postProcessApiKey,
+                        onPostProcessApiKeyChange = { postProcessApiKey = it },
+                        postProcessModel = postProcessModel,
+                        onPostProcessModelChange = { postProcessModel = it },
+                        streamingEnabled = streamingEnabled,
+                        onStreamingEnabledChange = { streamingEnabled = it },
+                        maxRecordingSeconds = maxRecordingSeconds,
+                        onMaxRecordingSecondsChange = { maxRecordingSeconds = it.filter { char -> char.isDigit() }.take(3) },
+                        prompt = prompt,
+                        onPromptChange = { prompt = it },
+                        postProcessPrompt = postProcessPrompt,
+                        onPostProcessPromptChange = { postProcessPrompt = it },
+                        hotwords = hotwords,
+                        onHotwordsChange = { hotwords = it },
+                        onTestRealtimeConnection = {
+                            scope.launch {
+                                val currentConfig = config()
+                                val transcriptionProvider = realtimeProviderFactory.create(currentConfig)
+                                val result = transcriptionProvider.testConnection(currentConfig)
+                                connectionStatus = if (result.success) {
+                                    result.detail ?: result.summary
+                                } else {
+                                    listOfNotNull(result.summary, result.detail).joinToString("：")
+                                }
+                            }
+                        },
+                        onTestPostProcessConnection = {
+                            scope.launch {
+                                connectionStatus = "正在测试后处理模型连接"
+                                val result = textPostProcessProvider.testConnection(config())
+                                connectionStatus = if (result.success) {
+                                    result.detail ?: result.summary
+                                } else {
+                                    listOfNotNull(result.summary, result.detail).joinToString("：")
+                                }
+                            }
                         }
                     )
                 }
             }
-            VoiceFlowTab.Settings -> {
-                SettingsPanel(
-                    realtimeProtocol = realtimeProtocol,
-                    onRealtimeProtocolChange = { nextProtocol ->
-                        realtimeProtocol = nextProtocol
-                        when (nextProtocol) {
-                            RealtimeProviderProtocol.AliyunParaformer -> {
-                                if (providerName.isBlank() || providerName.contains("OpenAI", ignoreCase = true)) {
-                                    providerName = "阿里云 Paraformer"
-                                }
-                                if (realtimeModel.isBlank() || realtimeModel.startsWith("gpt", ignoreCase = true)) {
-                                    realtimeModel = "paraformer-realtime-v2"
-                                }
-                            }
-                            RealtimeProviderProtocol.OpenAiRealtime -> {
-                                if (providerName.isBlank() || providerName.contains("阿里云")) {
-                                    providerName = "OpenAI-compatible Realtime"
-                                }
-                                if (realtimeModel.isBlank() || realtimeModel.startsWith("paraformer")) {
-                                    realtimeModel = "gpt-realtime"
-                                }
-                                if (baseUrl.isBlank()) {
-                                    baseUrl = "https://api.openai.com/v1/realtime"
-                                }
-                            }
-                        }
-                    },
-                    providerName = providerName,
-                    onProviderNameChange = { providerName = it },
-                    baseUrl = baseUrl,
-                    onBaseUrlChange = { baseUrl = it },
-                    apiKey = apiKey,
-                    onApiKeyChange = { apiKey = it },
-                    realtimeModel = realtimeModel,
-                    onRealtimeModelChange = { realtimeModel = it },
-                    aliyunWorkspaceId = aliyunWorkspaceId,
-                    onAliyunWorkspaceIdChange = { aliyunWorkspaceId = it.trim() },
-                    aliyunRegion = aliyunRegion,
-                    onAliyunRegionChange = { aliyunRegion = it.trim() },
-                    postProcessProviderName = postProcessProviderName,
-                    onPostProcessProviderNameChange = { postProcessProviderName = it },
-                    postProcessBaseUrl = postProcessBaseUrl,
-                    onPostProcessBaseUrlChange = { postProcessBaseUrl = it },
-                    postProcessApiKey = postProcessApiKey,
-                    onPostProcessApiKeyChange = { postProcessApiKey = it },
-                    postProcessModel = postProcessModel,
-                    onPostProcessModelChange = { postProcessModel = it },
-                    streamingEnabled = streamingEnabled,
-                    onStreamingEnabledChange = { streamingEnabled = it },
-                    maxRecordingSeconds = maxRecordingSeconds,
-                    onMaxRecordingSecondsChange = { maxRecordingSeconds = it.filter { char -> char.isDigit() }.take(3) },
-                    prompt = prompt,
-                    onPromptChange = { prompt = it },
-                    postProcessPrompt = postProcessPrompt,
-                    onPostProcessPromptChange = { postProcessPrompt = it },
-                    hotwords = hotwords,
-                    onHotwordsChange = { hotwords = it },
-                    onTestRealtimeConnection = {
-                        scope.launch {
-                            val currentConfig = config()
-                            val transcriptionProvider = realtimeProviderFactory.create(currentConfig)
-                            val result = transcriptionProvider.testConnection(currentConfig)
-                            connectionStatus = if (result.success) {
-                                result.detail ?: result.summary
-                            } else {
-                                listOfNotNull(result.summary, result.detail).joinToString("：")
-                            }
-                        }
-                    },
-                    onTestPostProcessConnection = {
-                        scope.launch {
-                            connectionStatus = "正在测试后处理模型连接"
-                            val result = textPostProcessProvider.testConnection(config())
-                            connectionStatus = if (result.success) {
-                                result.detail ?: result.summary
-                            } else {
-                                listOfNotNull(result.summary, result.detail).joinToString("：")
-                            }
-                        }
-                    }
-                )
-            }
         }
+        VoiceFlowBottomNavigation(
+            selectedTab = selectedTab,
+            onTabSelected = ::selectTab
+        )
     }
 }
 
@@ -872,35 +880,36 @@ private fun Header(
 }
 
 @Composable
-private fun VoiceFlowTabs(
+private fun VoiceFlowBottomNavigation(
     selectedTab: VoiceFlowTab,
     onTabSelected: (VoiceFlowTab) -> Unit
 ) {
-    val tabs = VoiceFlowTab.entries
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        tonalElevation = 1.dp
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
+        containerColor = Color.White,
+        contentColor = MaterialTheme.colorScheme.primary
     ) {
-        PrimaryTabRow(
-            selectedTabIndex = tabs.indexOf(selectedTab),
-            containerColor = Color.White,
-            contentColor = MaterialTheme.colorScheme.primary
-        ) {
-            tabs.forEach { tab ->
-                Tab(
-                    selected = selectedTab == tab,
-                    onClick = { onTabSelected(tab) },
-                    text = {
-                        Text(
-                            text = tab.label,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                )
-            }
+        VoiceFlowTab.entries.forEach { tab ->
+            NavigationBarItem(
+                selected = selectedTab == tab,
+                onClick = { onTabSelected(tab) },
+                icon = {
+                    Text(
+                        text = tab.navMark,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                label = {
+                    Text(
+                        text = tab.label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            )
         }
     }
 }
