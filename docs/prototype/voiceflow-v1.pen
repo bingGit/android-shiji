@@ -4053,7 +4053,7 @@
     },
     {
       "type": "frame",
-      "id": "B1aWd8",
+      "id": "VRG3x",
       "x": 0,
       "y": 1948,
       "name": "视觉方向 B 细化探索区",
@@ -4063,14 +4063,14 @@
       "children": [
         {
           "type": "text",
-          "id": "dyLJT",
+          "id": "P6pmtu",
           "x": 4,
           "y": 0,
           "name": "分区标题",
           "fill": "#28342E",
           "textGrowth": "fixed-width",
           "width": 1312,
-          "content": "视觉方向 B 细化探索：记录触发与按住动效",
+          "content": "视觉方向 B 细化探索：开放式声场记录入口",
           "lineHeight": 1.2,
           "fontFamily": "Noto Sans SC",
           "fontSize": 32,
@@ -4078,14 +4078,14 @@
         },
         {
           "type": "text",
-          "id": "uoZBt",
+          "id": "dCG6c",
           "x": 4,
           "y": 48,
           "name": "分区说明",
           "fill": "#68756E",
           "textGrowth": "fixed-width",
           "width": 1312,
-          "content": "目标：圆形按钮即主记录入口；舞台和边界融合；标题降级；按住时出现呼吸环与声波反馈。",
+          "content": "本版取消明显舞台边框，让圆形记录按钮、呼吸环和背景光场融为一体；按住时由整块页面轻微响应。",
           "lineHeight": 1.4,
           "fontFamily": "Noto Sans SC",
           "fontSize": 18
@@ -4108,22 +4108,22 @@
     },
     {
       "type": "frame",
-      "id": "UnF1Q",
+      "id": "Kfxyi",
       "x": 0,
       "y": 2080,
-      "name": "B1 - 融合呼吸按钮",
+      "name": "B1 - 开放式声场空闲态",
       "clip": true,
       "width": 390,
       "height": 620,
-      "fill": "#F6F4ED",
+      "fill": "#F7F5EF",
       "cornerRadius": 32,
-      "stroke": "#E3DED3",
+      "stroke": "#E5E0D6",
       "strokeWidth": 1,
       "layout": "none",
       "children": [
         {
           "type": "frame",
-          "id": "lMvoP",
+          "id": "G8VBwi",
           "x": 0,
           "y": 0,
           "name": "状态栏",
@@ -4133,7 +4133,7 @@
           "children": [
             {
               "type": "text",
-              "id": "h0fAfn",
+              "id": "W8i3NI",
               "x": 22,
               "y": 20,
               "name": "时间",
@@ -4145,7 +4145,7 @@
             },
             {
               "type": "text",
-              "id": "D1Qy6",
+              "id": "oaZsz",
               "x": 314,
               "y": 22.5,
               "name": "系统状态",
@@ -4159,14 +4159,14 @@
         },
         {
           "type": "text",
-          "id": "e5zN1",
+          "id": "w6kSQh",
           "x": 22,
           "y": 78,
           "name": "页面小标题",
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "空闲态 / 主触发入口",
+          "content": "空闲态 / 开放声场",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -4174,7 +4174,7 @@
         },
         {
           "type": "text",
-          "id": "b3Q9w1",
+          "id": "k8cfPp",
           "x": 22,
           "y": 104,
           "name": "页面标题",
@@ -4184,53 +4184,124 @@
           "content": "记录灵感",
           "lineHeight": 1.16,
           "fontFamily": "Noto Sans SC",
-          "fontSize": 24,
+          "fontSize": 22,
           "fontWeight": "700"
         },
         {
           "type": "text",
-          "id": "kqAmh",
+          "id": "Glx1F",
           "x": 22,
-          "y": 138,
+          "y": 134,
           "name": "页面说明",
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 300,
-          "content": "从一句话开始，让想法先落地。",
+          "content": "中间圆圈就是记录入口。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13
         },
         {
           "type": "frame",
-          "id": "oJJ1P",
-          "x": 22,
-          "y": 150,
-          "name": "融合式记录按钮舞台",
-          "width": 346,
-          "height": 300,
-          "cornerRadius": 34,
-          "stroke": "#DDE8DE",
-          "strokeWidth": 1,
-          "effect": {
-            "type": "shadow",
-            "shadowType": "outer",
-            "color": "#2C4E4030",
-            "offset": {
-              "x": 0,
-              "y": 28
-            },
-            "blur": 54,
-            "spread": -28
-          },
+          "id": "QV35q",
+          "x": 0,
+          "y": 152,
+          "name": "开放式声场 - 空闲态",
+          "width": 390,
+          "height": 360,
+          "fill": "#FFFFFF00",
           "layout": "none",
           "children": [
             {
               "type": "ellipse",
-              "id": "iA621",
-              "x": 87,
-              "y": 24,
-              "name": "记录按钮融合底盘",
+              "id": "HVG5B",
+              "x": 56,
+              "y": 12,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#DDEADEAA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 278,
+              "height": 230
+            },
+            {
+              "type": "ellipse",
+              "id": "vVfO1",
+              "x": 98,
+              "y": 66,
+              "name": "按钮落点柔光",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.82,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#CFE0D255",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 194,
+              "height": 194
+            },
+            {
+              "type": "ellipse",
+              "id": "nF8GB",
+              "x": 104,
+              "y": 78,
+              "name": "空闲呼吸环 1",
+              "fill": "#FFFFFF00",
+              "width": 182,
+              "height": 182,
+              "stroke": "#7FA08B26",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "BM9Wj",
+              "x": 126,
+              "y": 100,
+              "name": "空闲呼吸环 2",
+              "fill": "#FFFFFF00",
+              "width": 138,
+              "height": 138,
+              "stroke": "#7FA08B38",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "ADmx2",
+              "x": 132,
+              "y": 106,
+              "name": "按钮承托层",
               "fill": {
                 "type": "gradient",
                 "gradientType": "radial",
@@ -4242,123 +4313,88 @@
                 },
                 "colors": [
                   {
-                    "color": "#F2F7EF",
+                    "color": "#F7FBF6",
                     "position": 0
                   },
                   {
-                    "color": "#DFEADF",
+                    "color": "#DDEADF",
                     "position": 1
                   }
                 ]
               },
-              "width": 172,
-              "height": 172,
+              "width": 126,
+              "height": 126,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#315A4930",
+                "color": "#2F5A4930",
                 "offset": {
                   "x": 0,
                   "y": 24
                 },
-                "blur": 42,
-                "spread": -22
+                "blur": 40,
+                "spread": -24
               }
             },
             {
               "type": "ellipse",
-              "id": "rDlEy",
-              "x": 104,
-              "y": 41,
-              "name": "记录按钮外呼吸环",
-              "fill": "#FFFFFF00",
-              "width": 138,
-              "height": 138,
-              "stroke": "#87A38F55",
-              "strokeWidth": 2
-            },
-            {
-              "type": "ellipse",
-              "id": "W1Kbq",
-              "x": 122,
-              "y": 59,
-              "name": "记录按钮内呼吸环",
-              "fill": "#FFFFFFAA",
-              "width": 102,
-              "height": 102,
-              "stroke": "#6F927655",
-              "strokeWidth": 1.5,
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#37685433",
-                "offset": {
-                  "x": 0,
-                  "y": 16
-                },
-                "blur": 28,
-                "spread": -14
-              }
-            },
-            {
-              "type": "ellipse",
-              "id": "RGXPc",
-              "x": 139,
-              "y": 76,
+              "id": "gZGXc",
+              "x": 157,
+              "y": 131,
               "name": "按住记录触发按钮",
               "fill": "#376854",
-              "width": 68,
-              "height": 68,
+              "width": 76,
+              "height": 76,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#254B3D66",
+                "color": "#244A3D5C",
                 "offset": {
                   "x": 0,
-                  "y": 12
+                  "y": 14
                 },
-                "blur": 24,
+                "blur": 26,
                 "spread": -10
               }
             },
             {
               "type": "icon",
-              "id": "h8sWF",
-              "x": 161,
-              "y": 98,
+              "id": "BkXKO",
+              "x": 181,
+              "y": 155,
               "name": "麦克风图标",
-              "width": 24,
-              "height": 24,
+              "width": 28,
+              "height": 28,
               "icon": "mic",
               "library": "lucide",
               "fill": "#FFFFFF"
             },
             {
               "type": "text",
-              "id": "f3L8Z",
-              "x": 73,
-              "y": 218,
+              "id": "ssNJt",
+              "x": 83,
+              "y": 292,
               "name": "记录按钮提示",
               "fill": "#376854",
               "textGrowth": "fixed-width",
-              "width": 200,
+              "width": 224,
               "content": "按住说出这条灵感",
               "lineHeight": 1.3,
               "fontFamily": "Noto Sans SC",
               "fontSize": 14,
-              "fontWeight": "600"
+              "fontWeight": "650"
             },
             {
               "type": "text",
-              "id": "W1ApCl",
-              "x": 41,
-              "y": 244,
+              "id": "PgXpZ",
+              "x": 47,
+              "y": 320,
               "name": "记录按钮辅助文案",
-              "fill": "#708077",
+              "fill": "#728178",
               "textGrowth": "fixed-width",
-              "width": 264,
-              "content": "中心圆圈就是主记录入口，和周围舞台融为一体",
-              "lineHeight": 1.4,
+              "width": 296,
+              "content": "没有独立卡片边界，按钮从页面光场里浮起。",
+              "lineHeight": 1.45,
               "fontFamily": "Noto Sans SC",
               "fontSize": 12
             }
@@ -4366,7 +4402,7 @@
         },
         {
           "type": "frame",
-          "id": "uAE9z",
+          "id": "cKwLV",
           "x": 24,
           "y": 546,
           "name": "底部导航",
@@ -4377,7 +4413,7 @@
           "effect": {
             "type": "shadow",
             "shadowType": "outer",
-            "color": "#26423A33",
+            "color": "#26423A30",
             "offset": {
               "x": 0,
               "y": 14
@@ -4391,11 +4427,11 @@
           "children": [
             {
               "type": "frame",
-              "id": "Q6Jp6E",
+              "id": "BQiGJ",
               "name": "导航项 - 记录",
               "width": "fill_container",
               "height": 46,
-              "fill": "#E9F2EA",
+              "fill": "#E8F0E8CC",
               "cornerRadius": 23,
               "layout": "vertical",
               "gap": 2,
@@ -4404,7 +4440,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "eo9wD",
+                  "id": "jsX4Y",
                   "name": "导航图标 - 记录",
                   "width": 18,
                   "height": 18,
@@ -4414,7 +4450,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "A1Y5NZ",
+                  "id": "vfxUm",
                   "name": "导航文字 - 记录",
                   "fill": "#376854",
                   "content": "记录",
@@ -4426,7 +4462,7 @@
             },
             {
               "type": "frame",
-              "id": "NZQjn",
+              "id": "VkfEi",
               "name": "导航项 - 卡片",
               "width": "fill_container",
               "height": 46,
@@ -4439,7 +4475,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "Q9BtS",
+                  "id": "b5qj1k",
                   "name": "导航图标 - 卡片",
                   "width": 18,
                   "height": 18,
@@ -4449,7 +4485,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "y6IzLH",
+                  "id": "GzTmM",
                   "name": "导航文字 - 卡片",
                   "fill": "#8A9790",
                   "content": "卡片",
@@ -4461,7 +4497,7 @@
             },
             {
               "type": "frame",
-              "id": "BAivi",
+              "id": "YBr1f",
               "name": "导航项 - 设置",
               "width": "fill_container",
               "height": 46,
@@ -4474,7 +4510,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "rYZEx",
+                  "id": "x2KFvg",
                   "name": "导航图标 - 设置",
                   "width": 18,
                   "height": 18,
@@ -4484,7 +4520,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "KE8FY",
+                  "id": "K2ToOQ",
                   "name": "导航文字 - 设置",
                   "fill": "#8A9790",
                   "content": "设置",
@@ -4500,22 +4536,22 @@
     },
     {
       "type": "frame",
-      "id": "Rhxr7",
+      "id": "vrsWJ",
       "x": 470,
       "y": 2080,
-      "name": "B2 - 按住说话状态",
+      "name": "B2 - 开放式声场按住态",
       "clip": true,
       "width": 390,
       "height": 620,
-      "fill": "#F6F4ED",
+      "fill": "#F8F2EC",
       "cornerRadius": 32,
-      "stroke": "#E3DED3",
+      "stroke": "#E5E0D6",
       "strokeWidth": 1,
       "layout": "none",
       "children": [
         {
           "type": "frame",
-          "id": "z8NUh",
+          "id": "U48lE",
           "x": 0,
           "y": 0,
           "name": "状态栏",
@@ -4525,7 +4561,7 @@
           "children": [
             {
               "type": "text",
-              "id": "fXFmM",
+              "id": "sT6wB",
               "x": 22,
               "y": 20,
               "name": "时间",
@@ -4537,7 +4573,7 @@
             },
             {
               "type": "text",
-              "id": "wXy7T",
+              "id": "U2tnxS",
               "x": 314,
               "y": 22.5,
               "name": "系统状态",
@@ -4551,14 +4587,14 @@
         },
         {
           "type": "text",
-          "id": "t9rvRD",
+          "id": "Qgwn4",
           "x": 22,
           "y": 78,
           "name": "页面小标题",
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "按住态 / 动效反馈",
+          "content": "按住态 / 背景响应",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -4566,7 +4602,7 @@
         },
         {
           "type": "text",
-          "id": "botCE",
+          "id": "yz6oz",
           "x": 22,
           "y": 104,
           "name": "页面标题",
@@ -4576,77 +4612,136 @@
           "content": "正在记录",
           "lineHeight": 1.16,
           "fontFamily": "Noto Sans SC",
-          "fontSize": 24,
+          "fontSize": 22,
           "fontWeight": "700"
         },
         {
           "type": "text",
-          "id": "gyOpa",
+          "id": "q327C",
           "x": 22,
-          "y": 138,
+          "y": 134,
           "name": "页面说明",
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 300,
-          "content": "保持按住，说完整一点也没关系。",
+          "content": "保持按住，背景和声波会跟着响应。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13
         },
         {
           "type": "frame",
-          "id": "Em2uZ",
-          "x": 22,
-          "y": 150,
-          "name": "按住记录动效舞台",
-          "width": 346,
-          "height": 300,
-          "cornerRadius": 34,
-          "stroke": "#DDE8DE",
-          "strokeWidth": 1,
-          "effect": {
-            "type": "shadow",
-            "shadowType": "outer",
-            "color": "#2C4E4030",
-            "offset": {
-              "x": 0,
-              "y": 28
-            },
-            "blur": 54,
-            "spread": -28
-          },
+          "id": "l1hig",
+          "x": 0,
+          "y": 152,
+          "name": "开放式声场 - 按住态",
+          "width": 390,
+          "height": 360,
+          "fill": "#FFFFFF00",
           "layout": "none",
           "children": [
             {
               "type": "ellipse",
-              "id": "V3ftko",
-              "x": 58,
-              "y": 0,
-              "name": "动效外圈第 2 帧",
+              "id": "YFird",
+              "x": 56,
+              "y": 12,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F2C7B8AA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F1EA00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 278,
+              "height": 230
+            },
+            {
+              "type": "ellipse",
+              "id": "U7CHM",
+              "x": 98,
+              "y": 66,
+              "name": "按钮落点柔光",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.82,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F0B29C55",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 194,
+              "height": 194
+            },
+            {
+              "type": "ellipse",
+              "id": "v8KGBr",
+              "x": 78,
+              "y": 50,
+              "name": "按住动效扩散环 1",
               "fill": "#FFFFFF00",
-              "width": 230,
-              "height": 230,
-              "stroke": "#D8664F16",
+              "width": 234,
+              "height": 234,
+              "stroke": "#D8664F1F",
               "strokeWidth": 2
             },
             {
               "type": "ellipse",
-              "id": "fAXyI",
-              "x": 69,
-              "y": 8,
-              "name": "动效外圈第 1 帧",
+              "id": "a88vW",
+              "x": 100,
+              "y": 72,
+              "name": "按住动效扩散环 2",
               "fill": "#FFFFFF00",
-              "width": 208,
-              "height": 208,
-              "stroke": "#D8664F24",
+              "width": 190,
+              "height": 190,
+              "stroke": "#D8664F34",
               "strokeWidth": 2
             },
             {
               "type": "ellipse",
-              "id": "N0mqyn",
-              "x": 87,
-              "y": 24,
-              "name": "记录按钮融合底盘",
+              "id": "YeKXz",
+              "x": 123,
+              "y": 95,
+              "name": "按住动效扩散环 3",
+              "fill": "#FFFFFF00",
+              "width": 144,
+              "height": 144,
+              "stroke": "#D8664F4A",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "wHA80",
+              "x": 132,
+              "y": 106,
+              "name": "按钮承托层",
               "fill": {
                 "type": "gradient",
                 "gradientType": "radial",
@@ -4658,93 +4753,58 @@
                 },
                 "colors": [
                   {
-                    "color": "#FFF1EA",
+                    "color": "#FFF1EB",
                     "position": 0
                   },
                   {
-                    "color": "#F2D4C8",
+                    "color": "#F0C5B5",
                     "position": 1
                   }
                 ]
               },
-              "width": 172,
-              "height": 172,
+              "width": 126,
+              "height": 126,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#B54B3138",
+                "color": "#A5422D38",
                 "offset": {
                   "x": 0,
                   "y": 24
                 },
-                "blur": 42,
-                "spread": -22
+                "blur": 40,
+                "spread": -24
               }
             },
             {
               "type": "ellipse",
-              "id": "XIew9",
-              "x": 104,
-              "y": 41,
-              "name": "记录按钮外呼吸环",
-              "fill": "#FFFFFF00",
-              "width": 138,
-              "height": 138,
-              "stroke": "#D8664F55",
-              "strokeWidth": 2
-            },
-            {
-              "type": "ellipse",
-              "id": "T3LUeV",
-              "x": 122,
-              "y": 59,
-              "name": "记录按钮内呼吸环",
-              "fill": "#FFFFFFAA",
-              "width": 102,
-              "height": 102,
-              "stroke": "#D8664F66",
-              "strokeWidth": 1.5,
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#D8664F42",
-                "offset": {
-                  "x": 0,
-                  "y": 16
-                },
-                "blur": 28,
-                "spread": -14
-              }
-            },
-            {
-              "type": "ellipse",
-              "id": "LjUvq",
-              "x": 139,
-              "y": 76,
+              "id": "G3P6Vz",
+              "x": 157,
+              "y": 131,
               "name": "按住记录触发按钮",
               "fill": "#D8664F",
-              "width": 68,
-              "height": 68,
+              "width": 76,
+              "height": 76,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#B0442D66",
+                "color": "#AA3D2860",
                 "offset": {
                   "x": 0,
-                  "y": 12
+                  "y": 14
                 },
-                "blur": 24,
+                "blur": 26,
                 "spread": -10
               }
             },
             {
               "type": "icon",
-              "id": "TODFB",
-              "x": 161,
-              "y": 98,
+              "id": "pQ2E9",
+              "x": 181,
+              "y": 155,
               "name": "麦克风图标",
-              "width": 24,
-              "height": 24,
+              "width": 28,
+              "height": 28,
               "icon": "audio-lines",
               "library": "lucide",
               "fill": "#FFFFFF"
@@ -4752,9 +4812,9 @@
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "dxfKz",
+              "id": "UqzME",
               "x": 116,
-              "y": 178,
+              "y": 246,
               "name": "实时声波柱 1",
               "fill": "#D8664FCC",
               "width": 5,
@@ -4763,117 +4823,139 @@
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "CiD7X",
-              "x": 130,
-              "y": 169,
+              "id": "kUBoL",
+              "x": 131,
+              "y": 238,
               "name": "实时声波柱 2",
               "fill": "#37685499",
               "width": 5,
-              "height": 26
+              "height": 25
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "Z50biD",
-              "x": 144,
-              "y": 160,
+              "id": "G2Ebg",
+              "x": 146,
+              "y": 230,
               "name": "实时声波柱 3",
               "fill": "#D8664FCC",
               "width": 5,
-              "height": 34
+              "height": 32
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "c0kAOO",
-              "x": 158,
-              "y": 178,
+              "id": "CSHoj",
+              "x": 161,
+              "y": 222,
               "name": "实时声波柱 4",
               "fill": "#37685499",
               "width": 5,
-              "height": 42
+              "height": 39
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "h9qTcZ",
-              "x": 172,
-              "y": 169,
+              "id": "O6kZZE",
+              "x": 176,
+              "y": 246,
               "name": "实时声波柱 5",
               "fill": "#D8664FCC",
+              "width": 5,
+              "height": 46
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "YXXsw",
+              "x": 191,
+              "y": 238,
+              "name": "实时声波柱 6",
+              "fill": "#37685499",
               "width": 5,
               "height": 18
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "ExqwR",
-              "x": 186,
-              "y": 160,
-              "name": "实时声波柱 6",
-              "fill": "#37685499",
-              "width": 5,
-              "height": 26
-            },
-            {
-              "type": "rectangle",
-              "cornerRadius": 3,
-              "id": "yzyH2",
-              "x": 200,
-              "y": 178,
+              "id": "jns6j",
+              "x": 206,
+              "y": 230,
               "name": "实时声波柱 7",
               "fill": "#D8664FCC",
               "width": 5,
-              "height": 34
+              "height": 25
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "A6D2Vu",
-              "x": 214,
-              "y": 169,
+              "id": "sftww",
+              "x": 221,
+              "y": 222,
               "name": "实时声波柱 8",
               "fill": "#37685499",
               "width": 5,
-              "height": 42
+              "height": 32
             },
             {
               "type": "rectangle",
               "cornerRadius": 3,
-              "id": "mxOL1",
-              "x": 228,
-              "y": 160,
+              "id": "p0NMz",
+              "x": 236,
+              "y": 246,
               "name": "实时声波柱 9",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 39
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "ZqyLU",
+              "x": 251,
+              "y": 238,
+              "name": "实时声波柱 10",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 46
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "XifyP",
+              "x": 266,
+              "y": 230,
+              "name": "实时声波柱 11",
               "fill": "#D8664FCC",
               "width": 5,
               "height": 18
             },
             {
               "type": "text",
-              "id": "QN6W5",
-              "x": 73,
-              "y": 218,
+              "id": "cbJHb",
+              "x": 83,
+              "y": 292,
               "name": "记录按钮提示",
               "fill": "#B94D35",
               "textGrowth": "fixed-width",
-              "width": 200,
+              "width": 224,
               "content": "松开生成灵感草稿",
               "lineHeight": 1.3,
               "fontFamily": "Noto Sans SC",
               "fontSize": 14,
-              "fontWeight": "600"
+              "fontWeight": "650"
             },
             {
               "type": "text",
-              "id": "LbAqf",
-              "x": 41,
-              "y": 244,
+              "id": "wNynS",
+              "x": 47,
+              "y": 320,
               "name": "记录按钮辅助文案",
-              "fill": "#708077",
+              "fill": "#728178",
               "textGrowth": "fixed-width",
-              "width": 264,
-              "content": "声波会随语音扩散，形成明确的进行中反馈",
-              "lineHeight": 1.4,
+              "width": 296,
+              "content": "整个声场随语音变暖，呼吸环向外扩散。",
+              "lineHeight": 1.45,
               "fontFamily": "Noto Sans SC",
               "fontSize": 12
             }
@@ -4881,7 +4963,7 @@
         },
         {
           "type": "frame",
-          "id": "bPVB2",
+          "id": "zApLj",
           "x": 24,
           "y": 546,
           "name": "底部导航",
@@ -4892,7 +4974,7 @@
           "effect": {
             "type": "shadow",
             "shadowType": "outer",
-            "color": "#26423A33",
+            "color": "#26423A30",
             "offset": {
               "x": 0,
               "y": 14
@@ -4906,11 +4988,11 @@
           "children": [
             {
               "type": "frame",
-              "id": "wU0dd",
+              "id": "nKqrW",
               "name": "导航项 - 记录",
               "width": "fill_container",
               "height": 46,
-              "fill": "#E9F2EA",
+              "fill": "#E8F0E8CC",
               "cornerRadius": 23,
               "layout": "vertical",
               "gap": 2,
@@ -4919,7 +5001,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "X1z0yZ",
+                  "id": "UhjZ8",
                   "name": "导航图标 - 记录",
                   "width": 18,
                   "height": 18,
@@ -4929,7 +5011,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "I9ecMk",
+                  "id": "DSZ58",
                   "name": "导航文字 - 记录",
                   "fill": "#376854",
                   "content": "记录",
@@ -4941,7 +5023,7 @@
             },
             {
               "type": "frame",
-              "id": "eLwmD",
+              "id": "B3q3cQ",
               "name": "导航项 - 卡片",
               "width": "fill_container",
               "height": 46,
@@ -4954,7 +5036,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "waR9T",
+                  "id": "bBUG2",
                   "name": "导航图标 - 卡片",
                   "width": 18,
                   "height": 18,
@@ -4964,7 +5046,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "JV9G4",
+                  "id": "fbdIW",
                   "name": "导航文字 - 卡片",
                   "fill": "#8A9790",
                   "content": "卡片",
@@ -4976,7 +5058,7 @@
             },
             {
               "type": "frame",
-              "id": "iA042",
+              "id": "JQiqr",
               "name": "导航项 - 设置",
               "width": "fill_container",
               "height": 46,
@@ -4989,7 +5071,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "LS01k",
+                  "id": "LD5mH",
                   "name": "导航图标 - 设置",
                   "width": 18,
                   "height": 18,
@@ -4999,7 +5081,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "O00jK",
+                  "id": "FZ77k",
                   "name": "导航文字 - 设置",
                   "fill": "#8A9790",
                   "content": "设置",
@@ -5015,22 +5097,22 @@
     },
     {
       "type": "frame",
-      "id": "F2ARB",
+      "id": "sq9ev",
       "x": 940,
       "y": 2080,
-      "name": "B3 - 记录完成与轻操作",
+      "name": "B3 - 开放式声场完成态",
       "clip": true,
       "width": 390,
       "height": 620,
-      "fill": "#F6F4ED",
+      "fill": "#F7F5EF",
       "cornerRadius": 32,
-      "stroke": "#E3DED3",
+      "stroke": "#E5E0D6",
       "strokeWidth": 1,
       "layout": "none",
       "children": [
         {
           "type": "frame",
-          "id": "DTxRx",
+          "id": "EXHq1",
           "x": 0,
           "y": 0,
           "name": "状态栏",
@@ -5040,7 +5122,7 @@
           "children": [
             {
               "type": "text",
-              "id": "ofAOs",
+              "id": "giyeM",
               "x": 22,
               "y": 20,
               "name": "时间",
@@ -5052,7 +5134,7 @@
             },
             {
               "type": "text",
-              "id": "c0GNn",
+              "id": "FWsp4",
               "x": 314,
               "y": 22.5,
               "name": "系统状态",
@@ -5066,14 +5148,14 @@
         },
         {
           "type": "text",
-          "id": "sY43G",
+          "id": "Xjeka",
           "x": 22,
           "y": 78,
           "name": "页面小标题",
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "完成态 / 可继续操作",
+          "content": "完成态 / 开放声场",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -5081,7 +5163,7 @@
         },
         {
           "type": "text",
-          "id": "LuLRz",
+          "id": "xPbv1",
           "x": 22,
           "y": 104,
           "name": "页面标题",
@@ -5091,53 +5173,124 @@
           "content": "灵感已就绪",
           "lineHeight": 1.16,
           "fontFamily": "Noto Sans SC",
-          "fontSize": 24,
+          "fontSize": 22,
           "fontWeight": "700"
         },
         {
           "type": "text",
-          "id": "S05gba",
+          "id": "C6Bq4E",
           "x": 22,
-          "y": 138,
+          "y": 134,
           "name": "页面说明",
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 300,
-          "content": "从一句话开始，让想法先落地。",
+          "content": "中间圆圈就是记录入口。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13
         },
         {
           "type": "frame",
-          "id": "PRxB5",
-          "x": 22,
-          "y": 150,
-          "name": "完成态记录按钮舞台",
-          "width": 346,
-          "height": 250,
-          "cornerRadius": 34,
-          "stroke": "#DDE8DE",
-          "strokeWidth": 1,
-          "effect": {
-            "type": "shadow",
-            "shadowType": "outer",
-            "color": "#2C4E4030",
-            "offset": {
-              "x": 0,
-              "y": 28
-            },
-            "blur": 54,
-            "spread": -28
-          },
+          "id": "tZ0GB",
+          "x": 0,
+          "y": 152,
+          "name": "开放式声场 - 完成态",
+          "width": 390,
+          "height": 360,
+          "fill": "#FFFFFF00",
           "layout": "none",
           "children": [
             {
               "type": "ellipse",
-              "id": "H2qPuW",
-              "x": 87,
-              "y": 24,
-              "name": "记录按钮融合底盘",
+              "id": "t80sOW",
+              "x": 56,
+              "y": 12,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#DDEADEAA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 278,
+              "height": 230
+            },
+            {
+              "type": "ellipse",
+              "id": "lHPF3",
+              "x": 98,
+              "y": 66,
+              "name": "按钮落点柔光",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.82,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#CFE0D255",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 194,
+              "height": 194
+            },
+            {
+              "type": "ellipse",
+              "id": "i4sHK",
+              "x": 104,
+              "y": 78,
+              "name": "空闲呼吸环 1",
+              "fill": "#FFFFFF00",
+              "width": 182,
+              "height": 182,
+              "stroke": "#7FA08B26",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "m2l8n",
+              "x": 126,
+              "y": 100,
+              "name": "空闲呼吸环 2",
+              "fill": "#FFFFFF00",
+              "width": 138,
+              "height": 138,
+              "stroke": "#7FA08B38",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "h8kXw5",
+              "x": 132,
+              "y": 106,
+              "name": "按钮承托层",
               "fill": {
                 "type": "gradient",
                 "gradientType": "radial",
@@ -5149,93 +5302,58 @@
                 },
                 "colors": [
                   {
-                    "color": "#F2F7EF",
+                    "color": "#F7FBF6",
                     "position": 0
                   },
                   {
-                    "color": "#DFEADF",
+                    "color": "#DDEADF",
                     "position": 1
                   }
                 ]
               },
-              "width": 172,
-              "height": 172,
+              "width": 126,
+              "height": 126,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#315A4930",
+                "color": "#2F5A4930",
                 "offset": {
                   "x": 0,
                   "y": 24
                 },
-                "blur": 42,
-                "spread": -22
+                "blur": 40,
+                "spread": -24
               }
             },
             {
               "type": "ellipse",
-              "id": "TSQ0x",
-              "x": 104,
-              "y": 41,
-              "name": "记录按钮外呼吸环",
-              "fill": "#FFFFFF00",
-              "width": 138,
-              "height": 138,
-              "stroke": "#87A38F55",
-              "strokeWidth": 2
-            },
-            {
-              "type": "ellipse",
-              "id": "sS1AT",
-              "x": 122,
-              "y": 59,
-              "name": "记录按钮内呼吸环",
-              "fill": "#FFFFFFAA",
-              "width": 102,
-              "height": 102,
-              "stroke": "#6F927655",
-              "strokeWidth": 1.5,
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#37685433",
-                "offset": {
-                  "x": 0,
-                  "y": 16
-                },
-                "blur": 28,
-                "spread": -14
-              }
-            },
-            {
-              "type": "ellipse",
-              "id": "oAk3m",
-              "x": 139,
-              "y": 76,
+              "id": "yQSW7",
+              "x": 157,
+              "y": 131,
               "name": "按住记录触发按钮",
               "fill": "#376854",
-              "width": 68,
-              "height": 68,
+              "width": 76,
+              "height": 76,
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#254B3D66",
+                "color": "#244A3D5C",
                 "offset": {
                   "x": 0,
-                  "y": 12
+                  "y": 14
                 },
-                "blur": 24,
+                "blur": 26,
                 "spread": -10
               }
             },
             {
               "type": "icon",
-              "id": "osWKT",
-              "x": 161,
-              "y": 98,
+              "id": "HAQoS",
+              "x": 181,
+              "y": 155,
               "name": "麦克风图标",
-              "width": 24,
-              "height": 24,
+              "width": 28,
+              "height": 28,
               "icon": "mic",
               "library": "lucide",
               "fill": "#FFFFFF"
@@ -5244,12 +5362,12 @@
         },
         {
           "type": "frame",
-          "id": "kiDRA",
+          "id": "o1KHvt",
           "x": 36,
-          "y": 366,
+          "y": 386,
           "name": "生成结果浮层",
           "width": 318,
-          "height": 146,
+          "height": 126,
           "fill": "#FFFFFFE8",
           "cornerRadius": 24,
           "stroke": "#E2E8DD",
@@ -5266,12 +5384,12 @@
             "spread": -22
           },
           "layout": "vertical",
-          "gap": 10,
+          "gap": 8,
           "padding": 18,
           "children": [
             {
               "type": "text",
-              "id": "sGxIv",
+              "id": "L1kPSp",
               "name": "结果标题",
               "fill": "#376854",
               "textGrowth": "fixed-width",
@@ -5284,20 +5402,20 @@
             },
             {
               "type": "text",
-              "id": "l7ZYlE",
+              "id": "ByMar",
               "name": "结果正文",
               "fill": "#26312C",
               "textGrowth": "fixed-width",
               "width": 282,
               "content": "我想做一个能快速承接灵感、再一键润色和提炼的记录工具。",
-              "lineHeight": 1.45,
+              "lineHeight": 1.42,
               "fontFamily": "Noto Sans SC",
-              "fontSize": 15,
+              "fontSize": 14,
               "fontWeight": "500"
             },
             {
               "type": "frame",
-              "id": "hn7aB",
+              "id": "ewlYt",
               "name": "结果操作",
               "width": "fill_container",
               "height": 28,
@@ -5305,7 +5423,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "Hh2wl",
+                  "id": "CYzig",
                   "name": "润色表达按钮",
                   "height": 28,
                   "fill": "#E9F2EA",
@@ -5319,7 +5437,7 @@
                   "children": [
                     {
                       "type": "icon",
-                      "id": "jJjRt",
+                      "id": "ZlJey",
                       "name": "润色图标",
                       "width": 14,
                       "height": 14,
@@ -5329,7 +5447,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "WKCKT",
+                      "id": "P0FUD",
                       "name": "润色文字",
                       "fill": "#376854",
                       "content": "润色",
@@ -5341,7 +5459,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "KigVk",
+                  "id": "p9pF9",
                   "name": "更多按钮",
                   "height": 28,
                   "fill": "#F3F1EA",
@@ -5355,7 +5473,7 @@
                   "children": [
                     {
                       "type": "icon",
-                      "id": "LTQUi",
+                      "id": "JL4qR",
                       "name": "更多图标",
                       "width": 14,
                       "height": 14,
@@ -5365,7 +5483,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "MQjuj",
+                      "id": "Hbf6d",
                       "name": "更多文字",
                       "fill": "#7D857F",
                       "content": "更多",
@@ -5381,7 +5499,7 @@
         },
         {
           "type": "frame",
-          "id": "O4RdmI",
+          "id": "zPxRb",
           "x": 24,
           "y": 546,
           "name": "底部导航",
@@ -5392,7 +5510,7 @@
           "effect": {
             "type": "shadow",
             "shadowType": "outer",
-            "color": "#26423A33",
+            "color": "#26423A30",
             "offset": {
               "x": 0,
               "y": 14
@@ -5406,11 +5524,11 @@
           "children": [
             {
               "type": "frame",
-              "id": "saPA7",
+              "id": "F097pC",
               "name": "导航项 - 记录",
               "width": "fill_container",
               "height": 46,
-              "fill": "#E9F2EA",
+              "fill": "#E8F0E8CC",
               "cornerRadius": 23,
               "layout": "vertical",
               "gap": 2,
@@ -5419,7 +5537,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "NYNPX",
+                  "id": "LSRvF",
                   "name": "导航图标 - 记录",
                   "width": 18,
                   "height": 18,
@@ -5429,7 +5547,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "TxMTK",
+                  "id": "OPyxM",
                   "name": "导航文字 - 记录",
                   "fill": "#376854",
                   "content": "记录",
@@ -5441,7 +5559,7 @@
             },
             {
               "type": "frame",
-              "id": "W6ICI",
+              "id": "XfD6V",
               "name": "导航项 - 卡片",
               "width": "fill_container",
               "height": 46,
@@ -5454,7 +5572,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "WBVCx",
+                  "id": "z6jIb",
                   "name": "导航图标 - 卡片",
                   "width": 18,
                   "height": 18,
@@ -5464,7 +5582,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "vuiwv",
+                  "id": "i4asRS",
                   "name": "导航文字 - 卡片",
                   "fill": "#8A9790",
                   "content": "卡片",
@@ -5476,7 +5594,7 @@
             },
             {
               "type": "frame",
-              "id": "q4n6A",
+              "id": "TMOGG",
               "name": "导航项 - 设置",
               "width": "fill_container",
               "height": 46,
@@ -5489,7 +5607,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "dp6g2",
+                  "id": "N3XHG9",
                   "name": "导航图标 - 设置",
                   "width": 18,
                   "height": 18,
@@ -5499,7 +5617,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "IuTf9",
+                  "id": "jrGpJ",
                   "name": "导航文字 - 设置",
                   "fill": "#8A9790",
                   "content": "设置",
