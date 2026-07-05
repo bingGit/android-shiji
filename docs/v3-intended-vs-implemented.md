@@ -5,55 +5,62 @@
 ## Source
 
 - 意图来源：[v3-implementation-wwas.md](v3-implementation-wwas.md)
+- 参数映射：[v3-prototype-implementation-map.md](v3-prototype-implementation-map.md)
 - 原型来源：[prototype/voiceflow-v1.pen](prototype/voiceflow-v1.pen)
 - 实现文件：[MainActivity.kt](../app/src/main/java/com/bing/androidvoiceflow/MainActivity.kt)
 
-## 1. 记录页
+## 1. 原型参数映射
 
-**Intended:** `实时转写 V3：极简背景化` 要求记录页最大程度背景化，实时转写直接成为页面内容，按住/录音中有状态反馈和声场反馈。
+**Intended:** V3 实现不能只参考氛围，应以 Pencil 原型的 `390 x 720` 画板、`x/y/w/h`、字号、颜色、底栏位置作为实现规格。
 
-**Implemented:** `RecorderPanel` 使用 `V3PageHeader`、`TranscriptCanvasText`、`V3StatusPill` 和中间圆形触发按钮组织页面；录音中显示脉冲状态、字数、波形和“当前句正在确认”。证据见 `MainActivity.kt:1194`、`MainActivity.kt:1346`、`MainActivity.kt:1383`。
+**Implemented:** 新增 `V3Spec` 固化 390 宽度、22 内容边距、346 内容宽、标题区 y 坐标、底部导航 `342 x 58` 和底部 16 间距；新增 `PrototypePage`、`PrototypeHeader`、`PrototypeBottomNavigation` 作为原型槽位承载层。证据见 `MainActivity.kt:1001`、`MainActivity.kt:1032`、`MainActivity.kt:1118`。
 
-**Gap:** 当前实现是点击开始/点击停止，不是长按按住说话。动态行为符合现有录音架构，但手势语义还没有完全复刻原型。
+**Gap:** 当前仍未做自动视觉 diff；需要在模拟器截图后人工对照原型检查。
 
-**Decision:** 保留为可验证版本。后续若要更接近原型，再把圆形按钮改为 press/release 手势。
+**Decision:** 先以代码坐标还原为主，截图验证交给模拟器测试环节。
 
-## 2. 卡片列表页
+## 2. 记录页
 
-**Intended:** 卡片页应从消息流变成灵感笔记库，用轻分隔展示每条记录，支持进入详情、复制、删除确认、空状态。
+**Intended:** `实时转写 V3：极简背景化` 要求记录页最大程度背景化，实时转写直接成为页面内容，按钮舞台和波形固定在原型区域内。
 
-**Implemented:** `IdeaCardsPanel` 改为背景上的轻分隔列表，列表项展示标题、时间、处理状态、摘要、处理版本，复制和删除以 chip 形式放在行内。删除仍走 `ConfirmDeleteDialog`。证据见 `MainActivity.kt:2208`、`MainActivity.kt:2256`、`MainActivity.kt:944`。
+**Implemented:** `PrototypeRecordPage` 将 header、transcript area、record stage 和完成态操作固定到原型坐标；`PrototypeRecordStage` 在 `390 x 232` 舞台内绘制同心背景、圆形记录按钮和声场条。证据见 `MainActivity.kt:1213`、`MainActivity.kt:1360`。
 
-**Gap:** 复制/删除仍直接显示在每条记录上，没有折叠到更多入口；这更利于当前调试，但比原型略显操作外露。
+**Gap:** 交互仍是点击开始/停止，不是 press/release 长按；这是业务录音状态机差异，不影响当前视觉还原验证。
 
-**Decision:** 可接受。后续若列表密度变高，可把低频操作收进更多菜单。
+**Decision:** 保留点击交互，视觉先对齐。后续单独做长按手势。
 
-## 3. 卡片详情工作台
+## 3. 卡片列表页
 
-**Intended:** 详情页是一条灵感的工作空间。原文可编辑、保存、复制；润色/提炼靠近正文；AI 结果独立展示、可编辑、可复制、可删除。
+**Intended:** 卡片页应像灵感笔记库，用轻分隔列表、筛选 chip、弱背景光场和固定底部导航组织。
 
-**Implemented:** `IdeaCardDetailPanel` 增加原文草稿编辑和“保存原文”；`updateIdeaCardOriginal` 会更新标题、原文和更新时间；处理入口贴在原文下方；`ProcessingResultsPanel` 和 `ProcessingResultRow` 保留结果版本编辑、复制、删除。证据见 `MainActivity.kt:665`、`MainActivity.kt:1494`、`MainActivity.kt:1761`。
+**Implemented:** `PrototypeIdeaListPage` 使用原型的 header、背景光场、筛选 chip、`346 x 92` 行高、`x=22` 列表位置、`52 x 52` 新增按钮和固定底栏。证据见 `MainActivity.kt:1422`。
 
-**Gap:** 详情页目前主动作只展示润色和提炼，更多处理动作没有放在详情页内展开。
+**Gap:** 列表行的更多入口目前点击触发复制，删除区域是隐藏热区；后续应补真正的更多菜单。
 
-**Decision:** 符合“先做简单操作”的当前产品方向。更多处理动作可后续按使用频率加入。
+**Decision:** 视觉还原优先，菜单交互作为下一轮细化。
 
-## 4. 设置页
+## 4. 卡片详情工作台
 
-**Intended:** 设置页降低配置焦虑，顶部清楚展示认证状态，下面保留模型、中转站、权限/隐私等可编辑配置。
+**Intended:** 详情页是一条灵感的工作空间。原文区、操作区、处理结果区必须贴合原型坐标，AI 结果独立展示，不覆盖原文。
 
-**Implemented:** `SettingsPanel` 顶部新增实时转写和文本处理的认证状态摘要，协议选择、实时转写 provider、阿里云参数、流式设置、后处理 provider 以低对比分组展示。证据见 `MainActivity.kt:1809`、`MainActivity.kt:2023`、`MainActivity.kt:2133`。
+**Implemented:** `PrototypeIdeaDetailPage` 固定原文标题、原文编辑区、分隔线、编辑/润色/要点/删除四个 32 高 chip、处理结果标题、左侧标记、结果正文和复制/替换原文操作。原文保存继续走 `updateIdeaCardOriginal`。证据见 `MainActivity.kt:1578`、`MainActivity.kt:669`。
 
-**Gap:** 权限与隐私还没有独立入口，当前主要覆盖 provider 和 prompt 配置。
+**Gap:** 结果区只显示最新一个处理版本；多版本管理仍由旧数据结构支持，但 V3 视觉槽位只呈现一个当前结果。
 
-**Decision:** 作为轻量缺口保留。进入权限管理或隐私说明时，需要再补一组设置项。
+**Decision:** 符合原型的单工作区表达，后续再讨论版本切换入口。
 
-## 5. 共享视觉与导航
+## 5. 设置页
 
-**Intended:** V3 风格应统一 token、间距、轻分隔、底部导航和操作 chip，避免页面各自漂移。
+**Intended:** 设置页应以认证摘要和轻分隔设置行呈现，而不是大表单堆叠。
 
-**Implemented:** 新增 `V3Color`、`V3PageHeader`、`V3ActionChip`、`V3Divider`，底部导航改为轻玻璃感三 tab。证据见 `MainActivity.kt:240`、`MainActivity.kt:1033`、`MainActivity.kt:1088`。
+**Implemented:** `PrototypeSettingsPage` 固定认证摘要 `346 x 64` 和五条 `346 x 56` 设置行；行内使用轻量 `BasicTextField` 保留编辑能力。证据见 `MainActivity.kt:1694`、`MainActivity.kt:1785`。
 
-**Gap:** 底部导航仍使用 `R/C/S` 文字符号，不是完整图标。
+**Gap:** 设置行把复杂配置压缩到了原型槽位里，详细帮助文案和高级配置入口还未展开。
 
-**Decision:** 暂时接受，避免引入新图标依赖。后续若加入 lucide 或 Material icons，再替换为真正图标。
+**Decision:** 先满足原型视觉和常用配置编辑，复杂项后续进入二级页或展开层。
+
+## 6. Verification Status
+
+- `git diff --check`: passed.
+- `./gradlew :app:compileDebugKotlin`: blocked by sandbox. Wrapper needs `~/.gradle` lock access, and direct Gradle startup is blocked by local file-lock socket permissions.
+- Safer project-local Gradle attempt failed because the wrapper distribution is not cached under project `.gradle` and network is restricted.
