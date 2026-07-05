@@ -5634,8 +5634,8 @@
     {
       "type": "frame",
       "id": "D8tbLC",
-      "x": -40,
-      "y": 2790,
+      "x": -41,
+      "y": 2781,
       "name": "记录中实时转写流程区边界",
       "width": 1840,
       "height": 900,
@@ -7601,7 +7601,7 @@
           "type": "frame",
           "id": "fIgRB",
           "x": 36,
-          "y": 150,
+          "y": 168,
           "name": "可编辑草稿浮层",
           "width": 318,
           "height": 228,
@@ -8074,6 +8074,1862 @@
                 {
                   "type": "text",
                   "id": "A9Qe1",
+                  "name": "导航文字 - 设置",
+                  "fill": "#8A9790",
+                  "content": "设置",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "SC3qm",
+      "x": -61,
+      "y": 3737,
+      "name": "实时转写 V2 半融合纸片区边界",
+      "width": 1370,
+      "height": 860,
+      "fill": "#FFFFFF00",
+      "cornerRadius": 28,
+      "stroke": "#D8DFD8",
+      "strokeWidth": 1,
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "h6cOOC",
+      "x": -41,
+      "y": 3679,
+      "name": "实时转写 V2 半融合纸片区",
+      "width": 1320,
+      "height": 74,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "d8fY9",
+          "x": 4,
+          "y": 0,
+          "name": "分区标题",
+          "fill": "#28342E",
+          "textGrowth": "fixed-width",
+          "width": 1312,
+          "content": "实时转写 V2：半融合式转写纸片",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 32,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "XsiXP",
+          "x": 4,
+          "y": 48,
+          "name": "分区说明",
+          "fill": "#68756E",
+          "textGrowth": "fixed-width",
+          "width": 1312,
+          "content": "录音中弱边界，像稿纸从背景里长出来；内容变长时增强承载感；松开后定型为可编辑草稿卡片。",
+          "lineHeight": 1.4,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 18
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "OLqBV",
+      "x": -41,
+      "y": 3811,
+      "name": "V2-1 录音初期：纸片轻浮现",
+      "clip": true,
+      "width": 390,
+      "height": 720,
+      "fill": "#F8F2EC",
+      "cornerRadius": 32,
+      "stroke": "#E5E0D6",
+      "strokeWidth": 1,
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "fPnAa",
+          "x": 0,
+          "y": 0,
+          "name": "状态栏",
+          "width": 390,
+          "height": 58,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "ebWIu",
+              "x": 22,
+              "y": 20,
+              "name": "时间",
+              "fill": "#25312C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "sq7xy",
+              "x": 314,
+              "y": 22.5,
+              "name": "系统状态",
+              "fill": "#25312C",
+              "content": "5G 100%",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "cEe42",
+          "x": 22,
+          "y": 78,
+          "name": "页面小标题",
+          "fill": "#77837C",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "记录中 / 半融合纸片",
+          "lineHeight": 1.3,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 12,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "w4xhiA",
+          "x": 22,
+          "y": 104,
+          "name": "页面标题",
+          "fill": "#23302A",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "正在记录",
+          "lineHeight": 1.16,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "oPSca",
+          "x": 22,
+          "y": 134,
+          "name": "页面说明",
+          "fill": "#748078",
+          "textGrowth": "fixed-width",
+          "width": 316,
+          "content": "文字像纸片从背景里浮现，不再像弹框。",
+          "lineHeight": 1.45,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13
+        },
+        {
+          "type": "frame",
+          "id": "igDBG",
+          "x": 36,
+          "y": 170,
+          "name": "半融合式转写纸片",
+          "width": 318,
+          "height": 120,
+          "fill": "#F9F3E7AA",
+          "cornerRadius": 26,
+          "stroke": "#FFFFFF00",
+          "strokeWidth": 1,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#6E5E4530",
+            "offset": {
+              "x": 0,
+              "y": 12
+            },
+            "blur": 34,
+            "spread": -28
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 18,
+          "children": [
+            {
+              "type": "frame",
+              "id": "h40NN",
+              "name": "转写状态条",
+              "width": "fill_container",
+              "height": 24,
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "wzARL",
+                  "name": "录音状态点",
+                  "width": 8,
+                  "height": 8,
+                  "fill": "#D8664F",
+                  "cornerRadius": 4
+                },
+                {
+                  "type": "text",
+                  "id": "uI132",
+                  "name": "状态文字",
+                  "fill": "#B94D35",
+                  "content": "正在听写",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "650"
+                },
+                {
+                  "type": "text",
+                  "id": "Qpg6K",
+                  "name": "区域性质",
+                  "fill": "#7B8780",
+                  "content": "正在生长的转写纸片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "L6F8D",
+              "name": "确认文本 1",
+              "fill": "#667269",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "我想做一个",
+              "lineHeight": 1.42,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "450"
+            },
+            {
+              "type": "frame",
+              "id": "jzdgT",
+              "name": "当前识别行",
+              "width": "fill_container",
+              "height": 42,
+              "fill": "#EEF5EE88",
+              "cornerRadius": 14,
+              "gap": 5,
+              "padding": [
+                8,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Rt5fX",
+                  "name": "当前识别文字",
+                  "fill": "#26322D",
+                  "content": "能快速承接灵感的工具",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 1,
+                  "id": "tYpmj",
+                  "name": "跳动光标",
+                  "fill": "#D8664F",
+                  "width": 2,
+                  "height": 18
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zSYgd",
+          "x": 0,
+          "y": 374,
+          "name": "开放式声场记录按钮",
+          "width": 390,
+          "height": 232,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "RQDB8",
+              "x": 78,
+              "y": 0,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F2C7B8AA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 234,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "iFjSu",
+              "x": 104,
+              "y": 34,
+              "name": "扩散环 1",
+              "fill": "#FFFFFF00",
+              "width": 182,
+              "height": 182,
+              "stroke": "#D8664F2E",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "Y1fD5q",
+              "x": 128,
+              "y": 58,
+              "name": "扩散环 2",
+              "fill": "#FFFFFF00",
+              "width": 134,
+              "height": 134,
+              "stroke": "#D8664F48",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "tpMye",
+              "x": 139,
+              "y": 70,
+              "name": "按钮承托层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#FFF1EB",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F0C5B5",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 112,
+              "height": 112,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#A5422D38",
+                "offset": {
+                  "x": 0,
+                  "y": 22
+                },
+                "blur": 36,
+                "spread": -22
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "U51fnM",
+              "x": 160,
+              "y": 91,
+              "name": "按住记录触发按钮",
+              "fill": "#D8664F",
+              "width": 70,
+              "height": 70,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#AA3D2860",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                },
+                "blur": 26,
+                "spread": -10
+              }
+            },
+            {
+              "type": "icon",
+              "id": "Hme3o",
+              "x": 181,
+              "y": 112,
+              "name": "麦克风图标",
+              "width": 28,
+              "height": 28,
+              "icon": "audio-lines",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "R6MHkf",
+              "x": 126,
+              "y": 192,
+              "name": "实时声波柱 1",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 16
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "k42Cr",
+              "x": 142,
+              "y": 185,
+              "name": "实时声波柱 2",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 22
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "sL5rB",
+              "x": 158,
+              "y": 178,
+              "name": "实时声波柱 3",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 28
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "ulLAl",
+              "x": 174,
+              "y": 171,
+              "name": "实时声波柱 4",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 34
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "zfaFm",
+              "x": 190,
+              "y": 192,
+              "name": "实时声波柱 5",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 40
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "tCSer",
+              "x": 206,
+              "y": 185,
+              "name": "实时声波柱 6",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 16
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "awg8Y",
+              "x": 222,
+              "y": 178,
+              "name": "实时声波柱 7",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 22
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "pBM2E",
+              "x": 238,
+              "y": 171,
+              "name": "实时声波柱 8",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 28
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "zFs76",
+              "x": 254,
+              "y": 192,
+              "name": "实时声波柱 9",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 34
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "A1Ktz0",
+          "x": 24,
+          "y": 646,
+          "name": "底部导航",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFC8",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#26423A30",
+            "offset": {
+              "x": 0,
+              "y": 14
+            },
+            "blur": 34,
+            "spread": -16
+          },
+          "gap": 4,
+          "padding": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "H3WonP",
+              "name": "导航项 - 记录",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#E8F0E8CC",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "xjkb6",
+                  "name": "导航图标 - 记录",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#376854"
+                },
+                {
+                  "type": "text",
+                  "id": "LJqBr",
+                  "name": "导航文字 - 记录",
+                  "fill": "#376854",
+                  "content": "记录",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P6suID",
+              "name": "导航项 - 卡片",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "CvybH",
+                  "name": "导航图标 - 卡片",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "OHGm3",
+                  "name": "导航文字 - 卡片",
+                  "fill": "#8A9790",
+                  "content": "卡片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zumWt",
+              "name": "导航项 - 设置",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "lyzxW",
+                  "name": "导航图标 - 设置",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "h0xGJ",
+                  "name": "导航文字 - 设置",
+                  "fill": "#8A9790",
+                  "content": "设置",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VyOpd",
+      "x": 429,
+      "y": 3811,
+      "name": "V2-2 内容变多：固定稿纸区",
+      "clip": true,
+      "width": 390,
+      "height": 720,
+      "fill": "#F8F2EC",
+      "cornerRadius": 32,
+      "stroke": "#E5E0D6",
+      "strokeWidth": 1,
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "tVPBW",
+          "x": 0,
+          "y": 0,
+          "name": "状态栏",
+          "width": 390,
+          "height": 58,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "YHjGq",
+              "x": 22,
+              "y": 20,
+              "name": "时间",
+              "fill": "#25312C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "sxqUk",
+              "x": 314,
+              "y": 22.5,
+              "name": "系统状态",
+              "fill": "#25312C",
+              "content": "5G 100%",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "nPyru",
+          "x": 22,
+          "y": 78,
+          "name": "页面小标题",
+          "fill": "#77837C",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "记录中 / 半融合纸片",
+          "lineHeight": 1.3,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 12,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "Deuol",
+          "x": 22,
+          "y": 104,
+          "name": "页面标题",
+          "fill": "#23302A",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "正在记录",
+          "lineHeight": 1.16,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "pMNBx",
+          "x": 22,
+          "y": 134,
+          "name": "页面说明",
+          "fill": "#748078",
+          "textGrowth": "fixed-width",
+          "width": 316,
+          "content": "文字像纸片从背景里浮现，不再像弹框。",
+          "lineHeight": 1.45,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13
+        },
+        {
+          "type": "frame",
+          "id": "zIfKB",
+          "x": 36,
+          "y": 156,
+          "name": "半融合式转写纸片",
+          "width": 318,
+          "height": 222,
+          "fill": "#FFFCF3CC",
+          "cornerRadius": 24,
+          "stroke": "#E9E1D36A",
+          "strokeWidth": 1,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#63523A33",
+            "offset": {
+              "x": 0,
+              "y": 18
+            },
+            "blur": 42,
+            "spread": -24
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 18,
+          "children": [
+            {
+              "type": "frame",
+              "id": "A2geQ8",
+              "name": "转写状态条",
+              "width": "fill_container",
+              "height": 24,
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AFDkE",
+                  "name": "录音状态点",
+                  "width": 8,
+                  "height": 8,
+                  "fill": "#D8664F",
+                  "cornerRadius": 4
+                },
+                {
+                  "type": "text",
+                  "id": "t37Kj",
+                  "name": "状态文字",
+                  "fill": "#B94D35",
+                  "content": "正在听写",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "650"
+                },
+                {
+                  "type": "text",
+                  "id": "ftKbf",
+                  "name": "区域性质",
+                  "fill": "#7B8780",
+                  "content": "正在生长的转写纸片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "KFLiL",
+              "name": "确认文本 1",
+              "fill": "#5C6B63",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "我想做一个能快速承接灵感的工具，说完以后可以自动整理成更清楚的表达。",
+              "lineHeight": 1.38,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "450"
+            },
+            {
+              "type": "text",
+              "id": "dUJ4U",
+              "name": "确认文本 2",
+              "fill": "#5C6B63",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "最好还能一键提炼要点，帮我把零散想法变成可以继续推进的任务。",
+              "lineHeight": 1.38,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "450"
+            },
+            {
+              "type": "frame",
+              "id": "qTX7A",
+              "name": "当前识别行",
+              "width": "fill_container",
+              "height": 44,
+              "fill": "#EEF5EE",
+              "cornerRadius": 14,
+              "gap": 5,
+              "padding": [
+                8,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "tthnc",
+                  "name": "当前识别文字",
+                  "fill": "#24312B",
+                  "content": "后面再支持修改和删除",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 1,
+                  "id": "jnYje",
+                  "name": "跳动光标",
+                  "fill": "#D8664F",
+                  "width": 2,
+                  "height": 18
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d1m6MI",
+              "name": "轻滚动提示",
+              "width": "fill_container",
+              "height": 22,
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "tFFVR",
+                  "name": "滚动图标",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "chevron-down",
+                  "library": "lucide",
+                  "fill": "#9AA49E"
+                },
+                {
+                  "type": "text",
+                  "id": "FQEyo",
+                  "name": "滚动提示文字",
+                  "fill": "#8B9690",
+                  "content": "纸片固定高度，向最新一句轻滚动",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "B6JQB3",
+          "x": 0,
+          "y": 430,
+          "name": "开放式声场记录按钮",
+          "width": 390,
+          "height": 232,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "yadto",
+              "x": 78,
+              "y": 0,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F2C7B8AA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 234,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "xgcWE",
+              "x": 104,
+              "y": 34,
+              "name": "扩散环 1",
+              "fill": "#FFFFFF00",
+              "width": 182,
+              "height": 182,
+              "stroke": "#D8664F2E",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "lbtPq",
+              "x": 128,
+              "y": 58,
+              "name": "扩散环 2",
+              "fill": "#FFFFFF00",
+              "width": 134,
+              "height": 134,
+              "stroke": "#D8664F48",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "pznOS",
+              "x": 139,
+              "y": 70,
+              "name": "按钮承托层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#FFF1EB",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F0C5B5",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 112,
+              "height": 112,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#A5422D38",
+                "offset": {
+                  "x": 0,
+                  "y": 22
+                },
+                "blur": 36,
+                "spread": -22
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "v84VkH",
+              "x": 160,
+              "y": 91,
+              "name": "按住记录触发按钮",
+              "fill": "#D8664F",
+              "width": 70,
+              "height": 70,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#AA3D2860",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                },
+                "blur": 26,
+                "spread": -10
+              }
+            },
+            {
+              "type": "icon",
+              "id": "ZJmr5",
+              "x": 181,
+              "y": 112,
+              "name": "麦克风图标",
+              "width": 28,
+              "height": 28,
+              "icon": "audio-lines",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "MQjHp",
+              "x": 126,
+              "y": 192,
+              "name": "实时声波柱 1",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 16
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "W3gEJ",
+              "x": 142,
+              "y": 185,
+              "name": "实时声波柱 2",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 22
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "I76IXV",
+              "x": 158,
+              "y": 178,
+              "name": "实时声波柱 3",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 28
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "a8PRi",
+              "x": 174,
+              "y": 171,
+              "name": "实时声波柱 4",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 34
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "ycwfj",
+              "x": 190,
+              "y": 192,
+              "name": "实时声波柱 5",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 40
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "wiGWs",
+              "x": 206,
+              "y": 185,
+              "name": "实时声波柱 6",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 16
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "TM87Z",
+              "x": 222,
+              "y": 178,
+              "name": "实时声波柱 7",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 22
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "gFfVq",
+              "x": 238,
+              "y": 171,
+              "name": "实时声波柱 8",
+              "fill": "#37685499",
+              "width": 5,
+              "height": 28
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "c2my0t",
+              "x": 254,
+              "y": 192,
+              "name": "实时声波柱 9",
+              "fill": "#D8664FCC",
+              "width": 5,
+              "height": 34
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bY9Ju",
+          "x": 24,
+          "y": 646,
+          "name": "底部导航",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFC8",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#26423A30",
+            "offset": {
+              "x": 0,
+              "y": 14
+            },
+            "blur": 34,
+            "spread": -16
+          },
+          "gap": 4,
+          "padding": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "H00tD",
+              "name": "导航项 - 记录",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#E8F0E8CC",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "mg0hD",
+                  "name": "导航图标 - 记录",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#376854"
+                },
+                {
+                  "type": "text",
+                  "id": "OiMcO",
+                  "name": "导航文字 - 记录",
+                  "fill": "#376854",
+                  "content": "记录",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ex99Z",
+              "name": "导航项 - 卡片",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "z8wQXp",
+                  "name": "导航图标 - 卡片",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "pAXCk",
+                  "name": "导航文字 - 卡片",
+                  "fill": "#8A9790",
+                  "content": "卡片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eVpIv",
+              "name": "导航项 - 设置",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "fLnRW",
+                  "name": "导航图标 - 设置",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "TAW7f",
+                  "name": "导航文字 - 设置",
+                  "fill": "#8A9790",
+                  "content": "设置",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HMQ8t",
+      "x": 899,
+      "y": 3811,
+      "name": "V2-3 松开后：定型草稿卡片",
+      "clip": true,
+      "width": 390,
+      "height": 720,
+      "fill": "#F7F5EF",
+      "cornerRadius": 32,
+      "stroke": "#E5E0D6",
+      "strokeWidth": 1,
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "ruzll",
+          "x": 0,
+          "y": 0,
+          "name": "状态栏",
+          "width": 390,
+          "height": 58,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "R8XiV",
+              "x": 22,
+              "y": 20,
+              "name": "时间",
+              "fill": "#25312C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "eRHtB",
+              "x": 314,
+              "y": 22.5,
+              "name": "系统状态",
+              "fill": "#25312C",
+              "content": "5G 100%",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "uPkto",
+          "x": 22,
+          "y": 78,
+          "name": "页面小标题",
+          "fill": "#77837C",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "松开后 / 定型草稿",
+          "lineHeight": 1.3,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 12,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "MgvHZ",
+          "x": 22,
+          "y": 104,
+          "name": "页面标题",
+          "fill": "#23302A",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "灵感已转成草稿",
+          "lineHeight": 1.16,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "OiWiQ",
+          "x": 22,
+          "y": 134,
+          "name": "页面说明",
+          "fill": "#748078",
+          "textGrowth": "fixed-width",
+          "width": 316,
+          "content": "边界增强，进入编辑和润色。",
+          "lineHeight": 1.45,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13
+        },
+        {
+          "type": "frame",
+          "id": "GazGf",
+          "x": 36,
+          "y": 150,
+          "name": "可编辑草稿卡片",
+          "width": 318,
+          "height": 236,
+          "fill": "#FFFFFFEB",
+          "cornerRadius": 24,
+          "stroke": "#E0E6DD",
+          "strokeWidth": 1,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2A46392E",
+            "offset": {
+              "x": 0,
+              "y": 18
+            },
+            "blur": 40,
+            "spread": -20
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 18,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Kd2dm",
+              "name": "转写状态条",
+              "width": "fill_container",
+              "height": 24,
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "nvXhY",
+                  "name": "录音状态点",
+                  "width": 8,
+                  "height": 8,
+                  "fill": "#6F9276",
+                  "cornerRadius": 4
+                },
+                {
+                  "type": "text",
+                  "id": "GCXdG",
+                  "name": "状态文字",
+                  "fill": "#376854",
+                  "content": "可编辑",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "650"
+                },
+                {
+                  "type": "text",
+                  "id": "xjVD0",
+                  "name": "区域性质",
+                  "fill": "#7B8780",
+                  "content": "已定型为草稿卡片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "a0Yh5",
+              "name": "草稿正文 1",
+              "fill": "#4F5D55",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "我想做一个能快速承接灵感的工具，说完以后可以自动整理成更清楚的表达。",
+              "lineHeight": 1.36,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "450"
+            },
+            {
+              "type": "text",
+              "id": "bUzLC",
+              "name": "草稿正文 2",
+              "fill": "#4F5D55",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "最好还能一键提炼要点，帮我把零散想法变成可以继续推进的任务。",
+              "lineHeight": 1.36,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "450"
+            },
+            {
+              "type": "text",
+              "id": "Mafgx",
+              "name": "草稿正文 3",
+              "fill": "#4F5D55",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "后面再支持修改和删除。",
+              "lineHeight": 1.36,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "450"
+            },
+            {
+              "type": "frame",
+              "id": "Zbeze",
+              "name": "草稿操作组",
+              "width": "fill_container",
+              "height": 32,
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "N0AEpF",
+                  "name": "编辑按钮",
+                  "height": 32,
+                  "fill": "#E9F2EA",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    7,
+                    11
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "T6PwB",
+                      "name": "编辑图标",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "pencil",
+                      "library": "lucide",
+                      "fill": "#376854"
+                    },
+                    {
+                      "type": "text",
+                      "id": "LpePg",
+                      "name": "编辑文字",
+                      "fill": "#376854",
+                      "content": "编辑",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "650"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "v64nq",
+                  "name": "润色按钮",
+                  "height": 32,
+                  "fill": "#F3F1EA",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    7,
+                    11
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "w9S9d",
+                      "name": "润色图标",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "#7B6F63"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XggOV",
+                      "name": "润色文字",
+                      "fill": "#7B6F63",
+                      "content": "润色",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "650"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "nFxMM",
+                  "name": "更多按钮",
+                  "height": 32,
+                  "fill": "#F3F1EA",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    7,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "xbbPP",
+                      "name": "更多图标",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "more-horizontal",
+                      "library": "lucide",
+                      "fill": "#7D857F"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QBPLP",
+          "x": 0,
+          "y": 442,
+          "name": "开放式声场记录按钮",
+          "width": 390,
+          "height": 232,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "Em7Bb",
+              "x": 78,
+              "y": 0,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.52,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#DDEADEAA",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 234,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "iOD5F",
+              "x": 104,
+              "y": 34,
+              "name": "扩散环 1",
+              "fill": "#FFFFFF00",
+              "width": 182,
+              "height": 182,
+              "stroke": "#7FA08B24",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "ueEDU",
+              "x": 128,
+              "y": 58,
+              "name": "扩散环 2",
+              "fill": "#FFFFFF00",
+              "width": 134,
+              "height": 134,
+              "stroke": "#7FA08B38",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "r9m0Ob",
+              "x": 139,
+              "y": 70,
+              "name": "按钮承托层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F7FBF6",
+                    "position": 0
+                  },
+                  {
+                    "color": "#DDEADF",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 112,
+              "height": 112,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#2F5A4930",
+                "offset": {
+                  "x": 0,
+                  "y": 22
+                },
+                "blur": 36,
+                "spread": -22
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "xty2W",
+              "x": 160,
+              "y": 91,
+              "name": "按住记录触发按钮",
+              "fill": "#376854",
+              "width": 70,
+              "height": 70,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#244A3D5C",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                },
+                "blur": 26,
+                "spread": -10
+              }
+            },
+            {
+              "type": "icon",
+              "id": "T5JMJ",
+              "x": 181,
+              "y": 112,
+              "name": "麦克风图标",
+              "width": 28,
+              "height": 28,
+              "icon": "mic",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gC3TQ",
+          "x": 24,
+          "y": 646,
+          "name": "底部导航",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFC8",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#26423A30",
+            "offset": {
+              "x": 0,
+              "y": 14
+            },
+            "blur": 34,
+            "spread": -16
+          },
+          "gap": 4,
+          "padding": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Jr0hm",
+              "name": "导航项 - 记录",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#E8F0E8CC",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "MNBva",
+                  "name": "导航图标 - 记录",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#376854"
+                },
+                {
+                  "type": "text",
+                  "id": "Rl2U5",
+                  "name": "导航文字 - 记录",
+                  "fill": "#376854",
+                  "content": "记录",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "czENm",
+              "name": "导航项 - 卡片",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "gi8EW",
+                  "name": "导航图标 - 卡片",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "z9QpM",
+                  "name": "导航文字 - 卡片",
+                  "fill": "#8A9790",
+                  "content": "卡片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "H8MIoz",
+              "name": "导航项 - 设置",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "xzUsO",
+                  "name": "导航图标 - 设置",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "I5tzRM",
                   "name": "导航文字 - 设置",
                   "fill": "#8A9790",
                   "content": "设置",
