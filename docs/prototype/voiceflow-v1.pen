@@ -3326,7 +3326,7 @@
                   "content": "把脑子里的东西\n先说出来。",
                   "lineHeight": 1.32,
                   "fontFamily": "$font-body2",
-                  "fontSize": 31,
+                  "fontSize": 32,
                   "fontWeight": "700"
                 },
                 {
@@ -3980,6 +3980,76 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "g8rRp",
+      "x": 0,
+      "y": -126,
+      "name": "V1 交互原型区标题",
+      "width": 1320,
+      "height": 78,
+      "fill": "#FFFFFF00",
+      "layout": "vertical",
+      "gap": 8,
+      "padding": [
+        0,
+        4
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "qj57M",
+          "name": "V1 Title",
+          "fill": "$explore-ink",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "V1 交互原型：结构与主流程",
+          "fontFamily": "$font-serif",
+          "fontSize": 30,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "MPFLh",
+          "name": "V1 Note",
+          "fill": "$explore-muted",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "记录页 3 个状态 / 卡片列表 / 卡片详情 / 设置页。此区域作为第一版结构原型，后续视觉方向在下方单独探索。",
+          "fontFamily": "$font-body2",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "m0BSAn",
+      "x": -20,
+      "y": -34,
+      "name": "V1 交互原型区边界",
+      "width": 2790,
+      "height": 1000,
+      "fill": "#FFFFFF00",
+      "cornerRadius": 28,
+      "stroke": "#D9D0C2",
+      "strokeWidth": 1,
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "Y2MfIX",
+      "x": -20,
+      "y": 1026,
+      "name": "视觉方向探索区边界",
+      "width": 1370,
+      "height": 820,
+      "fill": "#FFFFFF00",
+      "cornerRadius": 28,
+      "stroke": "#D9D0C2",
+      "strokeWidth": 1,
+      "layout": "none"
     }
   ],
   "variables": {
