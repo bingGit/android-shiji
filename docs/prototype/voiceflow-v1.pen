@@ -3,7 +3,7 @@
   "children": [
     {
       "type": "frame",
-      "id": "XfgYw",
+      "id": "c1jHX1",
       "x": 0,
       "y": 0,
       "name": "记录页 - 空闲态",
@@ -18,10 +18,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "XxFyi",
+          "id": "wHQ9L",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -35,7 +36,7 @@
           "children": [
             {
               "type": "text",
-              "id": "Zvo1p",
+              "id": "osY7f",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -45,7 +46,7 @@
             },
             {
               "type": "text",
-              "id": "kjogC",
+              "id": "KsSrK",
               "name": "Status Right",
               "fill": "$primary",
               "fontFamily": "$font",
@@ -56,7 +57,7 @@
         },
         {
           "type": "frame",
-          "id": "MkILe",
+          "id": "KGJT0",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -68,7 +69,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "vxH36",
+              "id": "UMwsW",
               "name": "Hero",
               "width": "fill_container",
               "layout": "vertical",
@@ -76,7 +77,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "ZV1k1",
+                  "id": "yfwiJ",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -89,7 +90,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "ckRIX",
+                  "id": "oOznW",
                   "name": "Subtitle",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -104,7 +105,7 @@
             },
             {
               "type": "frame",
-              "id": "sWfzy",
+              "id": "O4bbkX",
               "name": "Record Control",
               "width": "fill_container",
               "fill": "$surface",
@@ -117,7 +118,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "Iffwl",
+                  "id": "cKyxS",
                   "name": "Mic Button Area",
                   "width": "fill_container",
                   "layout": "vertical",
@@ -126,7 +127,7 @@
                   "children": [
                     {
                       "type": "ellipse",
-                      "id": "rMigT",
+                      "id": "DuHuP",
                       "name": "Primary Record Button",
                       "fill": "$primary",
                       "width": 104,
@@ -134,7 +135,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "Cwnit",
+                      "id": "v5LV17",
                       "name": "Primary Label",
                       "fill": "$ink",
                       "content": "开始记录",
@@ -146,7 +147,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "lGML0",
+                  "id": "mn1wL",
                   "name": "Hint",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -161,7 +162,7 @@
             },
             {
               "type": "frame",
-              "id": "rJM0e",
+              "id": "Lityc",
               "name": "Recent Notes Preview",
               "width": "fill_container",
               "layout": "vertical",
@@ -169,7 +170,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "l83d7",
+                  "id": "et2AM",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "最近灵感",
@@ -179,7 +180,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "o0V4y",
+                  "id": "NnVlN",
                   "name": "Recent Note Card",
                   "width": "fill_container",
                   "fill": "$surface",
@@ -192,7 +193,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "e2iIE4",
+                      "id": "wWgBx",
                       "name": "Card Title",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -205,7 +206,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "W4c0mS",
+                      "id": "sXDRB",
                       "name": "Card Meta",
                       "fill": "$muted",
                       "content": "刚刚 · 28 秒 · 未处理",
@@ -221,7 +222,7 @@
         },
         {
           "type": "frame",
-          "id": "XDhdV",
+          "id": "gjSjw",
           "name": "Bottom Tab Bar",
           "width": 358,
           "height": 62,
@@ -242,7 +243,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "a9eerE",
+              "id": "zcru5",
               "name": "Tab 记录",
               "width": "fill_container",
               "height": "fill_container",
@@ -255,7 +256,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "L9Ahp",
+                  "id": "AOWvX",
                   "name": "记录 Icon",
                   "width": 20,
                   "height": 20,
@@ -265,7 +266,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "NvUur",
+                  "id": "WQrkn",
                   "name": "记录 Label",
                   "fill": "$primary",
                   "content": "记录",
@@ -277,7 +278,7 @@
             },
             {
               "type": "frame",
-              "id": "AOjjb",
+              "id": "GOoOH",
               "name": "Tab 卡片",
               "width": "fill_container",
               "height": "fill_container",
@@ -290,7 +291,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "Lmw9G",
+                  "id": "Q3b816",
                   "name": "卡片 Icon",
                   "width": 20,
                   "height": 20,
@@ -300,7 +301,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "dhNqb",
+                  "id": "oth3b",
                   "name": "卡片 Label",
                   "fill": "$muted",
                   "content": "卡片",
@@ -312,7 +313,7 @@
             },
             {
               "type": "frame",
-              "id": "f0YXDw",
+              "id": "UGS7G",
               "name": "Tab 设置",
               "width": "fill_container",
               "height": "fill_container",
@@ -325,7 +326,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "NVPQg",
+                  "id": "pZS0u",
                   "name": "设置 Icon",
                   "width": 20,
                   "height": 20,
@@ -335,7 +336,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "dNyQ2",
+                  "id": "C3ogL",
                   "name": "设置 Label",
                   "fill": "$muted",
                   "content": "设置",
@@ -351,7 +352,7 @@
     },
     {
       "type": "frame",
-      "id": "R78ve",
+      "id": "st0Mw",
       "x": 470,
       "y": 0,
       "name": "记录页 - 记录中",
@@ -366,10 +367,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "E4TUxH",
+          "id": "XQ7Pt",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -383,7 +385,7 @@
           "children": [
             {
               "type": "text",
-              "id": "UMDAR",
+              "id": "v96hI4",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -393,7 +395,7 @@
             },
             {
               "type": "text",
-              "id": "ZkVEn",
+              "id": "qptvk",
               "name": "Status Right",
               "fill": "$primary",
               "content": "正在录音",
@@ -405,7 +407,7 @@
         },
         {
           "type": "frame",
-          "id": "xzl6w",
+          "id": "WT4MX",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -417,7 +419,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "aOBK9",
+              "id": "V057sy",
               "name": "Recording Header",
               "width": "fill_container",
               "layout": "vertical",
@@ -425,7 +427,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "BTgvS",
+                  "id": "b70bm",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -438,7 +440,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "xWVyp",
+                  "id": "P6L8cJ",
                   "name": "Subtitle",
                   "fill": "$primary",
                   "content": "00:36 · 实时转写中",
@@ -450,7 +452,7 @@
             },
             {
               "type": "frame",
-              "id": "xPVpi",
+              "id": "DmBOa",
               "name": "Waveform Panel",
               "width": "fill_container",
               "fill": "$primary-soft",
@@ -463,7 +465,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "PCoS5",
+                  "id": "XfPLa",
                   "name": "Waveform",
                   "width": "fill_container",
                   "height": 72,
@@ -474,7 +476,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "e3oMho",
+                      "id": "mHPNK",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -483,7 +485,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "M0gseU",
+                      "id": "QVMvt",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -492,7 +494,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "bRCT6",
+                      "id": "Yb0w0",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -501,7 +503,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "b1CBJ",
+                      "id": "VMu7I",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -510,7 +512,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "V95ir",
+                      "id": "KINFN",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -519,7 +521,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "p5OH5",
+                      "id": "Sy7du",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -528,7 +530,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "Kzuva",
+                      "id": "M47AY3",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -537,7 +539,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "y2tH0v",
+                      "id": "wxj8x",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -546,7 +548,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "GAS9P",
+                      "id": "ehkxS",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -555,7 +557,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "ygIP4",
+                      "id": "RfPbS",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -564,7 +566,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "wpQ97",
+                      "id": "yjNvX",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -573,7 +575,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "hhHhr",
+                      "id": "A4rc3",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -582,7 +584,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "b3xhwY",
+                      "id": "dnzLY",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -591,7 +593,7 @@
                     {
                       "type": "rectangle",
                       "cornerRadius": 5,
-                      "id": "rSiEJ",
+                      "id": "t3Rt9",
                       "name": "Audio Bar",
                       "fill": "$primary",
                       "width": 9,
@@ -601,7 +603,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "d9R8v",
+                  "id": "Lk0Tu",
                   "name": "Listening Text",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -616,7 +618,7 @@
             },
             {
               "type": "frame",
-              "id": "ysdcy",
+              "id": "wqM1z",
               "name": "Realtime Transcript",
               "width": "fill_container",
               "fill": "$surface",
@@ -629,7 +631,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "N7CF6e",
+                  "id": "L5kZr",
                   "name": "Transcript Label",
                   "fill": "$muted",
                   "content": "实时转写",
@@ -639,7 +641,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "B01N0",
+                  "id": "gK4nP",
                   "name": "Transcript Body",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -654,7 +656,7 @@
             },
             {
               "type": "frame",
-              "id": "v7IbsH",
+              "id": "dMMHj",
               "name": "Stop Button",
               "width": "fill_container",
               "height": 54,
@@ -665,7 +667,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "nyJBb",
+                  "id": "d7GN4",
                   "name": "Stop Label",
                   "fill": "#FFFFFF",
                   "content": "停止并保存",
@@ -679,7 +681,7 @@
         },
         {
           "type": "frame",
-          "id": "s0L4y",
+          "id": "Kk15h",
           "name": "Bottom Tab Bar",
           "width": 358,
           "height": 62,
@@ -700,7 +702,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "LrpR6",
+              "id": "F0BQHx",
               "name": "Tab 记录",
               "width": "fill_container",
               "height": "fill_container",
@@ -713,7 +715,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "qDqsf",
+                  "id": "Ntrag",
                   "name": "记录 Icon",
                   "width": 20,
                   "height": 20,
@@ -723,7 +725,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "c3j3Ty",
+                  "id": "KTew7",
                   "name": "记录 Label",
                   "fill": "$primary",
                   "content": "记录",
@@ -735,7 +737,7 @@
             },
             {
               "type": "frame",
-              "id": "vwuht",
+              "id": "q3Pbs",
               "name": "Tab 卡片",
               "width": "fill_container",
               "height": "fill_container",
@@ -748,7 +750,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "dOgPB",
+                  "id": "Nedut",
                   "name": "卡片 Icon",
                   "width": 20,
                   "height": 20,
@@ -758,7 +760,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "KGMMz",
+                  "id": "XjDGf",
                   "name": "卡片 Label",
                   "fill": "$muted",
                   "content": "卡片",
@@ -770,7 +772,7 @@
             },
             {
               "type": "frame",
-              "id": "gEAU9",
+              "id": "ZlQBH",
               "name": "Tab 设置",
               "width": "fill_container",
               "height": "fill_container",
@@ -783,7 +785,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "Gk5ht",
+                  "id": "C1bTk",
                   "name": "设置 Icon",
                   "width": 20,
                   "height": 20,
@@ -793,7 +795,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "zxHrC",
+                  "id": "sleIb",
                   "name": "设置 Label",
                   "fill": "$muted",
                   "content": "设置",
@@ -809,7 +811,7 @@
     },
     {
       "type": "frame",
-      "id": "m4LK1k",
+      "id": "KPfu5",
       "x": 940,
       "y": 0,
       "name": "记录页 - 完成态",
@@ -824,10 +826,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "wC8xB",
+          "id": "Sp2XL",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -841,7 +844,7 @@
           "children": [
             {
               "type": "text",
-              "id": "T80VSA",
+              "id": "aKwRg",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -851,7 +854,7 @@
             },
             {
               "type": "text",
-              "id": "Ksrha",
+              "id": "nAYK2",
               "name": "Status Right",
               "fill": "$primary",
               "content": "已保存",
@@ -863,7 +866,7 @@
         },
         {
           "type": "frame",
-          "id": "qnbwk",
+          "id": "qwFWV",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -875,7 +878,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "fRZhu",
+              "id": "P1U8kZ",
               "name": "Completion Header",
               "width": "fill_container",
               "layout": "vertical",
@@ -883,7 +886,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "xT8S8",
+                  "id": "bNEyq",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -896,7 +899,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "WjRyB",
+                  "id": "uJ6JB",
                   "name": "Subtitle",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -911,7 +914,7 @@
             },
             {
               "type": "frame",
-              "id": "ygFSG",
+              "id": "z5jL4",
               "name": "Saved Note Summary",
               "width": "fill_container",
               "fill": "$surface",
@@ -924,7 +927,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "e5Riuv",
+                  "id": "RvOVv",
                   "name": "Note Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -937,7 +940,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "hVdxW",
+                  "id": "vJKry",
                   "name": "Note Meta",
                   "fill": "$muted",
                   "content": "刚刚 · 约 36 秒 · 未处理",
@@ -947,7 +950,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "JSlq1",
+                  "id": "xoZbb",
                   "name": "Note Excerpt",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -962,7 +965,7 @@
             },
             {
               "type": "frame",
-              "id": "a5xeM7",
+              "id": "sFiqW",
               "name": "Completion Actions",
               "width": "fill_container",
               "layout": "vertical",
@@ -970,7 +973,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "HYIc5",
+                  "id": "G75CF0",
                   "name": "查看这条笔记 Button",
                   "width": "fill_container",
                   "height": 54,
@@ -983,7 +986,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "sQOCT",
+                      "id": "OvxRl",
                       "name": "查看这条笔记 Label",
                       "fill": "#FFFFFF",
                       "content": "查看这条笔记",
@@ -995,7 +998,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "f1BcE",
+                  "id": "qQZjE",
                   "name": "继续记录 Button",
                   "width": "fill_container",
                   "height": 50,
@@ -1008,7 +1011,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "dOJBW",
+                      "id": "P7CxE",
                       "name": "继续记录 Label",
                       "fill": "$ink",
                       "content": "继续记录",
@@ -1022,7 +1025,7 @@
             },
             {
               "type": "text",
-              "id": "jXizr",
+              "id": "p2mKC",
               "name": "Design Note",
               "fill": "$muted",
               "textGrowth": "fixed-width",
@@ -1037,7 +1040,7 @@
         },
         {
           "type": "frame",
-          "id": "gjaab",
+          "id": "UUpCu",
           "name": "Bottom Tab Bar",
           "width": 358,
           "height": 62,
@@ -1058,7 +1061,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "uOWpx",
+              "id": "PLcGw",
               "name": "Tab 记录",
               "width": "fill_container",
               "height": "fill_container",
@@ -1071,7 +1074,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "xkf54",
+                  "id": "h8o1Q",
                   "name": "记录 Icon",
                   "width": 20,
                   "height": 20,
@@ -1081,7 +1084,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "bXXj1",
+                  "id": "E6OjAv",
                   "name": "记录 Label",
                   "fill": "$primary",
                   "content": "记录",
@@ -1093,7 +1096,7 @@
             },
             {
               "type": "frame",
-              "id": "GMOq9",
+              "id": "hvTRi",
               "name": "Tab 卡片",
               "width": "fill_container",
               "height": "fill_container",
@@ -1106,7 +1109,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "ja9LM",
+                  "id": "YXQ5X",
                   "name": "卡片 Icon",
                   "width": 20,
                   "height": 20,
@@ -1116,7 +1119,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "eotAh",
+                  "id": "UH4hW",
                   "name": "卡片 Label",
                   "fill": "$muted",
                   "content": "卡片",
@@ -1128,7 +1131,7 @@
             },
             {
               "type": "frame",
-              "id": "Mu25P",
+              "id": "K83IA",
               "name": "Tab 设置",
               "width": "fill_container",
               "height": "fill_container",
@@ -1141,7 +1144,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "fE2DA",
+                  "id": "QIx2z",
                   "name": "设置 Icon",
                   "width": 20,
                   "height": 20,
@@ -1151,7 +1154,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "uvmxH",
+                  "id": "a2Rs7e",
                   "name": "设置 Label",
                   "fill": "$muted",
                   "content": "设置",
@@ -1167,7 +1170,7 @@
     },
     {
       "type": "frame",
-      "id": "j8eKTu",
+      "id": "O8MHFQ",
       "x": 1410,
       "y": 0,
       "name": "卡片页 - 笔记列表",
@@ -1182,10 +1185,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "uDCeq",
+          "id": "ZBcfA",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -1199,7 +1203,7 @@
           "children": [
             {
               "type": "text",
-              "id": "o1Zp4",
+              "id": "B7Twp3",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -1209,7 +1213,7 @@
             },
             {
               "type": "text",
-              "id": "hNpJR",
+              "id": "r6705",
               "name": "Status Right",
               "fill": "$primary",
               "content": "搜索",
@@ -1221,7 +1225,7 @@
         },
         {
           "type": "frame",
-          "id": "oAzIE",
+          "id": "Vj4oV",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -1233,7 +1237,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "INZ39",
+              "id": "Qy976",
               "name": "List Header",
               "width": "fill_container",
               "layout": "vertical",
@@ -1241,7 +1245,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "hzgju",
+                  "id": "u5mjr",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -1254,7 +1258,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "taxSK",
+                  "id": "ZQAad",
                   "name": "Subtitle",
                   "fill": "$muted",
                   "content": "共 12 条 · 最近更新刚刚",
@@ -1266,7 +1270,7 @@
             },
             {
               "type": "frame",
-              "id": "pFm1z",
+              "id": "OWahq",
               "name": "Group 今天",
               "width": "fill_container",
               "layout": "vertical",
@@ -1274,7 +1278,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "a97Jaf",
+                  "id": "pZEFz",
                   "name": "Group Title",
                   "fill": "$muted",
                   "content": "今天",
@@ -1284,7 +1288,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "dqeKo",
+                  "id": "vF67W",
                   "name": "Note Card",
                   "width": "fill_container",
                   "fill": "$surface",
@@ -1297,7 +1301,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "ZXc5j",
+                      "id": "vsbz5",
                       "name": "Card Top",
                       "width": "fill_container",
                       "gap": 8,
@@ -1305,7 +1309,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "E6qxu",
+                          "id": "oKbUn",
                           "name": "Card Title",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -1318,7 +1322,7 @@
                         },
                         {
                           "type": "icon",
-                          "id": "jt4Cp",
+                          "id": "tDnm0",
                           "name": "More Icon",
                           "width": 18,
                           "height": 18,
@@ -1330,7 +1334,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "MKQrx",
+                      "id": "kk7HR",
                       "name": "Card Excerpt",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -1343,7 +1347,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "qMKEu",
+                      "id": "LAf9s",
                       "name": "Card Meta",
                       "fill": "$muted",
                       "content": "刚刚 · 36 秒 · 未处理",
@@ -1355,7 +1359,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "A2ejW",
+                  "id": "HCNf2",
                   "name": "Note Card",
                   "width": "fill_container",
                   "fill": "$surface",
@@ -1368,7 +1372,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "exvBa",
+                      "id": "HusJR",
                       "name": "Card Top",
                       "width": "fill_container",
                       "gap": 8,
@@ -1376,7 +1380,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "kD1c0",
+                          "id": "EWlQW",
                           "name": "Card Title",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -1389,7 +1393,7 @@
                         },
                         {
                           "type": "icon",
-                          "id": "tugdp",
+                          "id": "gGYcH",
                           "name": "More Icon",
                           "width": 18,
                           "height": 18,
@@ -1401,7 +1405,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "r7OLk5",
+                      "id": "G99Ap",
                       "name": "Card Excerpt",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -1414,7 +1418,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "afIhQ",
+                      "id": "jFtuo",
                       "name": "Card Meta",
                       "fill": "$muted",
                       "content": "14:20 · 22 秒 · 已润色",
@@ -1428,7 +1432,7 @@
             },
             {
               "type": "frame",
-              "id": "vsWCy",
+              "id": "pKpeB",
               "name": "Group 昨天",
               "width": "fill_container",
               "layout": "vertical",
@@ -1436,7 +1440,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "Brpwj",
+                  "id": "Yw0mw",
                   "name": "Group Title",
                   "fill": "$muted",
                   "content": "昨天",
@@ -1446,7 +1450,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "H7XAYN",
+                  "id": "iSOoe",
                   "name": "Note Card",
                   "width": "fill_container",
                   "fill": "$surface",
@@ -1459,7 +1463,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "kd9Dv",
+                      "id": "Xcb0d",
                       "name": "Card Top",
                       "width": "fill_container",
                       "gap": 8,
@@ -1467,7 +1471,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "gmpeb",
+                          "id": "s5H0Mg",
                           "name": "Card Title",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -1480,7 +1484,7 @@
                         },
                         {
                           "type": "icon",
-                          "id": "wkhCh",
+                          "id": "nVPzr",
                           "name": "More Icon",
                           "width": 18,
                           "height": 18,
@@ -1492,7 +1496,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "KawAx",
+                      "id": "NUZYs",
                       "name": "Card Excerpt",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -1505,7 +1509,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "w3OTlh",
+                      "id": "QbSWB",
                       "name": "Card Meta",
                       "fill": "$muted",
                       "content": "昨天 21:30 · 18 秒 · 2 个版本",
@@ -1521,7 +1525,7 @@
         },
         {
           "type": "frame",
-          "id": "XYj9M",
+          "id": "HrDIk",
           "name": "Bottom Tab Bar",
           "width": 358,
           "height": 62,
@@ -1542,7 +1546,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "B4RAp",
+              "id": "Pzc3m",
               "name": "Tab 记录",
               "width": "fill_container",
               "height": "fill_container",
@@ -1555,7 +1559,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "GiVpN",
+                  "id": "HvAvJ",
                   "name": "记录 Icon",
                   "width": 20,
                   "height": 20,
@@ -1565,7 +1569,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "fLtlx",
+                  "id": "Heu4C",
                   "name": "记录 Label",
                   "fill": "$muted",
                   "content": "记录",
@@ -1577,7 +1581,7 @@
             },
             {
               "type": "frame",
-              "id": "U1taDV",
+              "id": "iXM8X",
               "name": "Tab 卡片",
               "width": "fill_container",
               "height": "fill_container",
@@ -1590,7 +1594,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "pXLpo",
+                  "id": "Eo7fu",
                   "name": "卡片 Icon",
                   "width": 20,
                   "height": 20,
@@ -1600,7 +1604,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "l5L5y",
+                  "id": "ynBII",
                   "name": "卡片 Label",
                   "fill": "$primary",
                   "content": "卡片",
@@ -1612,7 +1616,7 @@
             },
             {
               "type": "frame",
-              "id": "PPdul",
+              "id": "W86Roo",
               "name": "Tab 设置",
               "width": "fill_container",
               "height": "fill_container",
@@ -1625,7 +1629,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "V83eMD",
+                  "id": "jbt6Z",
                   "name": "设置 Icon",
                   "width": 20,
                   "height": 20,
@@ -1635,7 +1639,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "V128YR",
+                  "id": "NEae0",
                   "name": "设置 Label",
                   "fill": "$muted",
                   "content": "设置",
@@ -1651,7 +1655,7 @@
     },
     {
       "type": "frame",
-      "id": "sfVT0",
+      "id": "gIqc0",
       "x": 1880,
       "y": 0,
       "name": "卡片页 - 笔记详情",
@@ -1666,10 +1670,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "CGpy9",
+          "id": "h7MeZr",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -1683,7 +1688,7 @@
           "children": [
             {
               "type": "text",
-              "id": "upKd1",
+              "id": "TB1X5",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -1693,7 +1698,7 @@
             },
             {
               "type": "text",
-              "id": "G9SbLG",
+              "id": "t965c",
               "name": "Status Right",
               "fill": "$primary",
               "content": "更多",
@@ -1705,7 +1710,7 @@
         },
         {
           "type": "frame",
-          "id": "Gkt1x",
+          "id": "YJU05",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -1717,7 +1722,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "Zoa5A",
+              "id": "AJvbk",
               "name": "Detail Nav",
               "width": "fill_container",
               "gap": 10,
@@ -1725,7 +1730,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "Ve1vP",
+                  "id": "a7KPO",
                   "name": "Back Icon",
                   "width": 24,
                   "height": 24,
@@ -1735,7 +1740,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "B0Xsi",
+                  "id": "jbTkS",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -1750,7 +1755,7 @@
             },
             {
               "type": "frame",
-              "id": "nGGm8",
+              "id": "Z24FV",
               "name": "原文区",
               "width": "fill_container",
               "fill": "$surface",
@@ -1763,7 +1768,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "srQ4W",
+                  "id": "uNsup",
                   "name": "Section Title",
                   "fill": "$muted",
                   "content": "原文",
@@ -1773,7 +1778,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "C9bjJ",
+                  "id": "YAyS8",
                   "name": "Meta",
                   "fill": "$muted",
                   "content": "今天 14:36 · 36 秒 · Paraformer",
@@ -1783,7 +1788,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "G8JJD",
+                  "id": "N9c5r",
                   "name": "Original Text",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -1796,14 +1801,14 @@
                 },
                 {
                   "type": "frame",
-                  "id": "dAzkT",
+                  "id": "U9GKt",
                   "name": "Original Actions",
                   "width": "fill_container",
                   "gap": 10,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "rCCPa",
+                      "id": "zSs5B",
                       "name": "复制原文 Button",
                       "width": "fill_container",
                       "height": 40,
@@ -1816,7 +1821,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "WW7ow",
+                          "id": "v6x2PP",
                           "name": "复制原文 Label",
                           "fill": "$ink",
                           "content": "复制原文",
@@ -1828,7 +1833,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "HFyg7",
+                      "id": "FQ3XJ",
                       "name": "保存修改 Button",
                       "width": "fill_container",
                       "height": 40,
@@ -1841,7 +1846,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "FeHXT",
+                          "id": "XLXAk",
                           "name": "保存修改 Label",
                           "fill": "#FFFFFF",
                           "content": "保存修改",
@@ -1857,7 +1862,7 @@
             },
             {
               "type": "frame",
-              "id": "VsOJF",
+              "id": "OSlKf",
               "name": "AI 操作区",
               "width": "fill_container",
               "layout": "vertical",
@@ -1865,7 +1870,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "I0GXE",
+                  "id": "SQMj9",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "处理",
@@ -1875,14 +1880,14 @@
                 },
                 {
                   "type": "frame",
-                  "id": "xbuD4",
+                  "id": "W6BXK",
                   "name": "Primary AI Actions",
                   "width": "fill_container",
                   "gap": 10,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "gwUZz",
+                      "id": "JES3r",
                       "name": "润色表达 Button",
                       "width": "fill_container",
                       "height": 46,
@@ -1893,7 +1898,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "QiZAq",
+                          "id": "CdYmC",
                           "name": "润色表达 Label",
                           "fill": "#FFFFFF",
                           "content": "润色表达",
@@ -1905,7 +1910,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "ElSbd",
+                      "id": "Ytp39",
                       "name": "提炼要点 Button",
                       "width": "fill_container",
                       "height": 46,
@@ -1916,7 +1921,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "TFRrk",
+                          "id": "OgebA",
                           "name": "提炼要点 Label",
                           "fill": "#FFFFFF",
                           "content": "提炼要点",
@@ -1930,7 +1935,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "CeKHf",
+                  "id": "hXgCk",
                   "name": "More AI Button",
                   "width": "fill_container",
                   "height": 42,
@@ -1941,7 +1946,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "Z6qdX9",
+                      "id": "E6Aed1",
                       "name": "More AI Label",
                       "fill": "$primary",
                       "content": "更多操作：整理成文 / 生成标题 / 口播稿",
@@ -1955,7 +1960,7 @@
             },
             {
               "type": "frame",
-              "id": "S5RwQ",
+              "id": "ZC2Vg",
               "name": "处理版本区",
               "width": "fill_container",
               "layout": "vertical",
@@ -1963,7 +1968,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "uxd0s",
+                  "id": "QXUzn",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "处理版本",
@@ -1973,7 +1978,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Q0Jd7M",
+                  "id": "Y6YLh",
                   "name": "润色版本 Card",
                   "width": "fill_container",
                   "fill": "$warm",
@@ -1986,7 +1991,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "BMvS9",
+                      "id": "q4phV",
                       "name": "Version Header",
                       "width": "fill_container",
                       "gap": 8,
@@ -1994,7 +1999,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "mT2kX",
+                          "id": "B6Qhz",
                           "name": "Version Title",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -2007,7 +2012,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "e7NXWb",
+                          "id": "NDErH",
                           "name": "Version Status",
                           "fill": "$primary",
                           "content": "已编辑",
@@ -2019,7 +2024,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "hf9GB",
+                      "id": "GOu3l",
                       "name": "Version Text",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -2032,14 +2037,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "tNzWP",
+                      "id": "cupt1",
                       "name": "Version Actions",
                       "width": "fill_container",
                       "gap": 8,
                       "children": [
                         {
                           "type": "frame",
-                          "id": "bZDXK",
+                          "id": "W6N94A",
                           "name": "复制 Button",
                           "width": "fill_container",
                           "height": 36,
@@ -2052,7 +2057,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "g9W5F",
+                              "id": "Q0PTb",
                               "name": "复制 Label",
                               "fill": "$ink",
                               "content": "复制",
@@ -2064,7 +2069,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "y0n3C2",
+                          "id": "lS7JJ",
                           "name": "删除 Button",
                           "width": "fill_container",
                           "height": 36,
@@ -2077,7 +2082,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "Cw41n",
+                              "id": "w0tWw",
                               "name": "删除 Label",
                               "fill": "$danger",
                               "content": "删除",
@@ -2093,7 +2098,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "aE1RJ",
+                  "id": "O6SGJ",
                   "name": "要点摘要 Card",
                   "width": "fill_container",
                   "fill": "$surface",
@@ -2106,7 +2111,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "A3y3Qx",
+                      "id": "fcOtz",
                       "name": "Version Header",
                       "width": "fill_container",
                       "gap": 8,
@@ -2114,7 +2119,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "h43t6c",
+                          "id": "wl01L",
                           "name": "Version Title",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -2127,7 +2132,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "cGY1F",
+                          "id": "vIVXb",
                           "name": "Version Status",
                           "fill": "$primary",
                           "content": "AI 原始结果",
@@ -2139,7 +2144,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "ZCMQw",
+                      "id": "EjJM1",
                       "name": "Version Text",
                       "fill": "$ink",
                       "textGrowth": "fixed-width",
@@ -2152,14 +2157,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "oBzqu",
+                      "id": "x61VPz",
                       "name": "Version Actions",
                       "width": "fill_container",
                       "gap": 8,
                       "children": [
                         {
                           "type": "frame",
-                          "id": "B4d4L",
+                          "id": "W3J5zb",
                           "name": "复制 Button",
                           "width": "fill_container",
                           "height": 36,
@@ -2172,7 +2177,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "G9C8WK",
+                              "id": "uN3Ux",
                               "name": "复制 Label",
                               "fill": "$ink",
                               "content": "复制",
@@ -2184,7 +2189,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "S1FMTU",
+                          "id": "ZNUIC",
                           "name": "删除 Button",
                           "width": "fill_container",
                           "height": 36,
@@ -2197,7 +2202,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "gAhtw",
+                              "id": "mBz6T",
                               "name": "删除 Label",
                               "fill": "$danger",
                               "content": "删除",
@@ -2219,7 +2224,7 @@
     },
     {
       "type": "frame",
-      "id": "MrTIC",
+      "id": "X3XQ7",
       "x": 2350,
       "y": 0,
       "name": "设置页 - 服务与偏好",
@@ -2234,10 +2239,11 @@
         14,
         0
       ],
+      "alignItems": "center",
       "children": [
         {
           "type": "frame",
-          "id": "Jr9Qr",
+          "id": "qzJKK",
           "name": "Status Bar",
           "width": "fill_container",
           "height": 62,
@@ -2251,7 +2257,7 @@
           "children": [
             {
               "type": "text",
-              "id": "E0s16Q",
+              "id": "ct15g",
               "name": "Time",
               "fill": "$ink",
               "content": "9:41",
@@ -2261,7 +2267,7 @@
             },
             {
               "type": "text",
-              "id": "RZtrf",
+              "id": "MYnZe",
               "name": "Status Right",
               "fill": "$primary",
               "content": "设置",
@@ -2273,7 +2279,7 @@
         },
         {
           "type": "frame",
-          "id": "rT7Yd",
+          "id": "USXWI",
           "name": "Content",
           "width": "fill_container",
           "layout": "vertical",
@@ -2285,7 +2291,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "bBhm6",
+              "id": "FRLwS",
               "name": "Settings Header",
               "width": "fill_container",
               "layout": "vertical",
@@ -2293,7 +2299,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "TP0Eo",
+                  "id": "M6LskW",
                   "name": "Title",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -2306,7 +2312,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "HM5E1",
+                  "id": "zlNrS",
                   "name": "Subtitle",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -2321,7 +2327,7 @@
             },
             {
               "type": "frame",
-              "id": "Be6r3",
+              "id": "Vfy6B",
               "name": "服务连接",
               "width": "fill_container",
               "fill": "$surface",
@@ -2334,7 +2340,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "Ne1Zt",
+                  "id": "kzbtw",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "服务连接",
@@ -2344,7 +2350,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "n7jJ6H",
+                  "id": "jiSba",
                   "name": "语音转写 Card",
                   "width": "fill_container",
                   "fill": "$primary-soft",
@@ -2355,7 +2361,7 @@
                   "children": [
                     {
                       "type": "icon",
-                      "id": "TGvsv",
+                      "id": "rDGjE",
                       "name": "语音转写 Status Icon",
                       "width": 22,
                       "height": 22,
@@ -2365,7 +2371,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "Z4wgE",
+                      "id": "qURGN",
                       "name": "语音转写 Info",
                       "width": "fill_container",
                       "layout": "vertical",
@@ -2373,7 +2379,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "k3m8g",
+                          "id": "uN5LX",
                           "name": "Name",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -2386,7 +2392,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "fE2IC",
+                          "id": "vsczg",
                           "name": "Detail",
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
@@ -2403,7 +2409,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "hvQlt",
+                  "id": "n192z",
                   "name": "AI 文本处理 Card",
                   "width": "fill_container",
                   "fill": "$warm",
@@ -2414,8 +2420,7 @@
                   "children": [
                     {
                       "type": "icon",
-                      "id": "OPTYw",
-                      "name": "AI 文本处理 Status Icon",
+                      "id": "Y39Tu",
                       "width": 22,
                       "height": 22,
                       "icon": "circle-alert",
@@ -2424,7 +2429,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "w0zLt1",
+                      "id": "n4oXD",
                       "name": "AI 文本处理 Info",
                       "width": "fill_container",
                       "layout": "vertical",
@@ -2432,7 +2437,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "pfm2X",
+                          "id": "ct8Y1",
                           "name": "Name",
                           "fill": "$ink",
                           "textGrowth": "fixed-width",
@@ -2445,16 +2450,12 @@
                         },
                         {
                           "type": "text",
-                          "id": "zcbTv",
-                          "name": "Detail",
+                          "id": "Z66jN",
                           "fill": "$muted",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
                           "content": "OpenAI-compatible · gpt-4o-mini",
-                          "lineHeight": 1.42,
-                          "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "500"
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -2462,14 +2463,14 @@
                 },
                 {
                   "type": "frame",
-                  "id": "YYVX3",
+                  "id": "eQmAS",
                   "name": "Test Buttons",
                   "width": "fill_container",
                   "gap": 10,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "q5Clw",
+                      "id": "Bd3kF",
                       "name": "测试转写 Button",
                       "width": "fill_container",
                       "height": 40,
@@ -2482,7 +2483,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "f9Z7DZ",
+                          "id": "pyD1B",
                           "name": "测试转写 Label",
                           "fill": "$ink",
                           "content": "测试转写",
@@ -2494,7 +2495,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "Cik5S",
+                      "id": "OEDMz",
                       "name": "测试 AI Button",
                       "width": "fill_container",
                       "height": 40,
@@ -2507,7 +2508,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "Uq9FI",
+                          "id": "UThyq",
                           "name": "测试 AI Label",
                           "fill": "$ink",
                           "content": "测试 AI",
@@ -2523,7 +2524,7 @@
             },
             {
               "type": "frame",
-              "id": "Uc1st",
+              "id": "d2anf",
               "name": "记录偏好",
               "width": "fill_container",
               "fill": "$surface",
@@ -2536,7 +2537,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "u4ZqhK",
+                  "id": "N5ByE",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "记录偏好",
@@ -2546,7 +2547,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "GuUdx",
+                  "id": "p5NKp",
                   "name": "最长录音时间 Row",
                   "width": "fill_container",
                   "padding": [
@@ -2558,7 +2559,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "bInTh",
+                      "id": "a1xJuy",
                       "name": "Label",
                       "fill": "$ink",
                       "content": "最长录音时间",
@@ -2568,7 +2569,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "XlGWt",
+                      "id": "nuyqB",
                       "name": "Value",
                       "fill": "$primary",
                       "content": "120 秒",
@@ -2580,7 +2581,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "yhJ8C",
+                  "id": "m3Fog",
                   "name": "实时转写 Row",
                   "width": "fill_container",
                   "padding": [
@@ -2592,7 +2593,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "C7oIYL",
+                      "id": "kB2BM",
                       "name": "Label",
                       "fill": "$ink",
                       "content": "实时转写",
@@ -2602,7 +2603,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "F67Pi",
+                      "id": "i586rB",
                       "name": "Value",
                       "fill": "$primary",
                       "content": "开启",
@@ -2614,7 +2615,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "hL3KP",
+                  "id": "mGsNd",
                   "name": "记录完成后 Row",
                   "width": "fill_container",
                   "padding": [
@@ -2626,7 +2627,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "g6J70",
+                      "id": "kgo9a",
                       "name": "Label",
                       "fill": "$ink",
                       "content": "记录完成后",
@@ -2636,7 +2637,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "lkzDc",
+                      "id": "AmizU",
                       "name": "Value",
                       "fill": "$primary",
                       "content": "显示完成态",
@@ -2650,7 +2651,7 @@
             },
             {
               "type": "frame",
-              "id": "yhglm",
+              "id": "z0CA9o",
               "name": "AI 处理偏好",
               "width": "fill_container",
               "fill": "$surface",
@@ -2663,7 +2664,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "Il01X",
+                  "id": "YusI6",
                   "name": "Section Title",
                   "fill": "$ink",
                   "content": "AI 处理偏好",
@@ -2673,7 +2674,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "cOcbR",
+                  "id": "lI881",
                   "name": "Prompt Label",
                   "fill": "$muted",
                   "content": "默认提示词",
@@ -2683,7 +2684,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "ki7d1",
+                  "id": "XAUua",
                   "name": "Prompt Body",
                   "fill": "$ink",
                   "textGrowth": "fixed-width",
@@ -2696,7 +2697,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "ZUhcu",
+                  "id": "YJQ7e",
                   "name": "Later Note",
                   "fill": "$muted",
                   "textGrowth": "fixed-width",
@@ -2713,7 +2714,7 @@
         },
         {
           "type": "frame",
-          "id": "T1LY9z",
+          "id": "sXQxW",
           "name": "Bottom Tab Bar",
           "width": 358,
           "height": 62,
@@ -2734,7 +2735,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "TFVRc",
+              "id": "LyX5r",
               "name": "Tab 记录",
               "width": "fill_container",
               "height": "fill_container",
@@ -2747,7 +2748,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "B1HXJd",
+                  "id": "xByAw",
                   "name": "记录 Icon",
                   "width": 20,
                   "height": 20,
@@ -2757,7 +2758,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "R9l7r",
+                  "id": "y21HL",
                   "name": "记录 Label",
                   "fill": "$muted",
                   "content": "记录",
@@ -2769,7 +2770,7 @@
             },
             {
               "type": "frame",
-              "id": "p9d6Y",
+              "id": "u2Tgav",
               "name": "Tab 卡片",
               "width": "fill_container",
               "height": "fill_container",
@@ -2782,7 +2783,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "CxfIF",
+                  "id": "mssVT",
                   "name": "卡片 Icon",
                   "width": 20,
                   "height": 20,
@@ -2792,7 +2793,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "J5Meb",
+                  "id": "ELSGs",
                   "name": "卡片 Label",
                   "fill": "$muted",
                   "content": "卡片",
@@ -2804,7 +2805,7 @@
             },
             {
               "type": "frame",
-              "id": "LthEI",
+              "id": "kVGNZ",
               "name": "Tab 设置",
               "width": "fill_container",
               "height": "fill_container",
@@ -2817,7 +2818,7 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "uM0fW",
+                  "id": "O05ER",
                   "name": "设置 Icon",
                   "width": 20,
                   "height": 20,
@@ -2827,13 +2828,1152 @@
                 },
                 {
                   "type": "text",
-                  "id": "AfgU1",
+                  "id": "dUwnU",
                   "name": "设置 Label",
                   "fill": "$primary",
                   "content": "设置",
                   "fontFamily": "$font",
                   "fontSize": 10,
                   "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cbUPP",
+      "x": 0,
+      "y": 1060,
+      "name": "视觉方向探索区",
+      "width": 1320,
+      "height": 72,
+      "fill": "#FFFFFF00",
+      "layout": "vertical",
+      "gap": 8,
+      "padding": [
+        0,
+        4
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "q2HbIe",
+          "name": "Exploration Title",
+          "fill": "$explore-ink",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "视觉方向探索：记录页空闲态",
+          "fontFamily": "$font-serif",
+          "fontSize": 30,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "zypmY",
+          "name": "Exploration Note",
+          "fill": "$explore-muted",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "V1 结构不动；这里单独探索高级感、呼吸感和视觉记忆点。",
+          "fontFamily": "$font-body2",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "iwr5V",
+      "x": 0,
+      "y": 1180,
+      "name": "视觉方向 A - 静雅纸感",
+      "clip": true,
+      "width": 390,
+      "fill": "#F7F0E4",
+      "layout": "vertical",
+      "gap": 18,
+      "padding": [
+        0,
+        0,
+        14,
+        0
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "U6s14o",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "height": 58,
+          "fill": "#FFFFFF00",
+          "padding": [
+            0,
+            22
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "ENdNl",
+              "name": "Time",
+              "fill": "$explore-ink",
+              "content": "9:41",
+              "fontFamily": "$font-body2",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "t0syVj",
+              "name": "Battery",
+              "fill": "$explore-muted",
+              "content": "VOICEFLOW",
+              "fontFamily": "$font-mono",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HUO22",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            0,
+            22
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "wYQl0",
+              "name": "Direction Label",
+              "fill": "$explore-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A / QUIET PAPER NOTEBOOK",
+              "lineHeight": 1.3,
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "nSJAw",
+              "name": "Hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "tiU6t",
+                  "name": "Title",
+                  "fill": "$explore-ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "今天有什么\n新想法？",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-serif",
+                  "fontSize": 34,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "iG9qV",
+                  "name": "Subtitle",
+                  "fill": "$explore-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "说出来，我会把它安静地收进一条灵感笔记。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-body2",
+                  "fontSize": 15
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "a6I6M",
+              "name": "Ornament",
+              "width": "fill_container",
+              "height": 36,
+              "gap": 10,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "cAVmV",
+                  "name": "Line",
+                  "fill": "$explore-line",
+                  "width": "fill_container",
+                  "height": 1
+                },
+                {
+                  "type": "ellipse",
+                  "id": "dROlO",
+                  "name": "Dot",
+                  "fill": "$explore-gold",
+                  "width": 9,
+                  "height": 9
+                },
+                {
+                  "type": "rectangle",
+                  "id": "GNc5j",
+                  "name": "Line",
+                  "fill": "$explore-line",
+                  "width": "fill_container",
+                  "height": 1
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HGfFJ",
+              "name": "Record Panel",
+              "width": "fill_container",
+              "fill": "#FFFCF6",
+              "cornerRadius": 10,
+              "stroke": "#E5D8C3",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 18,
+              "padding": 22,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "M9nYQ",
+                  "name": "Panel Label",
+                  "fill": "$explore-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "CAPTURE FIRST, POLISH LATER",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "c8FoN",
+                  "name": "Record Button",
+                  "width": "fill_container",
+                  "height": 78,
+                  "fill": "$explore-green",
+                  "cornerRadius": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VbIV1",
+                      "name": "Button Text",
+                      "fill": "#FFFFFF",
+                      "content": "开始记录",
+                      "fontFamily": "$font-body2",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "GKcYL",
+                  "name": "Hint",
+                  "fill": "$explore-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "无需模板。把还没成形的念头先留下。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-body2",
+                  "fontSize": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "J1fz3",
+          "name": "Floating Tab Bar",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFCC",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#211D1322",
+            "offset": {
+              "x": 0,
+              "y": 10
+            },
+            "blur": 28
+          },
+          "gap": 4,
+          "padding": 6,
+          "children": [
+            {
+              "type": "frame",
+              "id": "v7rCwe",
+              "name": "Tab 记录",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$explore-green",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "kKWIb",
+                  "name": "记录 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "GgASK",
+                  "name": "记录 Label",
+                  "fill": "#FFFFFF",
+                  "content": "记录",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p6Hv0",
+              "name": "Tab 卡片",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "apC3g",
+                  "name": "卡片 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "$explore-muted"
+                },
+                {
+                  "type": "text",
+                  "id": "pnOPO",
+                  "name": "卡片 Label",
+                  "fill": "$explore-muted",
+                  "content": "卡片",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YwrRS",
+              "name": "Tab 设置",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "llVCo",
+                  "name": "设置 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "$explore-muted"
+                },
+                {
+                  "type": "text",
+                  "id": "iAbyA",
+                  "name": "设置 Label",
+                  "fill": "$explore-muted",
+                  "content": "设置",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HdRZN",
+      "x": 470,
+      "y": 1180,
+      "name": "视觉方向 B - 现代创作工作台",
+      "clip": true,
+      "width": 390,
+      "fill": "#F4F6F1",
+      "layout": "vertical",
+      "gap": 18,
+      "padding": [
+        0,
+        0,
+        14,
+        0
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "PIpdY",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "height": 58,
+          "fill": "#FFFFFF00",
+          "padding": [
+            0,
+            22
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "IaNX2",
+              "name": "Time",
+              "fill": "$explore-ink",
+              "content": "9:41",
+              "fontFamily": "$font-body2",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "k5viy",
+              "name": "Battery",
+              "fill": "$explore-muted",
+              "content": "VOICEFLOW",
+              "fontFamily": "$font-mono",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jytPW",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            0,
+            22
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "uO9mI",
+              "name": "Direction Label",
+              "fill": "$explore-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "B / MODERN CREATOR DESK",
+              "lineHeight": 1.3,
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "QIYTV",
+              "name": "Hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "w4FcY3",
+                  "name": "Title",
+                  "fill": "#17221D",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "把脑子里的东西\n先说出来。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-body2",
+                  "fontSize": 31,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "aipgj",
+                  "name": "Subtitle",
+                  "fill": "#65736B",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "记录、保存、再用 AI 做一点轻加工。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-body2",
+                  "fontSize": 15
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZFUBN",
+              "name": "Record Surface",
+              "width": "fill_container",
+              "fill": "#FFFFFF",
+              "cornerRadius": 24,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#20352A1A",
+                "offset": {
+                  "x": 0,
+                  "y": 18
+                },
+                "blur": 38
+              },
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bChYE",
+                  "name": "Mic Halo",
+                  "width": "fill_container",
+                  "height": 148,
+                  "fill": "#ECF4EF",
+                  "cornerRadius": 22,
+                  "layout": "vertical",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "xEAac",
+                      "name": "Mic Core",
+                      "fill": "$explore-green",
+                      "width": 92,
+                      "height": 92
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "L3BcuP",
+                  "name": "Primary Text",
+                  "fill": "#17221D",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "开始记录",
+                  "textAlign": "center",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 20,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "SBqRP",
+                  "name": "Soft Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "WAcOu",
+                      "name": "Chip",
+                      "width": "fill_container",
+                      "height": 32,
+                      "fill": "#F3F5EF",
+                      "cornerRadius": 16,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "YUkaO",
+                          "name": "Chip Text",
+                          "fill": "#65736B",
+                          "content": "自动保存",
+                          "fontFamily": "$font-body2",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mzCwR",
+                      "name": "Chip",
+                      "width": "fill_container",
+                      "height": 32,
+                      "fill": "#F3F5EF",
+                      "cornerRadius": 16,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tiTJ4",
+                          "name": "Chip Text",
+                          "fill": "#65736B",
+                          "content": "可编辑",
+                          "fontFamily": "$font-body2",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "G7PgfJ",
+                      "name": "Chip",
+                      "width": "fill_container",
+                      "height": 32,
+                      "fill": "#F3F5EF",
+                      "cornerRadius": 16,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xY251",
+                          "name": "Chip Text",
+                          "fill": "#65736B",
+                          "content": "稍后润色",
+                          "fontFamily": "$font-body2",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TgAsF",
+          "name": "Floating Tab Bar",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFCC",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#211D1322",
+            "offset": {
+              "x": 0,
+              "y": 10
+            },
+            "blur": 28
+          },
+          "gap": 4,
+          "padding": 6,
+          "children": [
+            {
+              "type": "frame",
+              "id": "rK1UG",
+              "name": "Tab 记录",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$explore-green",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "qcIiv",
+                  "name": "记录 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "LC9FV",
+                  "name": "记录 Label",
+                  "fill": "#FFFFFF",
+                  "content": "记录",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lACJz",
+              "name": "Tab 卡片",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "ChmHo",
+                  "name": "卡片 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "$explore-muted"
+                },
+                {
+                  "type": "text",
+                  "id": "JMktm",
+                  "name": "卡片 Label",
+                  "fill": "$explore-muted",
+                  "content": "卡片",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nCPAH",
+              "name": "Tab 设置",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "H6JgZI",
+                  "name": "设置 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "$explore-muted"
+                },
+                {
+                  "type": "text",
+                  "id": "i1H6jp",
+                  "name": "设置 Label",
+                  "fill": "$explore-muted",
+                  "content": "设置",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "F4Qjy",
+      "x": 940,
+      "y": 1180,
+      "name": "视觉方向 C - 轻 Editorial",
+      "clip": true,
+      "width": 390,
+      "fill": "$explore-dark",
+      "layout": "vertical",
+      "gap": 18,
+      "padding": [
+        0,
+        0,
+        14,
+        0
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "l9DK0",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "height": 58,
+          "fill": "#FFFFFF00",
+          "padding": [
+            0,
+            22
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "xqFfN",
+              "name": "Time",
+              "fill": "#F5EFE4",
+              "content": "9:41",
+              "fontFamily": "$font-body2",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "wYqAk",
+              "name": "Battery",
+              "fill": "#9EBFB7",
+              "content": "VOICEFLOW",
+              "fontFamily": "$font-mono",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "i3DJIr",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            0,
+            22
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "h5LAr",
+              "name": "Direction Label",
+              "fill": "$explore-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "C / LOW-LIGHT EDITORIAL",
+              "lineHeight": 1.3,
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "gZGYk",
+              "name": "Hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "MSRE6",
+                  "name": "Title",
+                  "fill": "#F5EFE4",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "灵感不是任务，\n先别急着整理。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-serif",
+                  "fontSize": 32,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "XMvph",
+                  "name": "Subtitle",
+                  "fill": "#A9B9B1",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "说出来。保留原文，再让 AI 轻轻推一把。",
+                  "lineHeight": 1.32,
+                  "fontFamily": "$font-body2",
+                  "fontSize": 15
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fe6Ig",
+              "name": "Dark Record Panel",
+              "width": "fill_container",
+              "fill": "#1A241F",
+              "cornerRadius": 18,
+              "stroke": "#304139",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 18,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Cf6vx",
+                  "name": "Panel Label",
+                  "fill": "#9EBFB7",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "VOICE NOTE  /  READY",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "BU53r",
+                  "name": "Action Row",
+                  "width": "fill_container",
+                  "height": 88,
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "Kf73d",
+                      "name": "Record Dot",
+                      "fill": "#D6A85D",
+                      "width": 76,
+                      "height": 76
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RAy4B",
+                      "name": "Copy",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Z0tuO",
+                          "name": "Action Title",
+                          "fill": "#F5EFE4",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "开始记录",
+                          "fontFamily": "$font-body2",
+                          "fontSize": 21,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MDMxo",
+                          "name": "Action Hint",
+                          "fill": "#A9B9B1",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "无需选择输出格式",
+                          "fontFamily": "$font-body2",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Tb05J",
+              "name": "Quote Strip",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": [
+                14,
+                0
+              ],
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "AvVYQ",
+                  "name": "Accent Rule",
+                  "fill": "#D6A85D",
+                  "width": 2,
+                  "height": 76
+                },
+                {
+                  "type": "frame",
+                  "id": "e0ILuy",
+                  "name": "Quote Copy",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ol2nb",
+                      "name": "Quote",
+                      "fill": "#F5EFE4",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "“先保存原始想法，之后再慢慢打磨。”",
+                      "lineHeight": 1.32,
+                      "fontFamily": "$font-serif",
+                      "fontSize": 19
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "R3ntp",
+          "name": "Floating Tab Bar",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFF1A",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000055",
+            "offset": {
+              "x": 0,
+              "y": 10
+            },
+            "blur": 28
+          },
+          "gap": 4,
+          "padding": 6,
+          "children": [
+            {
+              "type": "frame",
+              "id": "s3nnGe",
+              "name": "Tab 记录",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#D6A85D",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "M3fCNy",
+                  "name": "记录 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#11231F"
+                },
+                {
+                  "type": "text",
+                  "id": "q6N5l",
+                  "name": "记录 Label",
+                  "fill": "#11231F",
+                  "content": "记录",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "k1SS5",
+              "name": "Tab 卡片",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "ZU0LY",
+                  "name": "卡片 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "#C8D6D0"
+                },
+                {
+                  "type": "text",
+                  "id": "Wma7O",
+                  "name": "卡片 Label",
+                  "fill": "#C8D6D0",
+                  "content": "卡片",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iLGxl",
+              "name": "Tab 设置",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#FFFFFF00",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "sTo8F",
+                  "name": "设置 Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "#C8D6D0"
+                },
+                {
+                  "type": "text",
+                  "id": "Z6yhKT",
+                  "name": "设置 Label",
+                  "fill": "#C8D6D0",
+                  "content": "设置",
+                  "fontFamily": "$font-body2",
+                  "fontSize": 10,
+                  "fontWeight": "500"
                 }
               ]
             }
@@ -2882,6 +4022,50 @@
     "font": {
       "type": "string",
       "value": "Inter"
+    },
+    "explore-bg": {
+      "type": "color",
+      "value": "#F5F1E8"
+    },
+    "explore-ink": {
+      "type": "color",
+      "value": "#20211D"
+    },
+    "explore-muted": {
+      "type": "color",
+      "value": "#787363"
+    },
+    "explore-green": {
+      "type": "color",
+      "value": "#0E5F55"
+    },
+    "explore-gold": {
+      "type": "color",
+      "value": "#B98B3C"
+    },
+    "explore-line": {
+      "type": "color",
+      "value": "#E6DDCF"
+    },
+    "explore-soft": {
+      "type": "color",
+      "value": "#FFFCF5"
+    },
+    "explore-dark": {
+      "type": "color",
+      "value": "#111713"
+    },
+    "font-serif": {
+      "type": "string",
+      "value": "Newsreader"
+    },
+    "font-body2": {
+      "type": "string",
+      "value": "Geist"
+    },
+    "font-mono": {
+      "type": "string",
+      "value": "IBM Plex Mono"
     }
   },
   "fileToken": "2b58b821-bd05-4655-8c83-7a9888e728ef"
