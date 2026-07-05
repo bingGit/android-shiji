@@ -9,7 +9,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,6 +19,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,8 +36,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,8 +44,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -236,13 +232,29 @@ private class CaptureStats {
 }
 
 private val AppColorScheme = lightColorScheme(
-    primary = Color(0xFF1B6B63),
+    primary = Color(0xFF376854),
     onPrimary = Color.White,
-    secondary = Color(0xFF765A2A),
-    surface = Color(0xFFFFFCF4),
-    background = Color(0xFFF7F7F2),
-    error = Color(0xFFB3261E)
+    secondary = Color(0xFF7B6F63),
+    surface = Color(0xFFF8F5EF),
+    background = Color(0xFFF8F5EF),
+    error = Color(0xFFB85B48)
 )
+
+private object V3Color {
+    val Background = Color(0xFFF8F5EF)
+    val Surface = Color(0x00FFFFFF)
+    val SoftSurface = Color(0x66FFFFFF)
+    val TextPrimary = Color(0xFF23302A)
+    val TextSecondary = Color(0xFF68756E)
+    val TextMuted = Color(0xFF8A948E)
+    val Green = Color(0xFF376854)
+    val GreenSoft = Color(0xFFE9F2EA)
+    val Warm = Color(0xFFD8664F)
+    val WarmSoft = Color(0xFFF8EDE8)
+    val Secondary = Color(0xFF7B6F63)
+    val Sand = Color(0xFFF3F1EA)
+    val Line = Color(0xFFE8E2D7)
+}
 
 @Composable
 private fun AndroidVoiceFlowApp(initialQuickRecordMode: Boolean) {
@@ -313,7 +325,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     val actionableRecordTranscript = finalTranscript.trim()
     val canUsePostProcessDock = when (selectedTab) {
         VoiceFlowTab.Record -> actionableRecordTranscript.isNotBlank()
-        VoiceFlowTab.Cards -> selectedIdeaCard != null
+        VoiceFlowTab.Cards -> false
         VoiceFlowTab.Settings -> false
     }
 
@@ -647,6 +659,28 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         }
     }
 
+    fun updateIdeaCardOriginal(cardId: Long, nextContent: String) {
+        val normalized = nextContent.trim()
+        if (normalized.isBlank()) return
+        val now = System.currentTimeMillis()
+        ideaCards = ideaCards.map { card ->
+            if (card.id == cardId) {
+                card.copy(
+                    title = generateIdeaTitle(normalized),
+                    originalTranscript = normalized,
+                    updatedAt = now
+                )
+            } else {
+                card
+            }
+        }
+        if (currentIdeaCardId == cardId) {
+            finalTranscript = normalized
+        }
+        copiedNotice = "原文已保存"
+    }
+
+
     fun deleteProcessingResult(resultId: Long) {
         ideaCards = ideaCards.map { card ->
             val nextResults = card.processingResults.filterNot { it.id == resultId }
@@ -732,19 +766,15 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(V3Color.Background)
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+                .padding(horizontal = 22.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Header(
-                status = status,
-                connectionStatus = connectionStatus,
-                quickRecordMode = quickRecordMode
-            )
             when (selectedTab) {
                 VoiceFlowTab.Record -> {
                     RecorderPanel(
@@ -790,6 +820,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                                 val copied = copyText("VoiceFlow ${result.title}", result.content)
                                 copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
                             },
+                            onOriginalChange = { updateIdeaCardOriginal(card.id, it) },
+                            onPostProcess = ::runPostProcess,
                             onContentChange = ::updateProcessingResult,
                             onDeleteResult = { pendingDeleteResult = it },
                             onDeleteCard = { pendingDeleteCard = card }
@@ -1002,34 +1034,129 @@ private fun VoiceFlowBottomNavigation(
     selectedTab: VoiceFlowTab,
     onTabSelected: (VoiceFlowTab) -> Unit
 ) {
-    NavigationBar(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding(),
-        containerColor = Color.White,
-        contentColor = MaterialTheme.colorScheme.primary
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        color = Color.Transparent
     ) {
-        VoiceFlowTab.entries.forEach { tab ->
-            NavigationBarItem(
-                selected = selectedTab == tab,
-                onClick = { onTabSelected(tab) },
-                icon = {
-                    Text(
-                        text = tab.navMark,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                label = {
-                    Text(
-                        text = tab.label,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(999.dp),
+            color = Color.White.copy(alpha = 0.78f),
+            shadowElevation = 10.dp
+        ) {
+            Row(
+                modifier = Modifier.padding(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                VoiceFlowTab.entries.forEach { tab ->
+                    val selected = selectedTab == tab
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(999.dp))
+                            .background(if (selected) V3Color.GreenSoft else Color.Transparent)
+                            .clickable { onTabSelected(tab) }
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = tab.navMark,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (selected) V3Color.Green else V3Color.TextMuted,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = tab.label,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (selected) V3Color.Green else V3Color.TextMuted,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
-            )
+            }
         }
     }
+}
+
+@Composable
+private fun V3PageHeader(
+    eyebrow: String,
+    title: String,
+    description: String
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            text = eyebrow,
+            style = MaterialTheme.typography.labelSmall,
+            color = V3Color.TextMuted,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            color = V3Color.TextPrimary,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodySmall,
+            color = V3Color.TextSecondary
+        )
+    }
+}
+
+@Composable
+private fun V3ActionChip(
+    label: String,
+    modifier: Modifier = Modifier,
+    selected: Boolean = false,
+    danger: Boolean = false,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    val bg = when {
+        danger -> V3Color.WarmSoft
+        selected -> V3Color.GreenSoft
+        else -> V3Color.Sand
+    }
+    val fg = when {
+        danger -> V3Color.Warm
+        selected -> V3Color.Green
+        else -> V3Color.Secondary
+    }
+    Surface(
+        modifier = modifier
+            .clip(RoundedCornerShape(999.dp))
+            .clickable(enabled = enabled, onClick = onClick),
+        shape = RoundedCornerShape(999.dp),
+        color = if (enabled) bg else bg.copy(alpha = 0.5f)
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 11.dp, vertical = 8.dp),
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (enabled) fg else fg.copy(alpha = 0.55f),
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun V3Divider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(V3Color.Line)
+    )
 }
 
 @Composable
@@ -1078,6 +1205,7 @@ private fun RecorderPanel(
         status != VoiceFlowStatus.Finalizing &&
         status != VoiceFlowStatus.PostProcessing
     val isActivelyRecording = status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting
+    val hasTranscript = transcript.isNotBlank()
     val pulseTransition = rememberInfiniteTransition(label = "recordingPulse")
     val pulseAlpha by pulseTransition.animateFloat(
         initialValue = 0.35f,
@@ -1088,120 +1216,199 @@ private fun RecorderPanel(
         ),
         label = "recordingPulseAlpha"
     )
-    val panelShape = RoundedCornerShape(8.dp)
-    val panelColor = if (isActivelyRecording) Color(0xFFEAF4EF) else Color.White
-    val panelBorderColor = if (isActivelyRecording) Color(0xFF1B6B63) else Color.Transparent
 
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, panelBorderColor, panelShape),
-        shape = panelShape,
-        color = panelColor,
-        tonalElevation = 1.dp
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(22.dp)
     ) {
+        V3PageHeader(
+            eyebrow = "VOICE IDEA",
+            title = when {
+                isActivelyRecording -> "正在记录"
+                status == VoiceFlowStatus.Completed -> "刚刚这条灵感"
+                else -> "把灵感说出来"
+            },
+            description = if (isActivelyRecording) {
+                "实时转写会自然长在页面里，松开后自动保存为一条灵感。"
+            } else {
+                "轻按开始记录，结束后可以润色、提炼或继续整理。"
+            }
+        )
+
         Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 250.dp)
+                .padding(vertical = 6.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = status.userText(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    V3StatusPill(
+                        status = status,
+                        connectionStatus = connectionStatus,
+                        pulseAlpha = pulseAlpha
                     )
                     Text(
-                        text = if (status == VoiceFlowStatus.Failed) {
-                            "查看下方错误提示"
-                        } else {
-                            connectionStatus
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF687069),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        text = if (hasTranscript) "${transcript.length} 字" else "等待输入",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = V3Color.TextMuted,
+                        maxLines = 1
                     )
                 }
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+
+                TranscriptCanvasText(
+                    transcript = transcript,
+                    isActivelyRecording = isActivelyRecording
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Waveform(amplitude = amplitude, active = isActivelyRecording)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isActivelyRecording) {
-                        Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = Color.White
+                    Surface(
+                        modifier = Modifier
+                            .size(116.dp)
+                            .clip(CircleShape)
+                            .clickable(enabled = primaryActionEnabled, onClick = onPrimaryAction),
+                        shape = CircleShape,
+                        color = if (isActivelyRecording) V3Color.Green else Color.White.copy(alpha = 0.72f),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = if (isActivelyRecording) V3Color.Green.copy(alpha = pulseAlpha) else V3Color.Line
+                        ),
+                        shadowElevation = if (isActivelyRecording) 0.dp else 8.dp
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFF1B6B63).copy(alpha = pulseAlpha))
-                                )
-                                Text(
-                                    text = "实时采集中",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFF1B6B63),
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
+                            Text(
+                                text = if (isActivelyRecording) "停止" else "按下",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = if (isActivelyRecording) Color.White else V3Color.Green,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if (isActivelyRecording) "保存灵感" else "记录",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (isActivelyRecording) Color.White.copy(alpha = 0.78f) else V3Color.TextMuted
+                            )
                         }
                     }
-                    Button(
-                        enabled = primaryActionEnabled,
-                        onClick = onPrimaryAction
-                    ) {
-                        Text(
-                            text = if (isActivelyRecording) {
-                                "停止并保存"
-                            } else {
-                                "记录灵感"
-                            }
-                        )
-                    }
                 }
             }
+        }
 
-            Waveform(amplitude = amplitude, active = isActivelyRecording)
+        if (status == VoiceFlowStatus.Completed && hasTranscript) {
+            V3Divider()
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "已保存为卡片",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = V3Color.Green,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = transcript,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = V3Color.TextSecondary,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
 
-            Surface(
+        if (status == VoiceFlowStatus.Failed && errorMessage.isNotBlank()) {
+            ErrorPanel(message = errorMessage, hint = recoveryHint)
+        }
+
+        if (copiedNotice.isNotBlank()) {
+            Text(
+                text = copiedNotice,
+                style = MaterialTheme.typography.bodySmall,
+                color = V3Color.Green
+            )
+        }
+    }
+}
+
+@Composable
+private fun V3StatusPill(
+    status: VoiceFlowStatus,
+    connectionStatus: String,
+    pulseAlpha: Float
+) {
+    Surface(
+        shape = RoundedCornerShape(999.dp),
+        color = when (status) {
+            VoiceFlowStatus.Recording -> V3Color.GreenSoft
+            VoiceFlowStatus.Failed -> V3Color.WarmSoft
+            VoiceFlowStatus.Completed -> Color.White.copy(alpha = 0.54f)
+            else -> V3Color.Sand
+        }
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+            horizontalArrangement = Arrangement.spacedBy(7.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 180.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = if (isActivelyRecording) Color.White else Color(0xFFF8FAF7)
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(statusColor(status).copy(alpha = if (status == VoiceFlowStatus.Recording) pulseAlpha else 1f))
+            )
+            Text(
+                text = if (status == VoiceFlowStatus.Failed) status.userText() else connectionStatus,
+                style = MaterialTheme.typography.labelSmall,
+                color = if (status == VoiceFlowStatus.Failed) V3Color.Warm else V3Color.TextSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun TranscriptCanvasText(
+    transcript: String,
+    isActivelyRecording: Boolean
+) {
+    val text = transcript.ifBlank {
+        if (isActivelyRecording) "正在听你说话..." else "这里会实时浮现你的想法。"
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            text = text,
+            style = if (transcript.isBlank()) MaterialTheme.typography.titleMedium else MaterialTheme.typography.headlineSmall,
+            color = if (transcript.isBlank()) V3Color.TextMuted else V3Color.TextPrimary,
+            fontWeight = if (transcript.isBlank()) FontWeight.Medium else FontWeight.SemiBold,
+            maxLines = if (isActivelyRecording) 8 else 10,
+            overflow = TextOverflow.Ellipsis
+        )
+        if (isActivelyRecording && transcript.isNotBlank()) {
+            Surface(
+                shape = RoundedCornerShape(999.dp),
+                color = Color.White.copy(alpha = 0.52f)
             ) {
                 Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = transcript.ifBlank {
-                        if (isActivelyRecording) "正在听你说话..." else "点击“记录灵感”，先把想法说出来。"
-                    },
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (transcript.isBlank()) Color(0xFF7B827B) else Color(0xFF1F2924)
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                    text = "当前句正在确认",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = V3Color.Green,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
-
-            if (status == VoiceFlowStatus.Failed && errorMessage.isNotBlank()) {
-                ErrorPanel(message = errorMessage, hint = recoveryHint)
-            }
-
-            if (copiedNotice.isNotBlank()) {
-                Text(
-                    text = copiedNotice,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
         }
     }
 }
@@ -1290,70 +1497,94 @@ private fun IdeaCardDetailPanel(
     onBack: () -> Unit,
     onCopyOriginal: () -> Unit,
     onCopyResult: (ProcessingResult) -> Unit,
+    onOriginalChange: (String) -> Unit,
+    onPostProcess: (PostProcessAction) -> Unit,
     onContentChange: (Long, String) -> Unit,
     onDeleteResult: (ProcessingResult) -> Unit,
     onDeleteCard: () -> Unit
 ) {
-    Surface(
+    var draftText by remember(card.id, card.originalTranscript) { mutableStateOf(card.originalTranscript) }
+    val originalChanged = draftText.trim() != card.originalTranscript.trim()
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        tonalElevation = 1.dp
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onBack) {
-                Text("返回卡片列表")
-            }
+            V3ActionChip(label = "返回", onClick = onBack)
+            V3ActionChip(label = "删除", danger = true, onClick = onDeleteCard)
+        }
+
+        V3PageHeader(
+            eyebrow = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)}",
+            title = card.title,
+            description = "这是一条灵感的工作空间：先保护原文，再生成和管理不同处理版本。"
+        )
+
+        V3Divider()
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = card.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)} · ${card.statusLabel()}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF687069)
-                    )
-                }
-                TextButton(onClick = onDeleteCard) {
-                    Text("删除")
-                }
-            }
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                color = Color(0xFFF8FAF7)
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.padding(14.dp),
-                    text = card.originalTranscript,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF1F2924)
+                    text = "原文",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = V3Color.TextPrimary,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = card.statusLabel(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = V3Color.TextMuted,
+                    maxLines = 1
                 )
             }
-            OutlinedButton(
+
+            OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onCopyOriginal
+                value = draftText,
+                onValueChange = { draftText = it },
+                minLines = 6,
+                label = { Text("可编辑原文") }
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("复制原文")
+                V3ActionChip(label = "保存原文", selected = true, enabled = originalChanged, onClick = { onOriginalChange(draftText) })
+                V3ActionChip(label = "复制", onClick = onCopyOriginal)
             }
-            ProcessingResultsPanel(
-                results = card.processingResults,
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(
+                text = "处理",
+                style = MaterialTheme.typography.titleSmall,
+                color = V3Color.TextPrimary,
+                fontWeight = FontWeight.SemiBold
+            )
+            PostProcessActionGrid(
+                actions = listOf(PostProcessAction.Polish, PostProcessAction.Summarize),
                 runningAction = runningAction,
-                onCopyResult = onCopyResult,
-                onContentChange = onContentChange,
-                onDeleteResult = onDeleteResult
+                onPostProcess = onPostProcess
             )
         }
+
+        ProcessingResultsPanel(
+            results = card.processingResults,
+            runningAction = runningAction,
+            onCopyResult = onCopyResult,
+            onContentChange = onContentChange,
+            onDeleteResult = onDeleteResult
+        )
     }
 }
 
@@ -1365,14 +1596,21 @@ private fun ProcessingResultsPanel(
     onContentChange: (Long, String) -> Unit,
     onDeleteResult: (ProcessingResult) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (runningAction != null) {
             ProcessingPlaceholder(action = runningAction)
         }
-        if (results.isNotEmpty()) {
+        if (results.isEmpty() && runningAction == null) {
+            Text(
+                text = "还没有处理版本。选择润色或提炼后，会在这里保留独立草稿。",
+                style = MaterialTheme.typography.bodySmall,
+                color = V3Color.TextMuted
+            )
+        } else if (results.isNotEmpty()) {
             Text(
                 text = "处理版本",
                 style = MaterialTheme.typography.titleSmall,
+                color = V3Color.TextPrimary,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -1391,16 +1629,27 @@ private fun ProcessingResultsPanel(
 private fun ProcessingPlaceholder(action: PostProcessAction) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color(0xFFDDEFE8)
+        shape = RoundedCornerShape(16.dp),
+        color = V3Color.GreenSoft
     ) {
-        Text(
-            modifier = Modifier.padding(14.dp),
-            text = "${action.label}生成中...",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(V3Color.Green)
+            )
+            Text(
+                text = "${action.label}生成中...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = V3Color.Green,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -1418,12 +1667,11 @@ private fun PostProcessDock(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White,
-        tonalElevation = 3.dp
+        color = V3Color.Background
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (expanded) {
                 PostProcessActionGrid(
@@ -1432,7 +1680,7 @@ private fun PostProcessDock(
                     onPostProcess = onPostProcess
                 )
             }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PostProcessActionButton(
                     modifier = Modifier.weight(1f),
                     action = PostProcessAction.Polish,
@@ -1446,21 +1694,19 @@ private fun PostProcessDock(
                     onPostProcess = onPostProcess
                 )
             }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                V3ActionChip(
                     modifier = Modifier.weight(1f),
+                    label = "复制原文",
                     enabled = actionsEnabled,
                     onClick = onCopyOriginal
-                ) {
-                    Text("复制原文")
-                }
-                OutlinedButton(
+                )
+                V3ActionChip(
                     modifier = Modifier.weight(1f),
+                    label = if (expanded) "收起更多" else "更多操作",
                     enabled = actionsEnabled,
                     onClick = onToggleExpanded
-                ) {
-                    Text(if (expanded) "收起更多" else "更多操作")
-                }
+                )
             }
         }
     }
@@ -1502,16 +1748,13 @@ private fun PostProcessActionButton(
     onPostProcess: (PostProcessAction) -> Unit
 ) {
     val isRunning = runningAction == action
-    OutlinedButton(
+    V3ActionChip(
         modifier = modifier,
+        label = if (isRunning) "生成中..." else action.label,
+        selected = action == PostProcessAction.Polish || action == PostProcessAction.Summarize,
         enabled = runningAction == null,
         onClick = { onPostProcess(action) }
-    ) {
-        Text(
-            text = if (isRunning) "生成中..." else action.label,
-            maxLines = 1
-        )
-    }
+    )
 }
 
 @Composable
@@ -1523,12 +1766,13 @@ private fun ProcessingResultRow(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color(0xFFFFFCF4)
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.54f),
+        border = BorderStroke(1.dp, V3Color.Line)
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1536,20 +1780,18 @@ private fun ProcessingResultRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(result.title, fontWeight = FontWeight.SemiBold)
+                    Text(result.title, color = V3Color.TextPrimary, fontWeight = FontWeight.SemiBold)
                     Text(
                         text = "${formatDisplayTime(result.createdAt)} · ${result.model} · ${if (result.isEdited) "已编辑" else "AI 原始结果"}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF687069)
+                        color = V3Color.TextMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    TextButton(onClick = onCopy) {
-                        Text("复制")
-                    }
-                    TextButton(onClick = onDelete) {
-                        Text("删除")
-                    }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    V3ActionChip(label = "复制", onClick = onCopy)
+                    V3ActionChip(label = "删除", danger = true, onClick = onDelete)
                 }
             }
             OutlinedTextField(
@@ -1600,148 +1842,222 @@ private fun SettingsPanel(
     onTestRealtimeConnection: () -> Unit,
     onTestPostProcessConnection: () -> Unit
 ) {
-    Surface(
+    val realtimeReady = apiKey.isNotBlank() && (
+        realtimeProtocol == RealtimeProviderProtocol.AliyunParaformer && aliyunWorkspaceId.isNotBlank() ||
+            realtimeProtocol == RealtimeProviderProtocol.OpenAiRealtime && baseUrl.isNotBlank()
+        )
+    val postProcessReady = postProcessApiKey.isNotBlank() && postProcessBaseUrl.isNotBlank() && postProcessModel.isNotBlank()
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        tonalElevation = 1.dp
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+        V3PageHeader(
+            eyebrow = "SETTINGS",
+            title = "配置",
+            description = "只保留必要技术参数，让实时转写和后续文本处理都可检查、可切换。"
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(
-                text = "Provider 设置",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+            V3StatusSummary(
+                modifier = Modifier.weight(1f),
+                title = "实时转写",
+                ready = realtimeReady,
+                detail = if (realtimeReady) "已认证" else "待配置"
             )
-
-            ProtocolSelector(
-                selectedProtocol = realtimeProtocol,
-                onProtocolSelected = onRealtimeProtocolChange
+            V3StatusSummary(
+                modifier = Modifier.weight(1f),
+                title = "文本处理",
+                ready = postProcessReady,
+                detail = if (postProcessReady) "已认证" else "待配置"
             )
+        }
 
-            ProviderConfigSection(
-                title = "实时语音转写",
-                description = when (realtimeProtocol) {
-                    RealtimeProviderProtocol.AliyunParaformer -> "接入阿里云百炼 Paraformer 实时语音识别。优先填写 Workspace ID，完整 WebSocket URL 可留空。"
-                    RealtimeProviderProtocol.OpenAiRealtime -> "接入 OpenAI-compatible Realtime WebSocket，可配置官方地址或兼容中转站。"
-                },
-                providerName = providerName,
-                onProviderNameChange = onProviderNameChange,
-                baseUrl = baseUrl,
-                onBaseUrlChange = onBaseUrlChange,
-                baseUrlLabel = when (realtimeProtocol) {
-                    RealtimeProviderProtocol.AliyunParaformer -> "完整 WebSocket URL（可选）"
-                    RealtimeProviderProtocol.OpenAiRealtime -> "Base URL"
-                },
-                apiKey = apiKey,
-                onApiKeyChange = onApiKeyChange,
-                model = realtimeModel,
-                onModelChange = onRealtimeModelChange,
-                modelLabel = "实时转写模型",
-                onTestConnection = onTestRealtimeConnection
-            )
+        ProtocolSelector(
+            selectedProtocol = realtimeProtocol,
+            onProtocolSelected = onRealtimeProtocolChange
+        )
 
-            if (realtimeProtocol == RealtimeProviderProtocol.AliyunParaformer) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFF8FAF7)
+        ProviderConfigSection(
+            title = "实时语音转写",
+            description = when (realtimeProtocol) {
+                RealtimeProviderProtocol.AliyunParaformer -> "接入阿里云百炼 Paraformer 实时语音识别。优先填写 Workspace ID，完整 WebSocket URL 可留空。"
+                RealtimeProviderProtocol.OpenAiRealtime -> "接入 OpenAI-compatible Realtime WebSocket，可配置官方地址或兼容中转站。"
+            },
+            providerName = providerName,
+            onProviderNameChange = onProviderNameChange,
+            baseUrl = baseUrl,
+            onBaseUrlChange = onBaseUrlChange,
+            baseUrlLabel = when (realtimeProtocol) {
+                RealtimeProviderProtocol.AliyunParaformer -> "完整 WebSocket URL（可选）"
+                RealtimeProviderProtocol.OpenAiRealtime -> "Base URL"
+            },
+            apiKey = apiKey,
+            onApiKeyChange = onApiKeyChange,
+            model = realtimeModel,
+            onModelChange = onRealtimeModelChange,
+            modelLabel = "实时转写模型",
+            onTestConnection = onTestRealtimeConnection
+        )
+
+        if (realtimeProtocol == RealtimeProviderProtocol.AliyunParaformer) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.44f),
+                border = BorderStroke(1.dp, V3Color.Line)
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(14.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = "阿里云百炼参数",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "官方端点会由 Workspace ID 自动生成：wss://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api-ws/v1/inference",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF687069)
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = aliyunWorkspaceId,
-                            onValueChange = onAliyunWorkspaceIdChange,
-                            singleLine = true,
-                            label = { Text("Workspace ID") }
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = aliyunRegion,
-                            onValueChange = onAliyunRegionChange,
-                            singleLine = true,
-                            label = { Text("Region") }
-                        )
-                    }
+                    Text(
+                        text = "阿里云百炼参数",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = V3Color.TextPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "官方端点会由 Workspace ID 自动生成：wss://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api-ws/v1/inference",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = V3Color.TextSecondary
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = aliyunWorkspaceId,
+                        onValueChange = onAliyunWorkspaceIdChange,
+                        singleLine = true,
+                        label = { Text("Workspace ID") }
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = aliyunRegion,
+                        onValueChange = onAliyunRegionChange,
+                        singleLine = true,
+                        label = { Text("Region") }
+                    )
                 }
             }
+        }
 
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White.copy(alpha = 0.36f),
+            border = BorderStroke(1.dp, V3Color.Line)
+        ) {
+            Column(
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("启用流式转写", color = V3Color.TextPrimary, fontWeight = FontWeight.Medium)
+                        Text(
+                            text = "关闭后可作为录完上传 provider 的扩展入口",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = V3Color.TextSecondary
+                        )
+                    }
+                    Switch(
+                        checked = streamingEnabled,
+                        onCheckedChange = onStreamingEnabledChange
+                    )
+                }
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = maxRecordingSeconds,
+                    onValueChange = onMaxRecordingSecondsChange,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = { Text("最大录音时长（秒）") }
+                )
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = prompt,
+                    onValueChange = onPromptChange,
+                    minLines = 2,
+                    label = { Text("实时转写 prompt") }
+                )
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = hotwords,
+                    onValueChange = onHotwordsChange,
+                    singleLine = true,
+                    label = { Text("热词 / 术语表") }
+                )
+            }
+        }
+
+        ProviderConfigSection(
+            title = "后续文本处理",
+            description = "用于润色、提炼要点、整理改写，可以走另一个文本模型中转站。",
+            providerName = postProcessProviderName,
+            onProviderNameChange = onPostProcessProviderNameChange,
+            baseUrl = postProcessBaseUrl,
+            onBaseUrlChange = onPostProcessBaseUrlChange,
+            apiKey = postProcessApiKey,
+            onApiKeyChange = onPostProcessApiKeyChange,
+            model = postProcessModel,
+            onModelChange = onPostProcessModelChange,
+            modelLabel = "后处理文本模型",
+            onTestConnection = onTestPostProcessConnection
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = postProcessPrompt,
+            onValueChange = onPostProcessPromptChange,
+            minLines = 2,
+            label = { Text("后处理 prompt") }
+        )
+    }
+}
+
+@Composable
+private fun V3StatusSummary(
+    modifier: Modifier,
+    title: String,
+    ready: Boolean,
+    detail: String
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = if (ready) V3Color.GreenSoft else Color.White.copy(alpha = 0.42f),
+        border = BorderStroke(1.dp, if (ready) V3Color.Green.copy(alpha = 0.22f) else V3Color.Line)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("启用流式转写", fontWeight = FontWeight.Medium)
-                    Text(
-                        text = "关闭后可作为录完上传 provider 的扩展入口",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF687069)
-                    )
-                }
-                Switch(
-                    checked = streamingEnabled,
-                    onCheckedChange = onStreamingEnabledChange
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = V3Color.TextPrimary,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(if (ready) V3Color.Green else V3Color.Warm)
                 )
             }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = maxRecordingSeconds,
-                onValueChange = onMaxRecordingSecondsChange,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                label = { Text("最大录音时长（秒）") }
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = prompt,
-                onValueChange = onPromptChange,
-                minLines = 2,
-                label = { Text("实时转写 prompt") }
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = hotwords,
-                onValueChange = onHotwordsChange,
-                singleLine = true,
-                label = { Text("热词 / 术语表") }
-            )
-
-            ProviderConfigSection(
-                title = "后续文本处理",
-                description = "用于润色、提炼要点、整理改写，可以走另一个文本模型中转站。",
-                providerName = postProcessProviderName,
-                onProviderNameChange = onPostProcessProviderNameChange,
-                baseUrl = postProcessBaseUrl,
-                onBaseUrlChange = onPostProcessBaseUrlChange,
-                apiKey = postProcessApiKey,
-                onApiKeyChange = onPostProcessApiKeyChange,
-                model = postProcessModel,
-                onModelChange = onPostProcessModelChange,
-                modelLabel = "后处理文本模型",
-                onTestConnection = onTestPostProcessConnection
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = postProcessPrompt,
-                onValueChange = onPostProcessPromptChange,
-                minLines = 2,
-                label = { Text("后处理 prompt") }
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.labelSmall,
+                color = if (ready) V3Color.Green else V3Color.TextMuted
             )
         }
     }
@@ -1754,8 +2070,9 @@ private fun ProtocolSelector(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color(0xFFF8FAF7)
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.36f),
+        border = BorderStroke(1.dp, V3Color.Line)
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
@@ -1764,6 +2081,7 @@ private fun ProtocolSelector(
             Text(
                 text = "实时转写协议",
                 style = MaterialTheme.typography.titleSmall,
+                color = V3Color.TextPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Row(
@@ -1829,8 +2147,9 @@ private fun ProviderConfigSection(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color(0xFFF8FAF7)
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.42f),
+        border = BorderStroke(1.dp, V3Color.Line)
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
@@ -1840,12 +2159,13 @@ private fun ProviderConfigSection(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
+                    color = V3Color.TextPrimary,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF687069)
+                    color = V3Color.TextSecondary
                 )
             }
             OutlinedTextField(
@@ -1892,41 +2212,40 @@ private fun IdeaCardsPanel(
     onCopy: (IdeaCard) -> Unit,
     onDelete: (IdeaCard) -> Unit
 ) {
-    Surface(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        tonalElevation = 1.dp
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "最近灵感卡片",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            if (ideaCards.isEmpty()) {
+        V3PageHeader(
+            eyebrow = "${ideaCards.size} NOTES",
+            title = "灵感卡片",
+            description = "每一条记录都是一张可继续加工的笔记。"
+        )
+        V3Divider()
+        if (ideaCards.isEmpty()) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.42f),
+                border = BorderStroke(1.dp, V3Color.Line)
+            ) {
                 Text(
-                    text = "暂无灵感卡片。完成一次真实转写后会自动保存到这里。",
+                    modifier = Modifier.padding(16.dp),
+                    text = "暂无灵感卡片。回到记录页说出第一条想法，它会自动保存到这里。",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF687069)
+                    color = V3Color.TextSecondary
                 )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.heightIn(max = 420.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    items(ideaCards, key = { it.id }) { item ->
-                        IdeaCardRow(
-                            item = item,
-                            isSelected = selectedIdeaCardId == item.id,
-                            onSelect = { onSelect(item) },
-                            onCopy = { onCopy(item) },
-                            onDelete = { onDelete(item) }
-                        )
-                    }
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                ideaCards.forEach { item ->
+                    IdeaCardRow(
+                        item = item,
+                        isSelected = selectedIdeaCardId == item.id,
+                        onSelect = { onSelect(item) },
+                        onCopy = { onCopy(item) },
+                        onDelete = { onDelete(item) }
+                    )
                 }
             }
         }
@@ -1941,15 +2260,14 @@ private fun IdeaCardRow(
     onCopy: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val background = if (isSelected) Color(0xFFEAF4EF) else Color.Transparent
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(background)
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isSelected) V3Color.GreenSoft.copy(alpha = 0.56f) else Color.Transparent)
             .clickable(onClick = onSelect)
-            .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(vertical = 12.dp, horizontal = 2.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -1960,6 +2278,7 @@ private fun IdeaCardRow(
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleSmall,
+                    color = V3Color.TextPrimary,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -1967,23 +2286,22 @@ private fun IdeaCardRow(
                 Text(
                     text = "${formatDisplayTime(item.createdAt)} · ${item.statusLabel()}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF687069)
+                    color = V3Color.TextMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                TextButton(onClick = onCopy) {
-                    Text("复制")
-                }
-                TextButton(onClick = onDelete) {
-                    Text("删除")
-                }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                V3ActionChip(label = "复制", onClick = onCopy)
+                V3ActionChip(label = "删除", danger = true, onClick = onDelete)
             }
         }
         Text(
             text = item.originalTranscript,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = V3Color.TextSecondary
         )
         if (item.processingResults.isNotEmpty()) {
             Text(
@@ -1991,15 +2309,10 @@ private fun IdeaCardRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF4F5F58)
+                color = V3Color.Green
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(Color(0xFFE7E8E2))
-        )
+        V3Divider()
     }
 }
 
