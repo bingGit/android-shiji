@@ -26,6 +26,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -77,6 +78,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -999,48 +1001,55 @@ private fun ConfirmDeleteDialog(
 }
 
 private object V3Spec {
-    val PageMaxWidth = 390.dp
-    val ContentX = 22.dp
-    val ContentWidth = 346.dp
-    val HeaderEyebrowY = 78.dp
-    val HeaderTitleY = 104.dp
-    val HeaderDescriptionY = 134.dp
-    val NavWidth = 342.dp
-    val NavHeight = 58.dp
-    val NavBottom = 16.dp
+    const val BaseWidth = 390f
+    const val ContentX = 22f
+    const val ContentWidth = 346f
+    const val HeaderEyebrowY = 78f
+    const val HeaderTitleY = 104f
+    const val HeaderDescriptionY = 134f
+    const val NavWidth = 342f
+    const val NavHeight = 58f
+    const val NavBottom = 16f
+}
+
+private class PrototypeMetrics(val scale: Float) {
+    fun dp(value: Int): Dp = (value * scale).dp
+    fun dp(value: Float): Dp = (value * scale).dp
+    fun sp(value: Int) = (value * scale).sp
+    fun sp(value: Float) = (value * scale).sp
 }
 
 @Composable
-private fun PrototypePage(content: @Composable BoxScope.() -> Unit) {
-    Box(
+private fun PrototypePage(content: @Composable BoxScope.(PrototypeMetrics) -> Unit) {
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(V3Color.Background),
-        contentAlignment = Alignment.TopCenter
+            .background(V3Color.Background)
     ) {
+        val metrics = PrototypeMetrics(maxWidth / V3Spec.BaseWidth.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .widthIn(max = V3Spec.PageMaxWidth)
                 .fillMaxHeight(),
-            content = content
+            content = { content(metrics) }
         )
     }
 }
 
 @Composable
 private fun PrototypeHeader(
+    metrics: PrototypeMetrics,
     eyebrow: String,
     title: String,
     description: String
 ) {
     Text(
         modifier = Modifier
-            .offset(V3Spec.ContentX, V3Spec.HeaderEyebrowY)
-            .width(V3Spec.ContentWidth),
+            .offset(metrics.dp(V3Spec.ContentX), metrics.dp(V3Spec.HeaderEyebrowY))
+            .width(metrics.dp(V3Spec.ContentWidth)),
         text = eyebrow,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        fontSize = metrics.sp(12),
+        lineHeight = metrics.sp(16),
         color = V3Color.TextMuted,
         fontWeight = FontWeight.SemiBold,
         maxLines = 1,
@@ -1048,11 +1057,11 @@ private fun PrototypeHeader(
     )
     Text(
         modifier = Modifier
-            .offset(V3Spec.ContentX, V3Spec.HeaderTitleY)
-            .width(V3Spec.ContentWidth),
+            .offset(metrics.dp(V3Spec.ContentX), metrics.dp(V3Spec.HeaderTitleY))
+            .width(metrics.dp(V3Spec.ContentWidth)),
         text = title,
-        fontSize = 22.sp,
-        lineHeight = 26.sp,
+        fontSize = metrics.sp(22),
+        lineHeight = metrics.sp(26),
         color = V3Color.TextPrimary,
         fontWeight = FontWeight.Bold,
         maxLines = 1,
@@ -1060,11 +1069,11 @@ private fun PrototypeHeader(
     )
     Text(
         modifier = Modifier
-            .offset(V3Spec.ContentX, V3Spec.HeaderDescriptionY)
-            .width(316.dp),
+            .offset(metrics.dp(V3Spec.ContentX), metrics.dp(V3Spec.HeaderDescriptionY))
+            .width(metrics.dp(316)),
         text = description,
-        fontSize = 13.sp,
-        lineHeight = 19.sp,
+        fontSize = metrics.sp(13),
+        lineHeight = metrics.sp(19),
         color = V3Color.TextMuted,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis
@@ -1073,6 +1082,7 @@ private fun PrototypeHeader(
 
 @Composable
 private fun PrototypeChip(
+    metrics: PrototypeMetrics,
     text: String,
     modifier: Modifier = Modifier,
     selected: Boolean = false,
@@ -1092,20 +1102,20 @@ private fun PrototypeChip(
     }
     Surface(
         modifier = modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .height(metrics.dp(32))
+            .clip(RoundedCornerShape(metrics.dp(16)))
             .clickable(enabled = enabled, onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(metrics.dp(16)),
         color = if (enabled) bg else bg.copy(alpha = 0.48f)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
+            modifier = Modifier.padding(horizontal = metrics.dp(10)),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
+            horizontalArrangement = Arrangement.spacedBy(metrics.dp(5))
         ) {
             Text(
                 text = text,
-                fontSize = 12.sp,
+                fontSize = metrics.sp(12),
                 color = if (enabled) fg else fg.copy(alpha = 0.52f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -1119,23 +1129,24 @@ private fun PrototypeBottomNavigation(
     selectedTab: VoiceFlowTab,
     onTabSelected: (VoiceFlowTab) -> Unit
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
         contentAlignment = Alignment.BottomCenter
     ) {
+        val metrics = PrototypeMetrics(maxWidth / V3Spec.BaseWidth.dp)
         Surface(
             modifier = Modifier
-                .padding(bottom = V3Spec.NavBottom)
-                .size(V3Spec.NavWidth, V3Spec.NavHeight),
-            shape = RoundedCornerShape(29.dp),
+                .padding(bottom = metrics.dp(V3Spec.NavBottom))
+                .size(metrics.dp(V3Spec.NavWidth), metrics.dp(V3Spec.NavHeight)),
+            shape = RoundedCornerShape(metrics.dp(29)),
             color = Color.White.copy(alpha = 0.78f),
-            shadowElevation = 12.dp
+            shadowElevation = metrics.dp(6)
         ) {
             Row(
-                modifier = Modifier.padding(6.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(metrics.dp(6)),
+                horizontalArrangement = Arrangement.spacedBy(metrics.dp(4)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 VoiceFlowTab.entries.forEach { tab ->
@@ -1143,17 +1154,17 @@ private fun PrototypeBottomNavigation(
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .height(46.dp)
-                            .clip(RoundedCornerShape(23.dp))
+                            .height(metrics.dp(46))
+                            .clip(RoundedCornerShape(metrics.dp(23)))
                             .background(if (selected) Color(0xCCE8F0E8) else Color.Transparent)
                             .clickable { onTabSelected(tab) },
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        PrototypeNavIcon(tab = tab, selected = selected)
+                        PrototypeNavIcon(metrics = metrics, tab = tab, selected = selected)
                         Text(
                             text = tab.label,
-                            fontSize = 10.sp,
+                            fontSize = metrics.sp(10),
                             color = if (selected) V3Color.Green else Color(0xFF8A9790),
                             maxLines = 1
                         )
@@ -1165,28 +1176,28 @@ private fun PrototypeBottomNavigation(
 }
 
 @Composable
-private fun PrototypeNavIcon(tab: VoiceFlowTab, selected: Boolean) {
+private fun PrototypeNavIcon(metrics: PrototypeMetrics, tab: VoiceFlowTab, selected: Boolean) {
     val color = if (selected) V3Color.Green else Color(0xFF8A9790)
-    Canvas(modifier = Modifier.size(18.dp)) {
-        val stroke = Stroke(width = 1.7.dp.toPx(), cap = StrokeCap.Round)
+    Canvas(modifier = Modifier.size(metrics.dp(18))) {
+        val stroke = Stroke(width = metrics.dp(1.7f).toPx(), cap = StrokeCap.Round)
         when (tab) {
             VoiceFlowTab.Record -> {
                 drawRoundRect(
                     color = color,
                     topLeft = Offset(size.width * 0.35f, size.height * 0.12f),
                     size = Size(size.width * 0.3f, size.height * 0.52f),
-                    cornerRadius = CornerRadius(6.dp.toPx(), 6.dp.toPx()),
+                    cornerRadius = CornerRadius(metrics.dp(6).toPx(), metrics.dp(6).toPx()),
                     style = stroke
                 )
-                drawLine(color, Offset(size.width * 0.2f, size.height * 0.48f), Offset(size.width * 0.2f, size.height * 0.55f), strokeWidth = 1.7.dp.toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.8f, size.height * 0.48f), Offset(size.width * 0.8f, size.height * 0.55f), strokeWidth = 1.7.dp.toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.5f, size.height * 0.72f), Offset(size.width * 0.5f, size.height * 0.9f), strokeWidth = 1.7.dp.toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.34f, size.height * 0.9f), Offset(size.width * 0.66f, size.height * 0.9f), strokeWidth = 1.7.dp.toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.2f, size.height * 0.48f), Offset(size.width * 0.2f, size.height * 0.55f), strokeWidth = metrics.dp(1.7f).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.8f, size.height * 0.48f), Offset(size.width * 0.8f, size.height * 0.55f), strokeWidth = metrics.dp(1.7f).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.5f, size.height * 0.72f), Offset(size.width * 0.5f, size.height * 0.9f), strokeWidth = metrics.dp(1.7f).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.34f, size.height * 0.9f), Offset(size.width * 0.66f, size.height * 0.9f), strokeWidth = metrics.dp(1.7f).toPx(), cap = StrokeCap.Round)
             }
             VoiceFlowTab.Cards -> {
-                drawRoundRect(color, Offset(size.width * 0.22f, size.height * 0.2f), Size(size.width * 0.56f, size.height * 0.22f), CornerRadius(3.dp.toPx(), 3.dp.toPx()), style = stroke)
-                drawRoundRect(color, Offset(size.width * 0.16f, size.height * 0.42f), Size(size.width * 0.68f, size.height * 0.22f), CornerRadius(3.dp.toPx(), 3.dp.toPx()), style = stroke)
-                drawRoundRect(color, Offset(size.width * 0.1f, size.height * 0.64f), Size(size.width * 0.8f, size.height * 0.22f), CornerRadius(3.dp.toPx(), 3.dp.toPx()), style = stroke)
+                drawRoundRect(color, Offset(size.width * 0.22f, size.height * 0.2f), Size(size.width * 0.56f, size.height * 0.22f), CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx()), style = stroke)
+                drawRoundRect(color, Offset(size.width * 0.16f, size.height * 0.42f), Size(size.width * 0.68f, size.height * 0.22f), CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx()), style = stroke)
+                drawRoundRect(color, Offset(size.width * 0.1f, size.height * 0.64f), Size(size.width * 0.8f, size.height * 0.22f), CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx()), style = stroke)
             }
             VoiceFlowTab.Settings -> {
                 drawCircle(color = color, radius = size.minDimension * 0.16f, center = Offset(size.width / 2f, size.height / 2f), style = stroke)
@@ -1200,7 +1211,7 @@ private fun PrototypeNavIcon(tab: VoiceFlowTab, selected: Boolean) {
                         color = color,
                         start = Offset((cx + kotlin.math.cos(angle) * inner).toFloat(), (cy + kotlin.math.sin(angle) * inner).toFloat()),
                         end = Offset((cx + kotlin.math.cos(angle) * outer).toFloat(), (cy + kotlin.math.sin(angle) * outer).toFloat()),
-                        strokeWidth = 1.5.dp.toPx(),
+                        strokeWidth = metrics.dp(1.5f).toPx(),
                         cap = StrokeCap.Round
                     )
                 }
@@ -1227,9 +1238,10 @@ private fun PrototypeRecordPage(
     val displayText = transcript.ifBlank {
         if (isRecording) "正在听你说话..." else "按下记录按钮，把刚冒出来的想法说出来。"
     }
-    val stageTop = if (displayText.length > 70) 398.dp else 372.dp
-    PrototypePage {
+    val stageTop = if (displayText.length > 70) 398 else 372
+    PrototypePage { metrics ->
         PrototypeHeader(
+            metrics = metrics,
             eyebrow = "VOICE IDEA",
             title = if (isCompleted) "刚刚这条灵感" else if (isRecording) "正在记录" else "刚刚这条灵感",
             description = "轻按开始记录，结束后可以润色、提炼或继续整理。"
@@ -1237,20 +1249,21 @@ private fun PrototypeRecordPage(
 
         Box(
             modifier = Modifier
-                .offset(36.dp, 166.dp)
-                .size(318.dp, if (displayText.length > 70) 220.dp else 130.dp)
+                .offset(metrics.dp(36), metrics.dp(166))
+                .size(metrics.dp(318), metrics.dp(if (displayText.length > 70) 220 else 130))
         ) {
             PrototypeStatusLine(
+                metrics = metrics,
                 status = status,
                 label = if (status == VoiceFlowStatus.Failed) "记录失败" else connectionStatus
             )
             Text(
                 modifier = Modifier
-                    .offset(0.dp, 48.dp)
-                    .width(318.dp),
+                    .offset(metrics.dp(0), metrics.dp(48))
+                    .width(metrics.dp(318)),
                 text = displayText,
-                fontSize = if (displayText.length > 45) 19.sp else 24.sp,
-                lineHeight = if (displayText.length > 45) 29.sp else 33.sp,
+                fontSize = if (displayText.length > 45) metrics.sp(19) else metrics.sp(24),
+                lineHeight = if (displayText.length > 45) metrics.sp(29) else metrics.sp(33),
                 color = V3Color.TextPrimary,
                 fontWeight = FontWeight.Bold,
                 maxLines = if (displayText.length > 70) 5 else 3,
@@ -1258,10 +1271,10 @@ private fun PrototypeRecordPage(
             )
             Text(
                 modifier = Modifier
-                    .offset(260.dp, 18.dp)
-                    .width(58.dp),
+                    .offset(metrics.dp(260), metrics.dp(18))
+                    .width(metrics.dp(58)),
                 text = "${displayText.length} 字",
-                fontSize = 13.sp,
+                fontSize = metrics.sp(13),
                 color = V3Color.TextMuted,
                 maxLines = 1
             )
@@ -1270,11 +1283,11 @@ private fun PrototypeRecordPage(
         if (status == VoiceFlowStatus.Failed && errorMessage.isNotBlank()) {
             Text(
                 modifier = Modifier
-                    .offset(36.dp, 304.dp)
-                    .width(318.dp),
+                    .offset(metrics.dp(36), metrics.dp(304))
+                    .width(metrics.dp(318)),
                 text = listOf(errorMessage, recoveryHint).filter { it.isNotBlank() }.joinToString("："),
-                fontSize = 12.sp,
-                lineHeight = 17.sp,
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(17),
                 color = V3Color.Warm,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
@@ -1284,30 +1297,31 @@ private fun PrototypeRecordPage(
         if (isCompleted && transcript.isNotBlank()) {
             Box(
                 modifier = Modifier
-                    .offset(22.dp, 584.dp)
-                    .size(346.dp, 1.dp)
+                    .offset(metrics.dp(22), metrics.dp(584))
+                    .size(metrics.dp(346), metrics.dp(1))
                     .background(V3Color.Line)
             )
             Text(
                 modifier = Modifier
-                    .offset(22.dp, 616.dp)
-                    .width(120.dp),
+                    .offset(metrics.dp(22), metrics.dp(616))
+                    .width(metrics.dp(120)),
                 text = "已保存为卡片",
-                fontSize = 12.sp,
+                fontSize = metrics.sp(12),
                 color = V3Color.Green,
                 fontWeight = FontWeight.SemiBold
             )
             Row(
-                modifier = Modifier.offset(152.dp, 604.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.offset(metrics.dp(152), metrics.dp(604)),
+                horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
             ) {
-                PrototypeChip(text = "润色", selected = true, onClick = onPolish)
-                PrototypeChip(text = "要点", onClick = onSummarize)
+                PrototypeChip(metrics = metrics, text = "润色", selected = true, onClick = onPolish)
+                PrototypeChip(metrics = metrics, text = "要点", onClick = onSummarize)
             }
         }
 
         PrototypeRecordStage(
-            modifier = Modifier.offset(0.dp, stageTop),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(0), metrics.dp(stageTop)),
             amplitude = amplitude,
             isRecording = isRecording,
             onClick = onPrimaryAction
@@ -1316,10 +1330,10 @@ private fun PrototypeRecordPage(
         if (copiedNotice.isNotBlank()) {
             Text(
                 modifier = Modifier
-                    .offset(22.dp, 612.dp)
-                    .width(346.dp),
+                    .offset(metrics.dp(22), metrics.dp(612))
+                    .width(metrics.dp(346)),
                 text = copiedNotice,
-                fontSize = 12.sp,
+                fontSize = metrics.sp(12),
                 color = V3Color.Green,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -1330,25 +1344,26 @@ private fun PrototypeRecordPage(
 
 @Composable
 private fun PrototypeStatusLine(
+    metrics: PrototypeMetrics,
     status: VoiceFlowStatus,
     label: String
 ) {
     Row(
         modifier = Modifier
-            .height(24.dp)
-            .width(282.dp),
+            .height(metrics.dp(24))
+            .width(metrics.dp(282)),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
     ) {
         Box(
             modifier = Modifier
-                .size(8.dp)
+                .size(metrics.dp(8))
                 .clip(CircleShape)
                 .background(statusColor(status))
         )
         Text(
             text = label,
-            fontSize = 12.sp,
+            fontSize = metrics.sp(12),
             color = V3Color.TextSecondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -1358,42 +1373,43 @@ private fun PrototypeStatusLine(
 
 @Composable
 private fun PrototypeRecordStage(
+    metrics: PrototypeMetrics,
     modifier: Modifier,
     amplitude: Float,
     isRecording: Boolean,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = modifier.size(390.dp, 232.dp),
+        modifier = modifier.size(metrics.dp(390), metrics.dp(232)),
         contentAlignment = Alignment.TopCenter
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val center = Offset(size.width / 2f, 96.dp.toPx())
-            drawCircle(Color(0x1AE5EFE5), radius = 120.dp.toPx(), center = center)
-            drawCircle(Color.White.copy(alpha = 0.45f), radius = 95.dp.toPx(), center = center, style = Stroke(1.dp.toPx()))
-            drawCircle(Color(0xFFE5E0D6), radius = 76.dp.toPx(), center = center, style = Stroke(1.2.dp.toPx()))
+            val center = Offset(size.width / 2f, metrics.dp(96).toPx())
+            drawCircle(Color(0x14E5EFE5), radius = metrics.dp(120).toPx(), center = center)
+            drawCircle(Color.White.copy(alpha = 0.32f), radius = metrics.dp(95).toPx(), center = center, style = Stroke(metrics.dp(1).toPx()))
+            drawCircle(Color(0xBFE5E0D6), radius = metrics.dp(76).toPx(), center = center, style = Stroke(metrics.dp(1.2f).toPx()))
             val bars = 9
             repeat(bars) { index ->
-                val x = 125.dp.toPx() + index * 16.dp.toPx()
+                val x = metrics.dp(125).toPx() + index * metrics.dp(16).toPx()
                 val level = (0.3f + amplitude * (1f - abs(index - 4) / 4.8f)).coerceIn(0.25f, 1f)
-                val barHeight = (16.dp.toPx() + level * 24.dp.toPx())
+                val barHeight = (metrics.dp(16).toPx() + level * metrics.dp(24).toPx())
                 drawRoundRect(
                     color = if (isRecording) V3Color.Green else Color(0xFF7C9890),
-                    topLeft = Offset(x, 204.dp.toPx() - barHeight),
-                    size = Size(5.dp.toPx(), barHeight),
-                    cornerRadius = CornerRadius(3.dp.toPx(), 3.dp.toPx())
+                    topLeft = Offset(x, metrics.dp(204).toPx() - barHeight),
+                    size = Size(metrics.dp(5).toPx(), barHeight),
+                    cornerRadius = CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx())
                 )
             }
         }
         Surface(
             modifier = Modifier
-                .offset(y = 58.dp)
-                .size(74.dp)
+                .offset(y = metrics.dp(58))
+                .size(metrics.dp(74))
                 .clip(CircleShape)
                 .clickable(onClick = onClick),
             shape = CircleShape,
             color = Color.White.copy(alpha = 0.9f),
-            border = BorderStroke(1.dp, V3Color.Line),
+            border = BorderStroke(metrics.dp(1), V3Color.Line),
             shadowElevation = 0.dp
         ) {
             Column(
@@ -1403,14 +1419,14 @@ private fun PrototypeRecordStage(
             ) {
                 Text(
                     text = if (isRecording) "停止" else "按下",
-                    fontSize = 16.sp,
-                    lineHeight = 20.sp,
+                    fontSize = metrics.sp(16),
+                    lineHeight = metrics.sp(20),
                     color = V3Color.Green,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = if (isRecording) "保存" else "记录",
-                    fontSize = 12.sp,
+                    fontSize = metrics.sp(12),
                     color = V3Color.TextMuted
                 )
             }
@@ -1427,33 +1443,34 @@ private fun PrototypeIdeaListPage(
     onDelete: (IdeaCard) -> Unit,
     onNewRecord: () -> Unit
 ) {
-    PrototypePage {
+    PrototypePage { metrics ->
         PrototypeHeader(
+            metrics = metrics,
             eyebrow = "${ideaCards.size} NOTES",
             title = "灵感卡片",
             description = "每一条记录都是一张可继续加工的笔记。"
         )
         Box(
             modifier = Modifier
-                .offset(52.dp, 150.dp)
-                .size(286.dp, 320.dp)
+                .offset(metrics.dp(52), metrics.dp(150))
+                .size(metrics.dp(286), metrics.dp(320))
                 .clip(CircleShape)
                 .background(Color(0x1AE5EFE5))
         )
         if (ideaCards.isEmpty()) {
             Surface(
                 modifier = Modifier
-                    .offset(22.dp, 174.dp)
-                    .size(346.dp, 68.dp),
-                shape = RoundedCornerShape(18.dp),
+                    .offset(metrics.dp(22), metrics.dp(174))
+                    .size(metrics.dp(346), metrics.dp(76)),
+                shape = RoundedCornerShape(metrics.dp(18)),
                 color = Color.White.copy(alpha = 0.32f),
-                border = BorderStroke(1.dp, V3Color.Line)
+                border = BorderStroke(metrics.dp(1), V3Color.Line)
             ) {
                 Text(
-                    modifier = Modifier.padding(horizontal = 22.dp, vertical = 19.dp),
+                    modifier = Modifier.padding(horizontal = metrics.dp(22), vertical = metrics.dp(17)),
                     text = "暂无灵感卡片。回到记录页说出第一条想法，它会自动保存到这里。",
-                    fontSize = 13.sp,
-                    lineHeight = 19.sp,
+                    fontSize = metrics.sp(13),
+                    lineHeight = metrics.sp(19),
                     color = V3Color.TextSecondary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -1461,16 +1478,17 @@ private fun PrototypeIdeaListPage(
             }
         } else {
             Row(
-                modifier = Modifier.offset(22.dp, 174.dp),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
+                modifier = Modifier.offset(metrics.dp(22), metrics.dp(174)),
+                horizontalArrangement = Arrangement.spacedBy(metrics.dp(15))
             ) {
-                PrototypeChip(text = "全部", selected = true)
-                PrototypeChip(text = "待整理")
-                PrototypeChip(text = "已润色")
+                PrototypeChip(metrics = metrics, text = "全部", selected = true)
+                PrototypeChip(metrics = metrics, text = "待整理")
+                PrototypeChip(metrics = metrics, text = "已润色")
             }
             ideaCards.take(3).forEachIndexed { index, item ->
                 PrototypeIdeaRow(
-                    modifier = Modifier.offset(22.dp, (218 + index * 104).dp),
+                    metrics = metrics,
+                    modifier = Modifier.offset(metrics.dp(22), metrics.dp(218 + index * 104)),
                     item = item,
                     selected = selectedIdeaCardId == item.id,
                     onSelect = { onSelect(item) },
@@ -1481,16 +1499,16 @@ private fun PrototypeIdeaListPage(
         }
         Surface(
             modifier = Modifier
-                .offset(302.dp, 560.dp)
-                .size(52.dp)
+                .offset(metrics.dp(302), metrics.dp(560))
+                .size(metrics.dp(52))
                 .clip(CircleShape)
                 .clickable(onClick = onNewRecord),
             shape = CircleShape,
             color = V3Color.Green,
-            shadowElevation = 10.dp
+            shadowElevation = metrics.dp(6)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Text("+", fontSize = 26.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                Text("+", fontSize = metrics.sp(26), color = Color.White, fontWeight = FontWeight.Medium)
             }
         }
     }
@@ -1498,6 +1516,7 @@ private fun PrototypeIdeaListPage(
 
 @Composable
 private fun PrototypeIdeaRow(
+    metrics: PrototypeMetrics,
     modifier: Modifier,
     item: IdeaCard,
     selected: Boolean,
@@ -1507,33 +1526,33 @@ private fun PrototypeIdeaRow(
 ) {
     Box(
         modifier = modifier
-            .size(346.dp, 92.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .size(metrics.dp(346), metrics.dp(92))
+            .clip(RoundedCornerShape(metrics.dp(12)))
             .background(if (selected) Color(0x33E8F0E8) else Color.Transparent)
             .clickable(onClick = onSelect)
     ) {
         Box(
             modifier = Modifier
-                .offset(0.dp, 10.dp)
-                .size(7.dp)
+                .offset(metrics.dp(0), metrics.dp(10))
+                .size(metrics.dp(7))
                 .clip(CircleShape)
                 .background(if (item.processingResults.isEmpty()) V3Color.Warm else V3Color.Green)
         )
         Text(
-            modifier = Modifier.offset(18.dp, 4.dp),
+            modifier = Modifier.offset(metrics.dp(18), metrics.dp(4)),
             text = formatDisplayTime(item.createdAt),
-            fontSize = 11.sp,
+            fontSize = metrics.sp(11),
             color = Color(0xFF929D96),
             fontWeight = FontWeight.Medium,
             maxLines = 1
         )
         Text(
             modifier = Modifier
-                .offset(18.dp, 24.dp)
-                .width(280.dp),
+                .offset(metrics.dp(18), metrics.dp(24))
+                .width(metrics.dp(280)),
             text = item.title,
-            fontSize = 15.sp,
-            lineHeight = 19.sp,
+            fontSize = metrics.sp(15),
+            lineHeight = metrics.sp(19),
             color = Color(0xFF28342E),
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -1541,34 +1560,34 @@ private fun PrototypeIdeaRow(
         )
         Text(
             modifier = Modifier
-                .offset(18.dp, 50.dp)
-                .width(304.dp),
+                .offset(metrics.dp(18), metrics.dp(50))
+                .width(metrics.dp(304)),
             text = item.originalTranscript,
-            fontSize = 13.sp,
-            lineHeight = 18.sp,
+            fontSize = metrics.sp(13),
+            lineHeight = metrics.sp(18),
             color = V3Color.TextSecondary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             modifier = Modifier
-                .offset(322.dp, 19.dp)
-                .size(18.dp)
+                .offset(metrics.dp(312), metrics.dp(16))
+                .size(metrics.dp(28))
                 .clickable(onClick = onCopy),
-            text = "...",
-            fontSize = 15.sp,
+            text = "复制",
+            fontSize = metrics.sp(11),
             color = Color(0xFF9AA49E)
         )
         Box(
             modifier = Modifier
-                .offset(0.dp, 90.dp)
-                .size(346.dp, 1.dp)
+                .offset(metrics.dp(0), metrics.dp(90))
+                .size(metrics.dp(346), metrics.dp(1))
                 .background(V3Color.Line)
         )
         Box(
             modifier = Modifier
-                .offset(286.dp, 50.dp)
-                .size(54.dp, 28.dp)
+                .offset(metrics.dp(286), metrics.dp(50))
+                .size(metrics.dp(54), metrics.dp(28))
                 .clickable(onClick = onDelete)
         )
     }
@@ -1590,66 +1609,71 @@ private fun PrototypeIdeaDetailPage(
     var draftText by remember(card.id, card.originalTranscript) { mutableStateOf(card.originalTranscript) }
     val result = card.processingResults.firstOrNull()
     var resultDraft by remember(result?.id, result?.content) { mutableStateOf(result?.content.orEmpty()) }
-    PrototypePage {
+    PrototypePage { metrics ->
         PrototypeHeader(
+            metrics = metrics,
             eyebrow = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)}",
             title = card.title,
             description = "打开一条灵感，在同一个空间里编辑、润色和提炼。"
         )
         Text(
-            modifier = Modifier.offset(22.dp, 174.dp).width(316.dp),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(174)).width(metrics.dp(316)),
             text = "原文",
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(16),
             color = V3Color.TextMuted,
             fontWeight = FontWeight.Bold
         )
         BasicTextField(
-            modifier = Modifier.offset(22.dp, 202.dp).size(346.dp, 96.dp),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(202)).size(metrics.dp(346), metrics.dp(96)),
             value = draftText,
             onValueChange = { draftText = it },
             textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 23.sp,
+                fontSize = metrics.sp(14),
+                lineHeight = metrics.sp(23),
                 color = V3Color.TextPrimary
             )
         )
-        Box(modifier = Modifier.offset(22.dp, 328.dp).size(346.dp, 1.dp).background(V3Color.Line))
+        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(328)).size(metrics.dp(346), metrics.dp(1)).background(V3Color.Line))
         PrototypeChip(
-            modifier = Modifier.offset(22.dp, 352.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(352)).width(metrics.dp(64)),
             text = "编辑",
             selected = true,
             onClick = { onOriginalChange(draftText) }
         )
         PrototypeChip(
-            modifier = Modifier.offset(92.dp, 352.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(92), metrics.dp(352)).width(metrics.dp(64)),
             text = if (runningAction == PostProcessAction.Polish) "生成" else "润色",
             onClick = { onPostProcess(PostProcessAction.Polish) },
             enabled = runningAction == null
         )
         PrototypeChip(
-            modifier = Modifier.offset(164.dp, 352.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(164), metrics.dp(352)).width(metrics.dp(64)),
             text = if (runningAction == PostProcessAction.Summarize) "生成" else "要点",
             onClick = { onPostProcess(PostProcessAction.Summarize) },
             enabled = runningAction == null
         )
         PrototypeChip(
-            modifier = Modifier.offset(236.dp, 352.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(236), metrics.dp(352)).width(metrics.dp(64)),
             text = "删除",
             danger = true,
             onClick = onDeleteCard
         )
         Text(
-            modifier = Modifier.offset(22.dp, 414.dp).width(316.dp),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(414)).width(metrics.dp(316)),
             text = result?.title ?: runningAction?.resultTitle ?: "处理结果",
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(16),
             color = V3Color.Secondary,
             fontWeight = FontWeight.Bold
         )
-        Box(modifier = Modifier.offset(22.dp, 446.dp).size(3.dp, 84.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFD9CBB8)))
+        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(446)).size(metrics.dp(3), metrics.dp(84)).clip(RoundedCornerShape(metrics.dp(2))).background(Color(0xFFD9CBB8)))
         BasicTextField(
-            modifier = Modifier.offset(36.dp, 442.dp).size(326.dp, 76.dp),
+            modifier = Modifier.offset(metrics.dp(36), metrics.dp(442)).size(metrics.dp(326), metrics.dp(76)),
             value = if (runningAction != null) "${runningAction.label}生成中..." else resultDraft.ifBlank { "点击润色或要点后，处理结果会作为独立版本显示在这里。" },
             onValueChange = { nextContent ->
                 resultDraft = nextContent
@@ -1657,31 +1681,35 @@ private fun PrototypeIdeaDetailPage(
             },
             enabled = result != null && runningAction == null,
             textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 21.sp,
+                fontSize = metrics.sp(14),
+                lineHeight = metrics.sp(21),
                 color = V3Color.TextSecondary
             )
         )
         PrototypeChip(
-            modifier = Modifier.offset(36.dp, 544.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(36), metrics.dp(544)).width(metrics.dp(64)),
             text = "复制",
             onClick = { result?.let(onCopyResult) ?: onCopyOriginal() }
         )
         PrototypeChip(
-            modifier = Modifier.offset(106.dp, 544.dp).width(88.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(106), metrics.dp(544)).width(metrics.dp(88)),
             text = "替换原文",
             selected = true,
             enabled = result != null,
             onClick = { if (resultDraft.isNotBlank()) onOriginalChange(resultDraft) }
         )
         PrototypeChip(
-            modifier = Modifier.offset(22.dp, 604.dp).width(64.dp),
+            metrics = metrics,
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(604)).width(metrics.dp(64)),
             text = "返回",
             onClick = onBack
         )
         if (result != null) {
             PrototypeChip(
-                modifier = Modifier.offset(92.dp, 604.dp).width(64.dp),
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(92), metrics.dp(604)).width(metrics.dp(64)),
                 text = "删版本",
                 danger = true,
                 onClick = { onDeleteResult(result) }
@@ -1723,46 +1751,55 @@ private fun PrototypeSettingsPage(
             baseUrl.isNotBlank()
         )
     val postReady = postProcessApiKey.isNotBlank() && postProcessBaseUrl.isNotBlank()
-    PrototypePage {
+    PrototypePage { metrics ->
         PrototypeHeader(
+            metrics = metrics,
             eyebrow = "SETTINGS",
             title = "设置",
             description = "认证、模型和中转站配置保持清楚，但视觉不过重。"
         )
         Surface(
-            modifier = Modifier.offset(22.dp, 174.dp).size(346.dp, 64.dp),
-            shape = RoundedCornerShape(18.dp),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(174)).size(metrics.dp(346), metrics.dp(70)),
+            shape = RoundedCornerShape(metrics.dp(18)),
             color = Color.White.copy(alpha = 0.34f),
-            border = BorderStroke(1.dp, V3Color.Line)
+            border = BorderStroke(metrics.dp(1), V3Color.Line)
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+                modifier = Modifier.padding(horizontal = metrics.dp(18), vertical = metrics.dp(14)),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(metrics.dp(12))
             ) {
-                Box(modifier = Modifier.size(20.dp).clip(CircleShape).background(if (realtimeReady && postReady) V3Color.Green else V3Color.Warm))
-                Column {
-                    Text("API 认证", fontSize = 15.sp, color = V3Color.TextPrimary, fontWeight = FontWeight.Bold)
-                    Text(if (realtimeReady && postReady) "实时转写和文本处理已配置" else "请补全中转站 API 配置", fontSize = 12.sp, color = V3Color.TextSecondary, maxLines = 1)
+                Box(modifier = Modifier.size(metrics.dp(20)).clip(CircleShape).background(if (realtimeReady && postReady) V3Color.Green else V3Color.Warm))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("API 认证", fontSize = metrics.sp(15), color = V3Color.TextPrimary, fontWeight = FontWeight.Bold, maxLines = 1)
+                    Text(
+                        if (realtimeReady && postReady) "实时转写和文本处理已配置" else "请补全中转站 API 配置",
+                        fontSize = metrics.sp(12),
+                        lineHeight = metrics.sp(17),
+                        color = V3Color.TextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }
-        PrototypeEditableSettingRow(266.dp, "实时模型", realtimeModel, onRealtimeModelChange)
-        PrototypeEditableSettingRow(334.dp, "文本模型", postProcessModel, onPostProcessModelChange)
-        PrototypeEditableSettingRow(402.dp, "中转站", postProcessBaseUrl.ifBlank { baseUrl }, {
+        PrototypeEditableSettingRow(metrics, 266, "实时模型", realtimeModel, onRealtimeModelChange)
+        PrototypeEditableSettingRow(metrics, 334, "文本模型", postProcessModel, onPostProcessModelChange)
+        PrototypeEditableSettingRow(metrics, 402, "中转站", postProcessBaseUrl.ifBlank { baseUrl }, {
             onPostProcessBaseUrlChange(it)
             onBaseUrlChange(it)
         })
-        PrototypeEditableSettingRow(470.dp, "API Key", postProcessApiKey.ifBlank { apiKey }, {
+        PrototypeEditableSettingRow(metrics, 470, "API Key", postProcessApiKey.ifBlank { apiKey }, {
             onPostProcessApiKeyChange(it)
             onApiKeyChange(it)
         })
-        PrototypeEditableSettingRow(538.dp, "热词", hotwords, onHotwordsChange)
+        PrototypeEditableSettingRow(metrics, 538, "热词", hotwords, onHotwordsChange)
         Row(
-            modifier = Modifier.offset(22.dp, 604.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(604)),
+            horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
         ) {
             PrototypeChip(
+                metrics = metrics,
                 text = if (realtimeProtocol == RealtimeProviderProtocol.AliyunParaformer) "阿里云" else "OpenAI",
                 selected = true,
                 onClick = {
@@ -1774,48 +1811,49 @@ private fun PrototypeSettingsPage(
                     onRealtimeProtocolChange(next)
                 }
             )
-            PrototypeChip(text = if (streamingEnabled) "流式开" else "流式关", onClick = { onStreamingEnabledChange(!streamingEnabled) })
-            PrototypeChip(text = "测转写", onClick = onTestRealtimeConnection)
-            PrototypeChip(text = "测文本", onClick = onTestPostProcessConnection)
+            PrototypeChip(metrics = metrics, text = if (streamingEnabled) "流式开" else "流式关", onClick = { onStreamingEnabledChange(!streamingEnabled) })
+            PrototypeChip(metrics = metrics, text = "测转写", onClick = onTestRealtimeConnection)
+            PrototypeChip(metrics = metrics, text = "测文本", onClick = onTestPostProcessConnection)
         }
     }
 }
 
 @Composable
 private fun PrototypeEditableSettingRow(
-    y: androidx.compose.ui.unit.Dp,
+    metrics: PrototypeMetrics,
+    y: Int,
     title: String,
     value: String,
     onValueChange: (String) -> Unit
 ) {
-    Box(modifier = Modifier.offset(22.dp, y).size(346.dp, 56.dp)) {
+    Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(y)).size(metrics.dp(346), metrics.dp(56))) {
         Text(
-            modifier = Modifier.offset(32.dp, 9.dp).width(110.dp),
+            modifier = Modifier.offset(metrics.dp(32), metrics.dp(9)).width(metrics.dp(110)),
             text = title,
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(20),
             color = V3Color.TextPrimary,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
         )
         BasicTextField(
-            modifier = Modifier.offset(32.dp, 31.dp).width(282.dp),
+            modifier = Modifier.offset(metrics.dp(32), metrics.dp(31)).width(metrics.dp(282)),
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
             textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 12.sp,
-                lineHeight = 17.sp,
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(17),
                 color = V3Color.TextSecondary
             )
         )
         Text(
-            modifier = Modifier.offset(328.dp, 18.dp),
+            modifier = Modifier.offset(metrics.dp(328), metrics.dp(18)),
             text = ">",
-            fontSize = 16.sp,
+            fontSize = metrics.sp(16),
             color = V3Color.TextMuted
         )
-        Box(modifier = Modifier.offset(0.dp, 55.dp).size(346.dp, 1.dp).background(V3Color.Line))
+        Box(modifier = Modifier.offset(metrics.dp(0), metrics.dp(55)).size(metrics.dp(346), metrics.dp(1)).background(V3Color.Line))
     }
 }
 

@@ -7,6 +7,7 @@
 - Pencil source: `docs/prototype/voiceflow-v1.pen`
 - Implementation target: Android Compose
 - Design frame: `390 x 720`
+- Runtime scale: all V3 prototype coordinates are stored against the `390` width frame and converted by `scale = screenWidth / 390`
 - Page background: `#F8F5EF`
 - Horizontal content inset: `22`
 - Main content width: `346`
@@ -37,6 +38,12 @@ All V3 pages use the same header geometry:
 | Eyebrow | 22 | 78 | 346 | 16 | 12sp / semibold / muted |
 | Title | 22 | 104 | 346 | 26 | 22sp / bold / primary |
 | Description | 22 | 134 | 316 | 19 | 13sp / regular / muted |
+
+Implementation note:
+
+- Compose implementation uses `PrototypeMetrics` to convert every Pencil `x/y/w/h` and typography size from the 390-wide prototype frame into runtime `dp/sp`.
+- This avoids the earlier drift where the UI was capped at a fixed 390dp canvas and could visually separate from wider emulator screenshots.
+- Dynamic content remains dynamic inside the same scaled slots; the slot coordinates should continue to come from the Pencil prototype.
 
 ## Record Page
 
@@ -97,7 +104,7 @@ Reference node: `HEYTz`.
 
 | Element | x | y | w | h | Implementation |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Auth summary | 22 | 174 | 346 | 64 | Status, provider, model |
+| Auth summary | 22 | 174 | 346 | 70 | Status, provider, model; implementation gives +6 height to prevent configured subtitle clipping |
 | Setting row 1 | 22 | 266 | 346 | 56 | Realtime provider/model |
 | Setting row 2 | 22 | 334 | 346 | 56 | Post-process provider/model |
 | Setting row 3 | 22 | 402 | 346 | 56 | Base URL / relay station |
