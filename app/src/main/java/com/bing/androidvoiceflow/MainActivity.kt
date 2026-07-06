@@ -99,6 +99,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -320,6 +321,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     var recoveryHint by remember { mutableStateOf("") }
     var copiedNotice by remember { mutableStateOf("") }
     var amplitude by remember { mutableStateOf(0.08f) }
+    var recordingStartedAtMillis by remember { mutableStateOf<Long?>(null) }
+    var recordingElapsedMillis by remember { mutableStateOf(0L) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
     var activeSession by remember { mutableStateOf<RealtimeSession?>(null) }
     var runningPostProcessAction by remember { mutableStateOf<PostProcessAction?>(null) }
@@ -338,6 +341,15 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     val activeTranscript = selectedIdeaCard?.originalTranscript ?: finalTranscript.trim()
     val recordTranscript = finalTranscript.ifBlank { partialTranscript }
     val actionableRecordTranscript = finalTranscript.trim()
+    val recordDurationLabel = when {
+        status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting -> {
+            formatTimerDuration(recordingElapsedMillis)
+        }
+        (status == VoiceFlowStatus.Completed || status == VoiceFlowStatus.Failed) && recordingElapsedMillis > 0L -> {
+            formatTimerDuration(recordingElapsedMillis)
+        }
+        else -> null
+    }
     val canUsePostProcessDock = when (selectedTab) {
         VoiceFlowTab.Record -> actionableRecordTranscript.isNotBlank()
         VoiceFlowTab.Cards -> false
@@ -376,6 +388,15 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         if (!settingsLoaded) return@LaunchedEffect
         context.settingsDataStore.edit { settings ->
             settings[SettingsKeys.IdeaCardsJson] = encodeIdeaCards(ideaCards)
+        }
+    }
+
+    LaunchedEffect(status, recordingStartedAtMillis) {
+        val startedAt = recordingStartedAtMillis ?: return@LaunchedEffect
+        if (status != VoiceFlowStatus.Connecting && status != VoiceFlowStatus.Recording) return@LaunchedEffect
+        while (true) {
+            recordingElapsedMillis = (System.currentTimeMillis() - startedAt).coerceAtLeast(0L)
+            delay(1000)
         }
     }
 
@@ -448,6 +469,10 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     }
 
     fun fail(message: String, hint: String) {
+        recordingStartedAtMillis?.let { startedAt ->
+            recordingElapsedMillis = (System.currentTimeMillis() - startedAt).coerceAtLeast(recordingElapsedMillis)
+        }
+        recordingStartedAtMillis = null
         status = VoiceFlowStatus.Failed
         errorMessage = message
         recoveryHint = hint
@@ -471,6 +496,10 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     fun finishRecording() {
         val currentConfig = config()
         val session = activeSession
+        recordingStartedAtMillis?.let { startedAt ->
+            recordingElapsedMillis = (System.currentTimeMillis() - startedAt).coerceAtLeast(recordingElapsedMillis)
+        }
+        recordingStartedAtMillis = null
         recordingJob?.cancel()
         recordingJob = null
         status = VoiceFlowStatus.Finalizing
@@ -537,6 +566,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         selectedIdeaCardId = null
         currentIdeaCardId = null
         captureStats.reset()
+        recordingStartedAtMillis = System.currentTimeMillis()
+        recordingElapsedMillis = 0L
         status = VoiceFlowStatus.Connecting
         connectionStatus = "正在连接实时转写 provider"
 
@@ -787,6 +818,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 PrototypeRecordPage(
                     status = status,
                     connectionStatus = connectionStatus,
+                    durationLabel = recordDurationLabel,
                     transcript = recordTranscript,
                     copiedNotice = copiedNotice,
                     errorMessage = errorMessage,
@@ -1228,6 +1260,7 @@ private fun PrototypeNavIcon(metrics: PrototypeMetrics, tab: VoiceFlowTab, selec
 private fun PrototypeRecordPage(
     status: VoiceFlowStatus,
     connectionStatus: String,
+    durationLabel: String?,
     transcript: String,
     copiedNotice: String,
     errorMessage: String,
@@ -1264,7 +1297,8 @@ private fun PrototypeRecordPage(
             PrototypeStatusLine(
                 metrics = metrics,
                 status = status,
-                label = if (status == VoiceFlowStatus.Failed) "记录失败" else connectionStatus
+                label = durationLabel ?: if (status == VoiceFlowStatus.Failed) "记录失败" else connectionStatus,
+                showDot = durationLabel == null || status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting
             )
             Text(
                 modifier = Modifier
@@ -1478,7 +1512,8 @@ private fun PrototypeRecordIdleStage(
 private fun PrototypeStatusLine(
     metrics: PrototypeMetrics,
     status: VoiceFlowStatus,
-    label: String
+    label: String,
+    showDot: Boolean = true
 ) {
     Row(
         modifier = Modifier
@@ -1487,12 +1522,14 @@ private fun PrototypeStatusLine(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
     ) {
-        Box(
-            modifier = Modifier
-                .size(metrics.dp(8))
-                .clip(CircleShape)
-                .background(statusColor(status))
-        )
+        if (showDot) {
+            Box(
+                modifier = Modifier
+                    .size(metrics.dp(8))
+                    .clip(CircleShape)
+                    .background(statusColor(status))
+            )
+        }
         Text(
             text = label,
             fontSize = metrics.sp(12),
@@ -3498,6 +3535,13 @@ private fun formatDuration(seconds: Float): String {
     } else {
         "${seconds.toInt()} 秒"
     }
+}
+
+private fun formatTimerDuration(durationMs: Long): String {
+    val totalSeconds = (durationMs / 1000L).coerceAtLeast(0L)
+    val minutes = totalSeconds / 60L
+    val seconds = totalSeconds % 60L
+    return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 }
 
 private fun formatDisplayTime(timestamp: Long): String {
