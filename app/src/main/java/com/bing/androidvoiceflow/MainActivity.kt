@@ -787,7 +787,6 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 PrototypeRecordPage(
                     status = status,
                     connectionStatus = connectionStatus,
-                    amplitude = amplitude,
                     transcript = recordTranscript,
                     copiedNotice = copiedNotice,
                     errorMessage = errorMessage,
@@ -1229,7 +1228,6 @@ private fun PrototypeNavIcon(metrics: PrototypeMetrics, tab: VoiceFlowTab, selec
 private fun PrototypeRecordPage(
     status: VoiceFlowStatus,
     connectionStatus: String,
-    amplitude: Float,
     transcript: String,
     copiedNotice: String,
     errorMessage: String,
@@ -1333,7 +1331,6 @@ private fun PrototypeRecordPage(
         PrototypeRecordStage(
             metrics = metrics,
             modifier = Modifier.offset(metrics.dp(0), metrics.dp(stageTop)),
-            amplitude = amplitude,
             isRecording = isRecording,
             onClick = onPrimaryAction
         )
@@ -1524,7 +1521,6 @@ private fun PrototypeStatusLine(
 private fun PrototypeRecordStage(
     metrics: PrototypeMetrics,
     modifier: Modifier,
-    amplitude: Float,
     isRecording: Boolean,
     onClick: () -> Unit
 ) {
@@ -1593,18 +1589,6 @@ private fun PrototypeRecordStage(
                 center = center,
                 style = Stroke(metrics.dp(1.2f).toPx())
             )
-            val bars = 9
-            repeat(bars) { index ->
-                val x = metrics.dp(125).toPx() + index * metrics.dp(16).toPx()
-                val level = (0.3f + amplitude * (1f - abs(index - 4) / 4.8f)).coerceIn(0.25f, 1f)
-                val barHeight = (metrics.dp(16).toPx() + level * metrics.dp(24).toPx())
-                drawRoundRect(
-                    color = if (isRecording) V3Color.Warm.copy(alpha = 0.72f) else Color(0xFF7C9890),
-                    topLeft = Offset(x, metrics.dp(204).toPx() - barHeight),
-                    size = Size(metrics.dp(5).toPx(), barHeight),
-                    cornerRadius = CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx())
-                )
-            }
         }
         Surface(
             modifier = Modifier
