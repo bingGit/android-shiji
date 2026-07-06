@@ -5,9 +5,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -23,6 +26,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -73,6 +77,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -474,21 +480,20 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 val transcript = session?.commit()
                 val finalText = transcript?.text?.trim().orEmpty().ifBlank { finalTranscript.trim() }
                 if (finalText.isBlank()) {
-                    val capturedSeconds = audioDurationSeconds(captureStats.audioBytes, currentConfig)
-                    status = VoiceFlowStatus.Completed
-                    connectionStatus = if (captureStats.audioBytes > 0L) {
-                        "转写结果为空"
-                    } else {
-                        "未采集到音频"
-                    }
-                    partialTranscript = if (captureStats.audioBytes > 0L) {
-                        "已采集 ${formatDuration(capturedSeconds)} PCM16 音频，${captureStats.chunkCount} 个分片，约 ${formatAudioBytes(captureStats.audioBytes)}，但 provider 没有返回最终文本。"
-                    } else {
-                        "没有读到麦克风音频，请检查麦克风权限或设备输入。"
-                    }
+                    partialTranscript = ""
+                    finalTranscript = ""
                     copiedNotice = ""
-                    errorMessage = ""
-                    recoveryHint = ""
+                    if (captureStats.audioBytes > 0L) {
+                        fail(
+                            message = "没有生成转写文本",
+                            hint = "这次已经收到声音，但没有识别出可保存的文字。可以再试一次，或检查实时转写配置。"
+                        )
+                    } else {
+                        fail(
+                            message = "没有收到声音",
+                            hint = "请确认麦克风权限和设备输入正常，然后再试一次。"
+                        )
+                    }
                     amplitude = 0.06f
                     return@launch
                 }
@@ -581,7 +586,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                     if (partialTranscript.isBlank()) {
                         val capturedSeconds = audioDurationSeconds(captureStats.audioBytes, currentConfig)
                         connectionStatus = "已发送 ${formatDuration(capturedSeconds)} 音频，等待转写"
-                        partialTranscript = "正在实时转写：已发送约 ${formatAudioBytes(captureStats.audioBytes)} 音频。"
+                        partialTranscript = "正在听你说话..."
                     }
                 }
             } catch (_: ClosedReceiveChannelException) {
@@ -718,8 +723,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         val sourceText = activeTranscript.trim()
         if (sourceText.isBlank()) {
             fail(
-                message = "没有可处理的转写文本",
-                hint = "当前版本已接入本地音频采集，实时转写 provider 接入后才会生成可处理文本。"
+                message = "还没有可处理的记录",
+                hint = "先完成一条有文字内容的记录，再进行润色或提炼。"
             )
             return
         }
@@ -1235,11 +1240,17 @@ private fun PrototypeRecordPage(
 ) {
     val isRecording = status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting
     val isCompleted = status == VoiceFlowStatus.Completed
+    val isInitialIdle = status == VoiceFlowStatus.Idle && transcript.isBlank()
     val displayText = transcript.ifBlank {
         if (isRecording) "正在听你说话..." else "按下记录按钮，把刚冒出来的想法说出来。"
     }
     val stageTop = if (displayText.length > 70) 398 else 372
     PrototypePage { metrics ->
+        if (isInitialIdle) {
+            PrototypeRecordIdlePage(metrics = metrics, onPrimaryAction = onPrimaryAction)
+            return@PrototypePage
+        }
+
         PrototypeHeader(
             metrics = metrics,
             eyebrow = "VOICE IDEA",
@@ -1343,6 +1354,144 @@ private fun PrototypeRecordPage(
 }
 
 @Composable
+private fun PrototypeRecordIdlePage(
+    metrics: PrototypeMetrics,
+    onPrimaryAction: () -> Unit
+) {
+    PrototypeHeader(
+        metrics = metrics,
+        eyebrow = "记录灵感",
+        title = "准备记录",
+        description = "按下按钮，说出刚冒出来的想法。"
+    )
+
+    Box(
+        modifier = Modifier
+            .offset(metrics.dp(36), metrics.dp(176))
+            .size(metrics.dp(318), metrics.dp(116))
+    ) {
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(0), metrics.dp(8.5f))
+                .size(metrics.dp(7))
+                .clip(CircleShape)
+                .background(Color(0xFFD9CBB8))
+        )
+        Text(
+            modifier = Modifier.offset(metrics.dp(15), metrics.dp(3.5f)),
+            text = "未开始",
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(17),
+            color = V3Color.TextMuted,
+            maxLines = 1
+        )
+        Text(
+            modifier = Modifier.offset(metrics.dp(60), metrics.dp(3.5f)),
+            text = "等待你的想法",
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(17),
+            color = V3Color.TextMuted,
+            maxLines = 1
+        )
+        Text(
+            modifier = Modifier
+                .offset(metrics.dp(0), metrics.dp(36))
+                .width(metrics.dp(318)),
+            text = "有想法时，按下按钮开始记录。",
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(20),
+            color = V3Color.TextPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(0), metrics.dp(66))
+                .size(metrics.dp(292), metrics.dp(38))
+                .clip(RoundedCornerShape(metrics.dp(19)))
+                .background(Color(0x1AE5EFE5))
+        ) {
+            Text(
+                modifier = Modifier.offset(metrics.dp(10), metrics.dp(9)),
+                text = "按下开始记录",
+                fontSize = metrics.sp(14),
+                lineHeight = metrics.sp(20),
+                color = V3Color.Green,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+        }
+    }
+
+    PrototypeRecordIdleStage(
+        metrics = metrics,
+        modifier = Modifier.offset(metrics.dp(0), metrics.dp(396)),
+        onClick = onPrimaryAction
+    )
+}
+
+@Composable
+private fun PrototypeRecordIdleStage(
+    metrics: PrototypeMetrics,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier.size(metrics.dp(390), metrics.dp(224)),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val center = Offset(metrics.dp(195).toPx(), metrics.dp(126).toPx())
+            fun soundCircle(radius: Float, color: Color, strokeColor: Color? = null, strokeWidth: Float = 1f) {
+                drawCircle(
+                    color = color,
+                    radius = metrics.dp(radius).toPx(),
+                    center = center
+                )
+                if (strokeColor != null) {
+                    drawCircle(
+                        color = strokeColor,
+                        radius = metrics.dp(radius).toPx(),
+                        center = center,
+                        style = Stroke(metrics.dp(strokeWidth).toPx())
+                    )
+                }
+            }
+
+            soundCircle(94f, Color(0x1AE5EFE5), Color(0xFFDCE8DF), 1f)
+            soundCircle(89f, Color(0x26E5EFE5), Color(0xFFCFE0D6), 1f)
+            soundCircle(65f, Color(0x40DCEBE1), Color(0xFFBDD4C7), 1f)
+            soundCircle(53f, Color(0x59D5E7DC))
+        }
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(161), metrics.dp(92))
+                .size(metrics.dp(68))
+                .clip(CircleShape)
+                .background(V3Color.Green)
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.size(metrics.dp(28))) {
+                val stroke = Stroke(width = metrics.dp(2).toPx(), cap = StrokeCap.Round)
+                val color = Color.White
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(size.width * 0.39f, size.height * 0.18f),
+                    size = Size(size.width * 0.22f, size.height * 0.44f),
+                    cornerRadius = CornerRadius(metrics.dp(6).toPx(), metrics.dp(6).toPx()),
+                    style = stroke
+                )
+                drawLine(color, Offset(size.width * 0.28f, size.height * 0.46f), Offset(size.width * 0.28f, size.height * 0.58f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.72f, size.height * 0.46f), Offset(size.width * 0.72f, size.height * 0.58f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.5f, size.height * 0.7f), Offset(size.width * 0.5f, size.height * 0.88f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.34f, size.height * 0.88f), Offset(size.width * 0.66f, size.height * 0.88f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
+            }
+        }
+    }
+}
+
+@Composable
 private fun PrototypeStatusLine(
     metrics: PrototypeMetrics,
     status: VoiceFlowStatus,
@@ -1379,22 +1528,78 @@ private fun PrototypeRecordStage(
     isRecording: Boolean,
     onClick: () -> Unit
 ) {
+    var isPressed by remember { mutableStateOf(false) }
+    val pulseTransition = rememberInfiniteTransition(label = "recordingPulse")
+    val pulse by pulseTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1650),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "recordingPulseProgress"
+    )
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.91f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "recordButtonPressScale"
+    )
+    val recordingEmphasis by animateFloatAsState(
+        targetValue = if (isRecording) 1f else 0f,
+        animationSpec = tween(durationMillis = 260),
+        label = "recordingEmphasis"
+    )
+    val buttonTone = if (isRecording) V3Color.Warm else Color.White.copy(alpha = 0.9f)
+    val primaryTextColor = if (isRecording) Color.White else V3Color.Green
+    val secondaryTextColor = if (isRecording) Color.White.copy(alpha = 0.74f) else V3Color.TextMuted
+
     Box(
         modifier = modifier.size(metrics.dp(390), metrics.dp(232)),
         contentAlignment = Alignment.TopCenter
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2f, metrics.dp(96).toPx())
+            val activePulse = if (isRecording) pulse else 0f
+            val secondPulse = (activePulse + 0.46f) % 1f
+            val pulseBase = metrics.dp(76).toPx()
+            val pulseRange = metrics.dp(42).toPx()
             drawCircle(Color(0x14E5EFE5), radius = metrics.dp(120).toPx(), center = center)
-            drawCircle(Color.White.copy(alpha = 0.32f), radius = metrics.dp(95).toPx(), center = center, style = Stroke(metrics.dp(1).toPx()))
-            drawCircle(Color(0xBFE5E0D6), radius = metrics.dp(76).toPx(), center = center, style = Stroke(metrics.dp(1.2f).toPx()))
+            if (isRecording) {
+                drawCircle(
+                    color = V3Color.Warm.copy(alpha = 0.11f * (1f - activePulse)),
+                    radius = pulseBase + activePulse * pulseRange,
+                    center = center,
+                    style = Stroke(metrics.dp(1.2f).toPx())
+                )
+                drawCircle(
+                    color = V3Color.Warm.copy(alpha = 0.08f * (1f - secondPulse)),
+                    radius = pulseBase + secondPulse * pulseRange,
+                    center = center,
+                    style = Stroke(metrics.dp(1f).toPx())
+                )
+            }
+            drawCircle(
+                Color.White.copy(alpha = 0.32f + recordingEmphasis * 0.08f),
+                radius = metrics.dp(95).toPx(),
+                center = center,
+                style = Stroke(metrics.dp(1).toPx())
+            )
+            drawCircle(
+                Color(0xBFE5E0D6).copy(alpha = 0.75f + recordingEmphasis * 0.16f),
+                radius = metrics.dp(76).toPx(),
+                center = center,
+                style = Stroke(metrics.dp(1.2f).toPx())
+            )
             val bars = 9
             repeat(bars) { index ->
                 val x = metrics.dp(125).toPx() + index * metrics.dp(16).toPx()
                 val level = (0.3f + amplitude * (1f - abs(index - 4) / 4.8f)).coerceIn(0.25f, 1f)
                 val barHeight = (metrics.dp(16).toPx() + level * metrics.dp(24).toPx())
                 drawRoundRect(
-                    color = if (isRecording) V3Color.Green else Color(0xFF7C9890),
+                    color = if (isRecording) V3Color.Warm.copy(alpha = 0.72f) else Color(0xFF7C9890),
                     topLeft = Offset(x, metrics.dp(204).toPx() - barHeight),
                     size = Size(metrics.dp(5).toPx(), barHeight),
                     cornerRadius = CornerRadius(metrics.dp(3).toPx(), metrics.dp(3).toPx())
@@ -1406,11 +1611,28 @@ private fun PrototypeRecordStage(
                 .offset(y = metrics.dp(58))
                 .size(metrics.dp(74))
                 .clip(CircleShape)
-                .clickable(onClick = onClick),
+                .graphicsLayer {
+                    scaleX = pressScale
+                    scaleY = pressScale
+                    alpha = if (isPressed) 0.96f else 1f
+                }
+                .pointerInput(onClick) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            val released = tryAwaitRelease()
+                            isPressed = false
+                            if (released) onClick()
+                        }
+                    )
+                },
             shape = CircleShape,
-            color = Color.White.copy(alpha = 0.9f),
-            border = BorderStroke(metrics.dp(1), V3Color.Line),
-            shadowElevation = 0.dp
+            color = buttonTone,
+            border = BorderStroke(
+                metrics.dp(1),
+                if (isRecording) V3Color.Warm.copy(alpha = 0.32f) else V3Color.Line
+            ),
+            shadowElevation = if (isRecording) metrics.dp(6) else 0.dp
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -1421,13 +1643,13 @@ private fun PrototypeRecordStage(
                     text = if (isRecording) "停止" else "按下",
                     fontSize = metrics.sp(16),
                     lineHeight = metrics.sp(20),
-                    color = V3Color.Green,
+                    color = primaryTextColor,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = if (isRecording) "保存" else "记录",
                     fontSize = metrics.sp(12),
-                    color = V3Color.TextMuted
+                    color = secondaryTextColor
                 )
             }
         }
@@ -3281,13 +3503,6 @@ private fun formatDuration(seconds: Float): String {
     } else {
         "${seconds.toInt()} 秒"
     }
-}
-
-private fun formatAudioBytes(bytes: Long): String {
-    if (bytes < 1024) return "$bytes B"
-    val kib = bytes / 1024f
-    if (kib < 1024f) return String.format(Locale.getDefault(), "%.1f KB", kib)
-    return String.format(Locale.getDefault(), "%.2f MB", kib / 1024f)
 }
 
 private fun formatDisplayTime(timestamp: Long): String {
