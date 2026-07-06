@@ -1469,21 +1469,7 @@ private fun PrototypeRecordIdleStage(
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.size(metrics.dp(28))) {
-                val stroke = Stroke(width = metrics.dp(2).toPx(), cap = StrokeCap.Round)
-                val color = Color.White
-                drawRoundRect(
-                    color = color,
-                    topLeft = Offset(size.width * 0.39f, size.height * 0.18f),
-                    size = Size(size.width * 0.22f, size.height * 0.44f),
-                    cornerRadius = CornerRadius(metrics.dp(6).toPx(), metrics.dp(6).toPx()),
-                    style = stroke
-                )
-                drawLine(color, Offset(size.width * 0.28f, size.height * 0.46f), Offset(size.width * 0.28f, size.height * 0.58f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.72f, size.height * 0.46f), Offset(size.width * 0.72f, size.height * 0.58f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.5f, size.height * 0.7f), Offset(size.width * 0.5f, size.height * 0.88f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
-                drawLine(color, Offset(size.width * 0.34f, size.height * 0.88f), Offset(size.width * 0.66f, size.height * 0.88f), strokeWidth = metrics.dp(2).toPx(), cap = StrokeCap.Round)
-            }
+            PrototypeMicIcon(metrics = metrics)
         }
     }
 }
@@ -1548,9 +1534,9 @@ private fun PrototypeRecordStage(
         animationSpec = tween(durationMillis = 260),
         label = "recordingEmphasis"
     )
-    val buttonTone = if (isRecording) V3Color.Warm else Color.White.copy(alpha = 0.9f)
-    val primaryTextColor = if (isRecording) Color.White else V3Color.Green
-    val secondaryTextColor = if (isRecording) Color.White.copy(alpha = 0.74f) else V3Color.TextMuted
+    val buttonSize = if (isRecording) metrics.dp(74) else metrics.dp(68)
+    val buttonOffsetY = if (isRecording) metrics.dp(58) else metrics.dp(62)
+    val buttonTone = if (isRecording) V3Color.Warm else V3Color.Green
 
     Box(
         modifier = modifier.size(metrics.dp(390), metrics.dp(232)),
@@ -1592,8 +1578,8 @@ private fun PrototypeRecordStage(
         }
         Surface(
             modifier = Modifier
-                .offset(y = metrics.dp(58))
-                .size(metrics.dp(74))
+                .offset(y = buttonOffsetY)
+                .size(buttonSize)
                 .clip(CircleShape)
                 .graphicsLayer {
                     scaleX = pressScale
@@ -1614,29 +1600,54 @@ private fun PrototypeRecordStage(
             color = buttonTone,
             border = BorderStroke(
                 metrics.dp(1),
-                if (isRecording) V3Color.Warm.copy(alpha = 0.32f) else V3Color.Line
+                if (isRecording) V3Color.Warm.copy(alpha = 0.32f) else V3Color.Green.copy(alpha = 0.16f)
             ),
-            shadowElevation = if (isRecording) metrics.dp(6) else 0.dp
+            shadowElevation = if (isRecording) metrics.dp(6) else metrics.dp(4)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = if (isRecording) "停止" else "按下",
-                    fontSize = metrics.sp(16),
-                    lineHeight = metrics.sp(20),
-                    color = primaryTextColor,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = if (isRecording) "保存" else "记录",
-                    fontSize = metrics.sp(12),
-                    color = secondaryTextColor
-                )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (isRecording) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "停止",
+                            fontSize = metrics.sp(16),
+                            lineHeight = metrics.sp(20),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "保存",
+                            fontSize = metrics.sp(12),
+                            color = Color.White.copy(alpha = 0.74f)
+                        )
+                    }
+                } else {
+                    PrototypeMicIcon(metrics = metrics)
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun PrototypeMicIcon(metrics: PrototypeMetrics) {
+    Canvas(modifier = Modifier.size(metrics.dp(28))) {
+        val strokeWidth = metrics.dp(2).toPx()
+        val stroke = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+        val color = Color.White
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(size.width * 0.39f, size.height * 0.18f),
+            size = Size(size.width * 0.22f, size.height * 0.44f),
+            cornerRadius = CornerRadius(metrics.dp(6).toPx(), metrics.dp(6).toPx()),
+            style = stroke
+        )
+        drawLine(color, Offset(size.width * 0.28f, size.height * 0.46f), Offset(size.width * 0.28f, size.height * 0.58f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width * 0.72f, size.height * 0.46f), Offset(size.width * 0.72f, size.height * 0.58f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width * 0.5f, size.height * 0.7f), Offset(size.width * 0.5f, size.height * 0.88f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width * 0.34f, size.height * 0.88f), Offset(size.width * 0.66f, size.height * 0.88f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
     }
 }
 
