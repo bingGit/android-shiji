@@ -1242,7 +1242,7 @@ private fun PrototypeRecordPage(
     val displayText = transcript.ifBlank {
         if (isRecording) "正在听你说话..." else "按下记录按钮，把刚冒出来的想法说出来。"
     }
-    val stageTop = if (displayText.length > 70) 398 else 372
+    val stageTop = 396
     PrototypePage { metrics ->
         if (isInitialIdle) {
             PrototypeRecordIdlePage(metrics = metrics, onPrimaryAction = onPrimaryAction)
@@ -1535,7 +1535,7 @@ private fun PrototypeRecordStage(
         label = "recordingEmphasis"
     )
     val buttonSize = if (isRecording) metrics.dp(74) else metrics.dp(68)
-    val buttonOffsetY = if (isRecording) metrics.dp(58) else metrics.dp(62)
+    val buttonOffsetY = if (isRecording) metrics.dp(89) else metrics.dp(92)
     val buttonTone = if (isRecording) V3Color.Warm else V3Color.Green
 
     Box(
@@ -1543,7 +1543,7 @@ private fun PrototypeRecordStage(
         contentAlignment = Alignment.TopCenter
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val center = Offset(size.width / 2f, metrics.dp(96).toPx())
+            val center = Offset(size.width / 2f, metrics.dp(126).toPx())
             val activePulse = if (isRecording) pulse else 0f
             val secondPulse = (activePulse + 0.46f) % 1f
             val pulseBase = metrics.dp(76).toPx()
