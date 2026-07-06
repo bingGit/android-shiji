@@ -345,9 +345,6 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting -> {
             formatTimerDuration(recordingElapsedMillis)
         }
-        (status == VoiceFlowStatus.Completed || status == VoiceFlowStatus.Failed) && recordingElapsedMillis > 0L -> {
-            formatTimerDuration(recordingElapsedMillis)
-        }
         else -> null
     }
     val canUsePostProcessDock = when (selectedTab) {
@@ -1297,8 +1294,7 @@ private fun PrototypeRecordPage(
             PrototypeStatusLine(
                 metrics = metrics,
                 status = status,
-                label = durationLabel ?: if (status == VoiceFlowStatus.Failed) "记录失败" else connectionStatus,
-                showDot = durationLabel == null || status == VoiceFlowStatus.Recording || status == VoiceFlowStatus.Connecting
+                label = if (status == VoiceFlowStatus.Failed) "记录失败" else connectionStatus
             )
             Text(
                 modifier = Modifier
@@ -1366,6 +1362,7 @@ private fun PrototypeRecordPage(
             metrics = metrics,
             modifier = Modifier.offset(metrics.dp(0), metrics.dp(stageTop)),
             isRecording = isRecording,
+            durationLabel = if (isRecording) durationLabel else null,
             onClick = onPrimaryAction
         )
 
@@ -1512,8 +1509,7 @@ private fun PrototypeRecordIdleStage(
 private fun PrototypeStatusLine(
     metrics: PrototypeMetrics,
     status: VoiceFlowStatus,
-    label: String,
-    showDot: Boolean = true
+    label: String
 ) {
     Row(
         modifier = Modifier
@@ -1522,14 +1518,12 @@ private fun PrototypeStatusLine(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
     ) {
-        if (showDot) {
-            Box(
-                modifier = Modifier
-                    .size(metrics.dp(8))
-                    .clip(CircleShape)
-                    .background(statusColor(status))
-            )
-        }
+        Box(
+            modifier = Modifier
+                .size(metrics.dp(8))
+                .clip(CircleShape)
+                .background(statusColor(status))
+        )
         Text(
             text = label,
             fontSize = metrics.sp(12),
@@ -1545,6 +1539,7 @@ private fun PrototypeRecordStage(
     metrics: PrototypeMetrics,
     modifier: Modifier,
     isRecording: Boolean,
+    durationLabel: String?,
     onClick: () -> Unit
 ) {
     var isPressed by remember { mutableStateOf(false) }
@@ -1643,23 +1638,14 @@ private fun PrototypeRecordStage(
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 if (isRecording) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "停止",
-                            fontSize = metrics.sp(16),
-                            lineHeight = metrics.sp(20),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "保存",
-                            fontSize = metrics.sp(12),
-                            color = Color.White.copy(alpha = 0.74f)
-                        )
-                    }
+                    Text(
+                        text = durationLabel ?: "00:00",
+                        fontSize = metrics.sp(16),
+                        lineHeight = metrics.sp(20),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
                 } else {
                     PrototypeMicIcon(metrics = metrics)
                 }
