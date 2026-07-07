@@ -82,6 +82,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -1880,7 +1882,14 @@ private fun PrototypeIdeaDetailPage(
     onDeleteResult: (ProcessingResult) -> Unit,
     onDeleteCard: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var activeSheet by remember(card.id) { mutableStateOf<PrototypeDetailSheet?>(null) }
+    fun openSheet(nextSheet: PrototypeDetailSheet) {
+        focusManager.clearFocus(force = true)
+        keyboardController?.hide()
+        activeSheet = nextSheet
+    }
     BackHandler {
         if (activeSheet != null) {
             activeSheet = null
@@ -1897,11 +1906,11 @@ private fun PrototypeIdeaDetailPage(
 
     LaunchedEffect(runningAction, result?.id) {
         if (runningAction != null) {
-            activeSheet = PrototypeDetailSheet.Result
+            openSheet(PrototypeDetailSheet.Result)
         } else if (result != null && result.id != lastSeenResultId) {
             resultDraft = result.content
             lastSeenResultId = result.id
-            activeSheet = PrototypeDetailSheet.Result
+            openSheet(PrototypeDetailSheet.Result)
         }
     }
 
@@ -1950,7 +1959,7 @@ private fun PrototypeIdeaDetailPage(
                 .offset(metrics.dp(344), metrics.dp(72))
                 .size(metrics.dp(24))
                 .clip(CircleShape)
-                .clickable { activeSheet = PrototypeDetailSheet.Menu },
+                .clickable { openSheet(PrototypeDetailSheet.Menu) },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -1987,7 +1996,8 @@ private fun PrototypeIdeaDetailPage(
                 lineHeight = metrics.sp(28.05f),
                 color = Color(0xFF2F3A35),
                 fontWeight = FontWeight.Normal
-            )
+            ),
+            enabled = activeSheet == null
         )
 
         if (activeSheet == null && showReplaceNotice) {
@@ -2010,24 +2020,25 @@ private fun PrototypeIdeaDetailPage(
                 runningAction = runningAction,
                 onDismiss = { activeSheet = null },
                 onPolish = {
-                    activeSheet = PrototypeDetailSheet.Result
+                    openSheet(PrototypeDetailSheet.Result)
                     onPostProcess(PostProcessAction.Polish, draftText)
                 },
                 onSummarize = {
-                    activeSheet = PrototypeDetailSheet.Result
+                    openSheet(PrototypeDetailSheet.Result)
                     onPostProcess(PostProcessAction.Summarize, draftText)
                 },
                 onCopyOriginal = {
                     onCopyOriginal()
                     activeSheet = null
                 },
-                onDeleteCard = { activeSheet = PrototypeDetailSheet.DeleteConfirm }
+                onDeleteCard = { openSheet(PrototypeDetailSheet.DeleteConfirm) }
             )
             PrototypeDetailSheet.Result -> PrototypeDetailResultDrawer(
                 metrics = metrics,
                 runningAction = runningAction,
                 result = result,
                 resultDraft = resultDraft,
+                onDismiss = { activeSheet = null },
                 onResultDraftChange = { nextContent ->
                     resultDraft = nextContent
                     result?.let { current -> onContentChange(current.id, nextContent) }
@@ -2050,7 +2061,7 @@ private fun PrototypeIdeaDetailPage(
             )
             PrototypeDetailSheet.DeleteConfirm -> PrototypeDetailDeleteConfirm(
                 metrics = metrics,
-                onCancel = { activeSheet = PrototypeDetailSheet.Menu },
+                onCancel = { openSheet(PrototypeDetailSheet.Menu) },
                 onDelete = {
                     activeSheet = null
                     onDeleteCard()
@@ -2098,6 +2109,22 @@ private fun PrototypeDetailMenuDrawer(
                     .clip(RoundedCornerShape(metrics.dp(999)))
                     .background(Color(0xFFD9D1C5))
             )
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(336), metrics.dp(30))
+                    .size(metrics.dp(32))
+                    .clip(CircleShape)
+                    .clickable(onClick = onDismiss),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "×",
+                    fontSize = metrics.sp(20),
+                    lineHeight = metrics.sp(20),
+                    color = Color(0xFF9AA39D),
+                    fontWeight = FontWeight.Medium
+                )
+            }
             Text(
                 modifier = Modifier.offset(metrics.dp(22), metrics.dp(42)).width(metrics.dp(346)),
                 text = "处理这条灵感",
@@ -2287,6 +2314,7 @@ private fun PrototypeDetailResultDrawer(
     runningAction: PostProcessAction?,
     result: ProcessingResult?,
     resultDraft: String,
+    onDismiss: () -> Unit,
     onResultDraftChange: (String) -> Unit,
     onReplaceOriginal: () -> Unit,
     onCopyResult: () -> Unit,
@@ -2301,7 +2329,7 @@ private fun PrototypeDetailResultDrawer(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(metrics.dp(398)),
+                .height(metrics.dp(430)),
             shape = RoundedCornerShape(
                 topStart = metrics.dp(28),
                 topEnd = metrics.dp(28)
@@ -2318,6 +2346,22 @@ private fun PrototypeDetailResultDrawer(
                     .clip(RoundedCornerShape(metrics.dp(999)))
                     .background(Color(0xFFD9D1C5))
             )
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(336), metrics.dp(30))
+                    .size(metrics.dp(32))
+                    .clip(CircleShape)
+                    .clickable(onClick = onDismiss),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "×",
+                    fontSize = metrics.sp(20),
+                    lineHeight = metrics.sp(20),
+                    color = Color(0xFF9AA39D),
+                    fontWeight = FontWeight.Medium
+                )
+            }
             val title = when {
                 runningAction != null -> "${runningAction.label}中"
                 result?.type == PostProcessAction.Summarize -> "提炼要点"
@@ -2347,14 +2391,14 @@ private fun PrototypeDetailResultDrawer(
             Box(
                 modifier = Modifier
                     .offset(metrics.dp(22), metrics.dp(104))
-                    .size(metrics.dp(3), metrics.dp(124))
+                    .size(metrics.dp(3), metrics.dp(220))
                     .clip(RoundedCornerShape(metrics.dp(2)))
                     .background(Color(0xFFD9CBB8))
             )
             BasicTextField(
                 modifier = Modifier
                     .offset(metrics.dp(36), metrics.dp(99))
-                    .size(metrics.dp(326), metrics.dp(132)),
+                    .size(metrics.dp(326), metrics.dp(230)),
                 value = if (runningAction != null) "" else resultDraft,
                 onValueChange = onResultDraftChange,
                 enabled = runningAction == null && result != null,
@@ -2386,7 +2430,7 @@ private fun PrototypeDetailResultDrawer(
             )
             PrototypeDetailPill(
                 metrics = metrics,
-                modifier = Modifier.offset(metrics.dp(36), metrics.dp(258)).width(metrics.dp(112)),
+                modifier = Modifier.offset(metrics.dp(36), metrics.dp(370)).width(metrics.dp(112)),
                 text = "替换原文",
                 primary = true,
                 enabled = result != null && runningAction == null && resultDraft.isNotBlank(),
@@ -2394,14 +2438,14 @@ private fun PrototypeDetailResultDrawer(
             )
             PrototypeDetailPill(
                 metrics = metrics,
-                modifier = Modifier.offset(metrics.dp(154), metrics.dp(258)).width(metrics.dp(86)),
+                modifier = Modifier.offset(metrics.dp(154), metrics.dp(370)).width(metrics.dp(86)),
                 text = "复制结果",
                 enabled = result != null && runningAction == null,
                 onClick = onCopyResult
             )
             PrototypeDetailPill(
                 metrics = metrics,
-                modifier = Modifier.offset(metrics.dp(252), metrics.dp(258)).width(metrics.dp(86)),
+                modifier = Modifier.offset(metrics.dp(252), metrics.dp(370)).width(metrics.dp(86)),
                 text = "重新生成",
                 enabled = runningAction == null,
                 onClick = onRegenerate
