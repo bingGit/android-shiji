@@ -1,6 +1,8 @@
 .DS_Store
 /build/
 .gradle/
+.gradle-user/
+.kotlin/
 .idea/
 *.iml
 local.properties
@@ -13,4 +15,3 @@ app/build/
 task_plan.md
 findings.md
 progress.md
-

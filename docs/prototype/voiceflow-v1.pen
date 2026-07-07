@@ -9954,13 +9954,155 @@
       "x": -81,
       "y": 4653,
       "name": "实时转写 V3 极简背景化区边界",
-      "width": 1840,
+      "width": 2310,
       "height": 860,
       "fill": "#FFFFFF00",
       "cornerRadius": 28,
       "stroke": "#D8DFD8",
       "strokeWidth": 1,
-      "layout": "none"
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "AgHC8",
+          "x": 387,
+          "y": 476,
+          "name": "开放式声场记录按钮",
+          "width": 390,
+          "height": 224,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "jHY2s",
+              "x": 78,
+              "y": 0,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.46,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#DDEADE9A",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 234,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "eb3ms",
+              "x": 106,
+              "y": 36,
+              "name": "扩散环 1",
+              "fill": "#FFFFFF00",
+              "width": 178,
+              "height": 178,
+              "stroke": "#7FA08B24",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "ZdQUe",
+              "x": 130,
+              "y": 60,
+              "name": "扩散环 2",
+              "fill": "#FFFFFF00",
+              "width": 130,
+              "height": 130,
+              "stroke": "#7FA08B38",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "D4sbr",
+              "x": 142,
+              "y": 73,
+              "name": "按钮承托层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F7FBF6",
+                    "position": 0
+                  },
+                  {
+                    "color": "#DDEADF",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 106,
+              "height": 106,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#2F5A4930",
+                "offset": {
+                  "x": 0,
+                  "y": 22
+                },
+                "blur": 34,
+                "spread": -22
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "nMG2w",
+              "x": 161,
+              "y": 92,
+              "name": "按住记录触发按钮",
+              "fill": "#376854",
+              "width": 68,
+              "height": 68,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#244A3D5C",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                },
+                "blur": 24,
+                "spread": -10
+              }
+            },
+            {
+              "type": "icon",
+              "id": "cXx9n",
+              "x": 181,
+              "y": 112,
+              "name": "麦克风图标",
+              "width": 28,
+              "height": 28,
+              "icon": "mic",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "frame",
@@ -9968,7 +10110,7 @@
       "x": -61,
       "y": 4595,
       "name": "实时转写 V3 极简背景化区",
-      "width": 1790,
+      "width": 2260,
       "height": 74,
       "layout": "none",
       "children": [
@@ -9980,7 +10122,7 @@
           "name": "分区标题",
           "fill": "#28342E",
           "textGrowth": "fixed-width",
-          "width": 1312,
+          "width": 1780,
           "content": "实时转写 V3：极简背景化",
           "lineHeight": 1.2,
           "fontFamily": "Noto Sans SC",
@@ -9995,7 +10137,7 @@
           "name": "分区说明",
           "fill": "#68756E",
           "textGrowth": "fixed-width",
-          "width": 1312,
+          "width": 1780,
           "content": "去掉纸片/卡片感，转写内容直接融入页面；只用文字层级、当前句轻高亮和背景光场表达状态。",
           "lineHeight": 1.4,
           "fontFamily": "Noto Sans SC",
@@ -10064,7 +10206,7 @@
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "记录中 / 背景化转写",
+          "content": "记录灵感",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -10094,7 +10236,7 @@
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 316,
-          "content": "不再使用浮层，文字直接成为页面内容。",
+          "content": "继续说，我会把想法实时记下来。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13,
@@ -10177,7 +10319,7 @@
                   "id": "u4Ci0",
                   "name": "说明文字",
                   "fill": "#8A948E",
-                  "content": "内容直接融入页面",
+                  "content": "保持自然说话",
                   "fontFamily": "Noto Sans SC",
                   "fontSize": 12,
                   "fontWeight": "500"
@@ -10650,7 +10792,7 @@
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "记录中 / 背景化转写",
+          "content": "记录灵感",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -10680,7 +10822,7 @@
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 316,
-          "content": "不再使用浮层，文字直接成为页面内容。",
+          "content": "内容会持续保存，你可以自然往下说。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13,
@@ -10763,7 +10905,7 @@
                   "id": "nISEP",
                   "name": "说明文字",
                   "fill": "#8A948E",
-                  "content": "内容直接融入页面",
+                  "content": "持续记录中",
                   "fontFamily": "Noto Sans SC",
                   "fontSize": 12,
                   "fontWeight": "500"
@@ -10847,7 +10989,7 @@
               "fill": "#9AA49E",
               "textGrowth": "fixed-width",
               "width": 318,
-              "content": "内容向上轻滚，最新一句停在当前行",
+              "content": "最新一句会保留在当前编辑位置",
               "fontFamily": "Noto Sans SC",
               "fontSize": 11,
               "fontWeight": "500"
@@ -11265,7 +11407,7 @@
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "松开后 / 简洁草稿",
+          "content": "记录灵感",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -11280,7 +11422,7 @@
           "fill": "#23302A",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "灵感已转成草稿",
+          "content": "灵感已保存",
           "lineHeight": 1.16,
           "fontFamily": "Noto Sans SC",
           "fontSize": 22,
@@ -11295,7 +11437,7 @@
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 316,
-          "content": "只保留必要操作，不增加卡片负担。",
+          "content": "可以继续编辑、润色或提炼要点。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13,
@@ -14761,7 +14903,7 @@
           "fill": "#77837C",
           "textGrowth": "fixed-width",
           "width": 346,
-          "content": "准备记录 / 背景化入口",
+          "content": "记录灵感",
           "lineHeight": 1.3,
           "fontFamily": "Noto Sans SC",
           "fontSize": 12,
@@ -14791,7 +14933,7 @@
           "fill": "#748078",
           "textGrowth": "fixed-width",
           "width": 316,
-          "content": "按下记录按钮，把刚冒出来的想法说出来。",
+          "content": "按下按钮，说出刚冒出来的想法。",
           "lineHeight": 1.45,
           "fontFamily": "Noto Sans SC",
           "fontSize": 13,
@@ -14864,7 +15006,7 @@
                   "id": "A83tT",
                   "name": "状态文字",
                   "fill": "#8A9790",
-                  "content": "等待开始",
+                  "content": "未开始",
                   "fontFamily": "Noto Sans SC",
                   "fontSize": 12,
                   "fontWeight": "650"
@@ -14874,7 +15016,7 @@
                   "id": "pEjtJ",
                   "name": "说明文字",
                   "fill": "#8A9790",
-                  "content": "内容将直接融入页面",
+                  "content": "等待你的想法",
                   "fontFamily": "Noto Sans SC",
                   "fontSize": 12,
                   "fontWeight": "500"
@@ -14890,7 +15032,7 @@
               "fill": "#23302A",
               "textGrowth": "fixed-width",
               "width": 318,
-              "content": "把刚冒出来的想法说出来。",
+              "content": "有想法时，按下按钮开始记录。",
               "lineHeight": 1.42,
               "fontFamily": "Noto Sans SC",
               "fontSize": 14,
@@ -14918,7 +15060,7 @@
                   "id": "DMUNz",
                   "name": "当前识别文字",
                   "fill": "#376854",
-                  "content": "按下按钮开始记录",
+                  "content": "按下开始记录",
                   "fontFamily": "Noto Sans SC",
                   "fontSize": 14,
                   "fontWeight": "700"
@@ -14933,109 +15075,6 @@
                   "height": 18
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "a4jyVV",
-          "x": 0,
-          "y": 376,
-          "name": "开放式声场记录按钮",
-          "width": 390,
-          "height": 224,
-          "fill": "#FFFFFF00",
-          "layout": "none",
-          "children": [
-            {
-              "type": "ellipse",
-              "id": "x96Rs8",
-              "x": 78,
-              "y": 0,
-              "name": "声场底色扩散层",
-              "fill": "#E5EFE51A",
-              "width": 234,
-              "height": 188,
-              "stroke": "#DCE8DF",
-              "strokeWidth": 1
-            },
-            {
-              "type": "ellipse",
-              "id": "G479h",
-              "x": 106,
-              "y": 36,
-              "name": "扩散环 1",
-              "fill": "#E5EFE526",
-              "width": 178,
-              "height": 178,
-              "stroke": "#CFE0D6",
-              "strokeWidth": 1
-            },
-            {
-              "type": "ellipse",
-              "id": "QV8hJ",
-              "x": 130,
-              "y": 60,
-              "name": "扩散环 2",
-              "fill": "#DCEBE140",
-              "width": 130,
-              "height": 130,
-              "stroke": "#BDD4C7",
-              "strokeWidth": 1
-            },
-            {
-              "type": "ellipse",
-              "id": "vT1Aa",
-              "x": 142,
-              "y": 73,
-              "name": "按钮承托层",
-              "fill": "#D5E7DC59",
-              "width": 106,
-              "height": 106,
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#A5422D34",
-                "offset": {
-                  "x": 0,
-                  "y": 22
-                },
-                "blur": 34,
-                "spread": -22
-              }
-            },
-            {
-              "type": "ellipse",
-              "id": "e2sgdS",
-              "x": 161,
-              "y": 92,
-              "name": "按住记录触发按钮",
-              "fill": "#376854",
-              "width": 68,
-              "height": 68,
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#AA3D2860",
-                "offset": {
-                  "x": 0,
-                  "y": 14
-                },
-                "blur": 24,
-                "spread": -10
-              }
-            },
-            {
-              "type": "icon",
-              "id": "Oz7qd",
-              "x": 181,
-              "y": 112,
-              "name": "麦克风图标",
-              "width": 28,
-              "height": 28,
-              "icon": "audio-lines",
-              "library": "lucide",
-              "fill": "#FFFFFF"
             }
           ]
         },
@@ -15160,6 +15199,727 @@
                 {
                   "type": "text",
                   "id": "g3B7sC",
+                  "name": "导航文字 - 设置",
+                  "fill": "#8A9790",
+                  "content": "设置",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ngnGD",
+          "x": 0,
+          "y": 396,
+          "name": "开放式声场记录按钮",
+          "width": 390,
+          "height": 224,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "mNDxv",
+              "x": 101,
+              "y": 32,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.46,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#DDEADE9A",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 188,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "t1Ruw",
+              "x": 106,
+              "y": 37,
+              "name": "扩散环 1",
+              "fill": "#FFFFFF00",
+              "width": 178,
+              "height": 178,
+              "stroke": "#7FA08B24",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "v23s4",
+              "x": 130,
+              "y": 61,
+              "name": "扩散环 2",
+              "fill": "#FFFFFF00",
+              "width": 130,
+              "height": 130,
+              "stroke": "#7FA08B38",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "lypEq",
+              "x": 142,
+              "y": 73,
+              "name": "按钮承托层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F7FBF6",
+                    "position": 0
+                  },
+                  {
+                    "color": "#DDEADF",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 106,
+              "height": 106,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#2F5A4930",
+                "offset": {
+                  "x": 0,
+                  "y": 22
+                },
+                "blur": 34,
+                "spread": -22
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "xvqOh",
+              "x": 161,
+              "y": 92,
+              "name": "按住记录触发按钮",
+              "fill": "#376854",
+              "width": 68,
+              "height": 68,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#244A3D5C",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                },
+                "blur": 24,
+                "spread": -10
+              }
+            },
+            {
+              "type": "icon",
+              "id": "jojEB",
+              "x": 181,
+              "y": 112,
+              "name": "麦克风图标",
+              "width": 28,
+              "height": 28,
+              "icon": "mic",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "A7j1Xl",
+      "x": -61,
+      "y": 4684,
+      "name": "V3-0 初始状态标题",
+      "fill": "#AEB3AE",
+      "textGrowth": "fixed-width",
+      "width": 390,
+      "content": "V3-0 初始：等待记录",
+      "lineHeight": 1.25,
+      "fontFamily": "Inter",
+      "fontSize": 18,
+      "fontWeight": "700"
+    },
+    {
+      "type": "frame",
+      "id": "Rrv8H",
+      "x": 1819,
+      "y": 4595,
+      "name": "V3-4 交互参数注释",
+      "width": 430,
+      "height": 110,
+      "fill": "#FFFFFF00",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "CpJtW",
+          "x": 0,
+          "y": 0,
+          "name": "V3-4 注释标题",
+          "fill": "#28342E",
+          "textGrowth": "fixed-width",
+          "width": 430,
+          "content": "V3-4 触感增强",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "j1kDZr",
+          "x": 0,
+          "y": 34,
+          "name": "V3-4 动效参数",
+          "fill": "#68756E",
+          "textGrowth": "fixed-width",
+          "width": 430,
+          "content": "按下 0.93 scale / 阴影下沉 / 暖色 +8%；松开 spring 回弹；录音中低透明同心圆呼吸；点击瞬间一次短波纹。",
+          "lineHeight": 1.45,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jA4Cr",
+      "x": 1819,
+      "y": 4727,
+      "name": "V3-4 录音中：按压反馈增强",
+      "clip": true,
+      "width": 390,
+      "height": 720,
+      "fill": "#F8F4EE",
+      "cornerRadius": 32,
+      "stroke": "#E5E0D6",
+      "strokeWidth": 1,
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "C9CtE",
+          "x": 0,
+          "y": 0,
+          "name": "状态栏",
+          "width": 390,
+          "height": 58,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "kgWqT",
+              "x": 22,
+              "y": 20,
+              "name": "时间",
+              "fill": "#25312C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "yDGps",
+              "x": 314,
+              "y": 22.5,
+              "name": "系统状态",
+              "fill": "#25312C",
+              "content": "5G 100%",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "c40ksV",
+          "x": 22,
+          "y": 78,
+          "name": "页面小标题",
+          "fill": "#77837C",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "记录灵感",
+          "lineHeight": 1.3,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 12,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "dLsYV",
+          "x": 22,
+          "y": 104,
+          "name": "页面标题",
+          "fill": "#23302A",
+          "textGrowth": "fixed-width",
+          "width": 346,
+          "content": "正在记录",
+          "lineHeight": 1.16,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "BGQjB",
+          "x": 22,
+          "y": 134,
+          "name": "页面说明",
+          "fill": "#748078",
+          "textGrowth": "fixed-width",
+          "width": 316,
+          "content": "按下有反馈，松开会自然回弹。",
+          "lineHeight": 1.45,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "CVa8k",
+          "x": 36,
+          "y": 176,
+          "name": "背景化实时转写区",
+          "width": 318,
+          "height": 116,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "LVr85",
+              "x": 8,
+              "y": 0,
+              "name": "背景转写光场",
+              "width": 302,
+              "height": 116,
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.5,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F3E7D3A0",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F8F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": 40
+            },
+            {
+              "type": "frame",
+              "id": "benkz",
+              "x": 0,
+              "y": 0,
+              "name": "极简状态行",
+              "width": 318,
+              "height": 24,
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "PpfF4",
+                  "name": "状态点",
+                  "width": 7,
+                  "height": 7,
+                  "fill": "#D8664F",
+                  "cornerRadius": 3.5
+                },
+                {
+                  "type": "text",
+                  "id": "n7bCiX",
+                  "name": "状态文字",
+                  "fill": "#B94D35",
+                  "content": "正在听写",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "650"
+                },
+                {
+                  "type": "text",
+                  "id": "U7x3KP",
+                  "name": "说明文字",
+                  "fill": "#8A948E",
+                  "content": "保持自然说话",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "bI14T",
+              "x": 0,
+              "y": 36,
+              "name": "已确认短句",
+              "fill": "#738078",
+              "textGrowth": "fixed-width",
+              "width": 318,
+              "content": "我想把这个想法先记录下来。",
+              "lineHeight": 1.42,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "450"
+            },
+            {
+              "type": "frame",
+              "id": "OqjvO",
+              "x": 0,
+              "y": 66,
+              "name": "当前句轻高亮",
+              "width": 292,
+              "height": 38,
+              "fill": "#EEF5EE88",
+              "cornerRadius": 14,
+              "gap": 5,
+              "padding": [
+                7,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WfNLJ",
+                  "name": "当前识别文字",
+                  "fill": "#25312C",
+                  "content": "能快速承接灵感的工具",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 1,
+                  "id": "VKQX3",
+                  "name": "跳动光标",
+                  "fill": "#D8664F",
+                  "width": 2,
+                  "height": 18
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zVzPR",
+          "x": 0,
+          "y": 376,
+          "name": "开放式声场记录按钮 - 触感增强",
+          "width": 390,
+          "height": 232,
+          "fill": "#FFFFFF00",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "XGgnw",
+              "x": 78,
+              "y": 0,
+              "name": "声场底色扩散层",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "opacity": 0.48,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F2C7B894",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F7F5EF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 234,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "Y7rUzg",
+              "x": 88,
+              "y": 18,
+              "name": "点击短波纹 - 外圈",
+              "fill": "#FFFFFF00",
+              "width": 214,
+              "height": 214,
+              "stroke": "#D8664F18",
+              "strokeWidth": 1.2
+            },
+            {
+              "type": "ellipse",
+              "id": "n67Jf",
+              "x": 106,
+              "y": 36,
+              "name": "录音呼吸波纹 1",
+              "fill": "#FFFFFF00",
+              "width": 178,
+              "height": 178,
+              "stroke": "#D8664F2A",
+              "strokeWidth": 1.4
+            },
+            {
+              "type": "ellipse",
+              "id": "MwqWz",
+              "x": 130,
+              "y": 60,
+              "name": "录音呼吸波纹 2",
+              "fill": "#FFFFFF00",
+              "width": 130,
+              "height": 130,
+              "stroke": "#D8664F42",
+              "strokeWidth": 1.5
+            },
+            {
+              "type": "ellipse",
+              "id": "sp8t4",
+              "x": 142,
+              "y": 73,
+              "name": "按钮承托层 - 按压",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#FFF1EB",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F0C5B5",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 106,
+              "height": 106,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#A5422D2E",
+                "offset": {
+                  "x": 0,
+                  "y": 10
+                },
+                "blur": 24,
+                "spread": -20
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "PG1Fu",
+              "x": 164,
+              "y": 95,
+              "name": "按压中的录音按钮",
+              "fill": "#D8664F",
+              "width": 62,
+              "height": 62,
+              "stroke": "#E17A664D",
+              "strokeWidth": 1,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#AA3D284A",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 18,
+                "spread": -12
+              }
+            },
+            {
+              "type": "icon",
+              "id": "rVFH7",
+              "x": 181,
+              "y": 112,
+              "name": "录音中图标",
+              "width": 28,
+              "height": 28,
+              "icon": "audio-lines",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DzXPs",
+          "x": 24,
+          "y": 646,
+          "name": "底部导航",
+          "width": 342,
+          "height": 58,
+          "fill": "#FFFFFFC8",
+          "cornerRadius": 29,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#26423A30",
+            "offset": {
+              "x": 0,
+              "y": 14
+            },
+            "blur": 34,
+            "spread": -16
+          },
+          "gap": 4,
+          "padding": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "PuPn5",
+              "name": "导航项 - 记录",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#E8F0E8CC",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Cx2dP",
+                  "name": "导航图标 - 记录",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "mic",
+                  "library": "lucide",
+                  "fill": "#376854"
+                },
+                {
+                  "type": "text",
+                  "id": "mJ6Cl",
+                  "name": "导航文字 - 记录",
+                  "fill": "#376854",
+                  "content": "记录",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Q0roNV",
+              "name": "导航项 - 卡片",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "D0QFq",
+                  "name": "导航图标 - 卡片",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "layers",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "jXynZ",
+                  "name": "导航文字 - 卡片",
+                  "fill": "#8A9790",
+                  "content": "卡片",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d5f69",
+              "name": "导航项 - 设置",
+              "width": "fill_container",
+              "height": 46,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 23,
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "DnsuK",
+                  "name": "导航图标 - 设置",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "settings",
+                  "library": "lucide",
+                  "fill": "#8A9790"
+                },
+                {
+                  "type": "text",
+                  "id": "a8iFup",
                   "name": "导航文字 - 设置",
                   "fill": "#8A9790",
                   "content": "设置",

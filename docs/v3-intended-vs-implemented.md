@@ -23,7 +23,7 @@
 
 **Intended:** `实时转写 V3：极简背景化` 要求记录页最大程度背景化，实时转写直接成为页面内容，按钮舞台和波形固定在原型区域内。
 
-**Implemented:** `PrototypeRecordPage` 将 header、transcript area、record stage 和完成态操作映射到原型坐标，并通过 `PrototypeMetrics` 随屏幕宽度同步缩放；`PrototypeRecordStage` 在 `390 x 232` 舞台比例内绘制更轻的同心背景、圆形记录按钮和声场条。证据见 `MainActivity.kt:1224`、`MainActivity.kt:1384`。
+**Implemented:** `PrototypeRecordPage` 现在对 `Idle + 空文本` 单独渲染 `X0Qf2e / V3-0 初始：等待记录`：手机内只放真实产品 UI 文案，初始态使用绿色麦克风待触发按钮，不显示红色录音态和波形；记录中/完成态继续使用动态 transcript area 和 `PrototypeRecordStage`。证据见 `MainActivity.kt:1238`、`MainActivity.kt:1352`、`MainActivity.kt:1437`。
 
 **Gap:** 交互仍是点击开始/停止，不是 press/release 长按；这是业务录音状态机差异，不影响当前视觉还原验证。
 

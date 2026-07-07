@@ -49,8 +49,27 @@ Implementation note:
 
 Reference nodes:
 
+- `X0Qf2e`: V3-0 initial idle state, waits for the first recording action
 - `XRnq7`: V3 recording initial state
 - `Y0Tkcd`: V3 text-rich state
+
+V3-0 initial idle state:
+
+| Element | x | y | w | h | Implementation |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Header eyebrow | 22 | 78 | 346 | 16 | `记录灵感`; product UI text, not a design annotation |
+| Header title | 22 | 104 | 346 | 26 | `准备记录` |
+| Header description | 22 | 134 | 316 | 19 | `按下按钮，说出刚冒出来的想法。` |
+| Initial copy area | 36 | 176 | 318 | 116 | Waiting status, user-facing prompt, CTA highlight |
+| Idle record stage | 0 | 396 | 390 | 224 | Green microphone button, no red recording state, no waveform |
+| Bottom nav | 24 | 646 | 342 | 58 | Fixed bottom with Record selected |
+
+Prototype rule:
+
+- Screen frame content must be production UI only. State names such as `V3-0 初始：等待记录` stay outside the phone frame as annotations.
+- The idle record stage uses concentric circles centered on the microphone button. Do not draw the outer sound field as a non-square oval; the open sound field comes from opacity and radius, not horizontal stretching.
+
+Recording and completed states:
 
 | Element | x | y | w | h | Implementation |
 | --- | ---: | ---: | ---: | ---: | --- |
@@ -60,7 +79,7 @@ Reference nodes:
 
 Dynamic mapping:
 
-- Idle: empty transcript prompt, record stage centered.
+- Idle: use `X0Qf2e`; green microphone ready state, no recording waveform.
 - Recording: transcript text grows in the transcript area; current status uses green state dot.
 - Completed: text remains in the transcript area and a saved note snippet is shown before the stage when space allows.
 
