@@ -19,6 +19,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -661,8 +663,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         }
     }
 
-    fun appendProcessingResult(action: PostProcessAction, result: String) {
-        val targetCardId = selectedIdeaCardId ?: currentIdeaCardId ?: return
+    fun appendProcessingResult(action: PostProcessAction, result: String, targetCardId: Long? = null) {
+        val resolvedCardId = targetCardId ?: selectedIdeaCardId ?: currentIdeaCardId ?: return
         val now = System.currentTimeMillis()
         val processingResult = ProcessingResult(
             id = now,
@@ -673,7 +675,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             model = postProcessModel
         )
         ideaCards = ideaCards.map { card ->
-            if (card.id == targetCardId) {
+            if (card.id == resolvedCardId) {
                 card.copy(
                     updatedAt = now,
                     processingResults = listOf(processingResult) + card.processingResults
@@ -702,14 +704,13 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
     }
 
     fun updateIdeaCardOriginal(cardId: Long, nextContent: String) {
-        val normalized = nextContent.trim()
-        if (normalized.isBlank()) return
+        val titleSource = nextContent.trim()
         val now = System.currentTimeMillis()
         ideaCards = ideaCards.map { card ->
             if (card.id == cardId) {
                 card.copy(
-                    title = generateIdeaTitle(normalized),
-                    originalTranscript = normalized,
+                    title = if (titleSource.isNotBlank()) generateIdeaTitle(titleSource) else card.title,
+                    originalTranscript = nextContent,
                     updatedAt = now
                 )
             } else {
@@ -717,9 +718,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
             }
         }
         if (currentIdeaCardId == cardId) {
-            finalTranscript = normalized
+            finalTranscript = nextContent
         }
-        copiedNotice = "原文已保存"
     }
 
 
@@ -746,9 +746,9 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
         copiedNotice = "灵感卡片已删除"
     }
 
-    fun runPostProcess(action: PostProcessAction) {
+    fun runPostProcess(action: PostProcessAction, sourceOverride: String? = null, targetCardId: Long? = null) {
         if (runningPostProcessAction != null) return
-        val sourceText = activeTranscript.trim()
+        val sourceText = (sourceOverride ?: activeTranscript).trim()
         if (sourceText.isBlank()) {
             fail(
                 message = "还没有可处理的记录",
@@ -776,7 +776,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 errorMessage = ""
                 recoveryHint = ""
                 status = VoiceFlowStatus.Completed
-                appendProcessingResult(action, result)
+                appendProcessingResult(action, result, targetCardId)
             } catch (error: Exception) {
                 postProcessResult = ""
                 fail(
@@ -827,8 +827,8 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                             else -> requestStartRecording()
                         }
                     },
-                    onPolish = { runPostProcess(PostProcessAction.Polish) },
-                    onSummarize = { runPostProcess(PostProcessAction.Summarize) }
+                    onPolish = { runPostProcess(PostProcessAction.Polish, targetCardId = currentIdeaCardId) },
+                    onSummarize = { runPostProcess(PostProcessAction.Summarize, targetCardId = currentIdeaCardId) }
                 )
             }
             VoiceFlowTab.Cards -> {
@@ -846,7 +846,10 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                             copiedNotice = if (copied) "${result.title} 已复制" else "处理结果为空"
                         },
                         onOriginalChange = { updateIdeaCardOriginal(card.id, it) },
-                        onPostProcess = ::runPostProcess,
+                        onPostProcess = { action, sourceText ->
+                            updateIdeaCardOriginal(card.id, sourceText)
+                            runPostProcess(action, sourceText, card.id)
+                        },
                         onContentChange = ::updateProcessingResult,
                         onDeleteResult = { pendingDeleteResult = it },
                         onDeleteCard = { pendingDeleteCard = card }
@@ -1034,6 +1037,7 @@ private fun ConfirmDeleteDialog(
 }
 
 private object V3Spec {
+    const val BaseHeight = 844f
     const val BaseWidth = 390f
     const val ContentX = 22f
     const val ContentWidth = 346f
@@ -1053,17 +1057,30 @@ private class PrototypeMetrics(val scale: Float) {
 }
 
 @Composable
-private fun PrototypePage(content: @Composable BoxScope.(PrototypeMetrics) -> Unit) {
+private fun PrototypePage(
+    modifier: Modifier = Modifier,
+    minContentHeight: Float? = null,
+    content: @Composable BoxScope.(PrototypeMetrics) -> Unit
+) {
+    val scrollState = rememberScrollState()
     BoxWithConstraints(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(V3Color.Background)
+            .then(if (minContentHeight != null) Modifier.verticalScroll(scrollState) else Modifier)
     ) {
         val metrics = PrototypeMetrics(maxWidth / V3Spec.BaseWidth.dp)
+        val contentHeight = minContentHeight?.let { max(V3Spec.BaseHeight, it) }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(),
+                .then(
+                    if (contentHeight != null) {
+                        Modifier.height(metrics.dp(contentHeight))
+                    } else {
+                        Modifier.fillMaxHeight()
+                    }
+                ),
             content = { content(metrics) }
         )
     }
@@ -1100,17 +1117,19 @@ private fun PrototypeHeader(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
-    Text(
-        modifier = Modifier
-            .offset(metrics.dp(V3Spec.ContentX), metrics.dp(V3Spec.HeaderDescriptionY))
-            .width(metrics.dp(316)),
-        text = description,
-        fontSize = metrics.sp(13),
-        lineHeight = metrics.sp(19),
-        color = V3Color.TextMuted,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis
-    )
+    if (description.isNotBlank()) {
+        Text(
+            modifier = Modifier
+                .offset(metrics.dp(V3Spec.ContentX), metrics.dp(V3Spec.HeaderDescriptionY))
+                .width(metrics.dp(316)),
+            text = description,
+            fontSize = metrics.sp(13),
+            lineHeight = metrics.sp(19),
+            color = V3Color.TextMuted,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @Composable
@@ -1272,8 +1291,13 @@ private fun PrototypeRecordPage(
     val displayText = transcript.ifBlank {
         if (isRecording) "正在听你说话..." else "按下记录按钮，把刚冒出来的想法说出来。"
     }
-    val stageTop = 396
-    PrototypePage { metrics ->
+    val textLineHeight = if (displayText.length > 45) 29 else 33
+    val estimatedLineCount = max(1, (displayText.length + 13) / 14)
+    val textBlockHeight = max(if (displayText.length > 70) 145 else 82, estimatedLineCount * textLineHeight)
+    val stageTop = max(396, 214 + textBlockHeight + 32)
+    val completedActionsTop = stageTop + 208
+    val pageContentHeight = max(V3Spec.BaseHeight, completedActionsTop + 96f)
+    PrototypePage(minContentHeight = pageContentHeight) { metrics ->
         if (isInitialIdle) {
             PrototypeRecordIdlePage(metrics = metrics, onPrimaryAction = onPrimaryAction)
             return@PrototypePage
@@ -1289,7 +1313,7 @@ private fun PrototypeRecordPage(
         Box(
             modifier = Modifier
                 .offset(metrics.dp(36), metrics.dp(166))
-                .size(metrics.dp(318), metrics.dp(if (displayText.length > 70) 220 else 130))
+                .size(metrics.dp(318), metrics.dp(textBlockHeight + 70))
         ) {
             PrototypeStatusLine(
                 metrics = metrics,
@@ -1304,9 +1328,7 @@ private fun PrototypeRecordPage(
                 fontSize = if (displayText.length > 45) metrics.sp(19) else metrics.sp(24),
                 lineHeight = if (displayText.length > 45) metrics.sp(29) else metrics.sp(33),
                 color = V3Color.TextPrimary,
-                fontWeight = FontWeight.Bold,
-                maxLines = if (displayText.length > 70) 5 else 3,
-                overflow = TextOverflow.Ellipsis
+                fontWeight = FontWeight.Bold
             )
             Text(
                 modifier = Modifier
@@ -1336,13 +1358,13 @@ private fun PrototypeRecordPage(
         if (isCompleted && transcript.isNotBlank()) {
             Box(
                 modifier = Modifier
-                    .offset(metrics.dp(22), metrics.dp(584))
+                    .offset(metrics.dp(22), metrics.dp(completedActionsTop))
                     .size(metrics.dp(346), metrics.dp(1))
                     .background(V3Color.Line)
             )
             Text(
                 modifier = Modifier
-                    .offset(metrics.dp(22), metrics.dp(616))
+                    .offset(metrics.dp(22), metrics.dp(completedActionsTop + 32))
                     .width(metrics.dp(120)),
                 text = "已保存为卡片",
                 fontSize = metrics.sp(12),
@@ -1350,7 +1372,7 @@ private fun PrototypeRecordPage(
                 fontWeight = FontWeight.SemiBold
             )
             Row(
-                modifier = Modifier.offset(metrics.dp(152), metrics.dp(604)),
+                modifier = Modifier.offset(metrics.dp(152), metrics.dp(completedActionsTop + 20)),
                 horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
             ) {
                 PrototypeChip(metrics = metrics, text = "润色", selected = true, onClick = onPolish)
@@ -1725,16 +1747,24 @@ private fun PrototypeIdeaListPage(
                 PrototypeChip(metrics = metrics, text = "待整理")
                 PrototypeChip(metrics = metrics, text = "已润色")
             }
-            ideaCards.take(3).forEachIndexed { index, item ->
-                PrototypeIdeaRow(
-                    metrics = metrics,
-                    modifier = Modifier.offset(metrics.dp(22), metrics.dp(218 + index * 104)),
-                    item = item,
-                    selected = selectedIdeaCardId == item.id,
-                    onSelect = { onSelect(item) },
-                    onCopy = { onCopy(item) },
-                    onDelete = { onDelete(item) }
-                )
+            Column(
+                modifier = Modifier
+                    .offset(metrics.dp(22), metrics.dp(218))
+                    .size(metrics.dp(346), metrics.dp(326))
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(metrics.dp(12))
+            ) {
+                ideaCards.forEach { item ->
+                    PrototypeIdeaRow(
+                        metrics = metrics,
+                        modifier = Modifier,
+                        item = item,
+                        selected = selectedIdeaCardId == item.id,
+                        onSelect = { onSelect(item) },
+                        onCopy = { onCopy(item) },
+                        onDelete = { onDelete(item) }
+                    )
+                }
             }
         }
         Surface(
@@ -1841,23 +1871,70 @@ private fun PrototypeIdeaDetailPage(
     onCopyOriginal: () -> Unit,
     onCopyResult: (ProcessingResult) -> Unit,
     onOriginalChange: (String) -> Unit,
-    onPostProcess: (PostProcessAction) -> Unit,
+    onPostProcess: (PostProcessAction, String) -> Unit,
     onContentChange: (Long, String) -> Unit,
     onDeleteResult: (ProcessingResult) -> Unit,
     onDeleteCard: () -> Unit
 ) {
-    var draftText by remember(card.id, card.originalTranscript) { mutableStateOf(card.originalTranscript) }
+    BackHandler(onBack = onBack)
+    var draftText by remember(card.id) { mutableStateOf(card.originalTranscript) }
     val result = card.processingResults.firstOrNull()
     var resultDraft by remember(result?.id, result?.content) { mutableStateOf(result?.content.orEmpty()) }
-    PrototypePage { metrics ->
-        PrototypeHeader(
-            metrics = metrics,
-            eyebrow = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)}",
-            title = card.title,
-            description = "打开一条灵感，在同一个空间里编辑、润色和提炼。"
+    PrototypePage(
+        modifier = Modifier.pointerInput(card.id) {
+            var totalDrag = 0f
+            detectHorizontalDragGestures(
+                onDragStart = { totalDrag = 0f },
+                onHorizontalDrag = { _, dragAmount -> totalDrag += dragAmount },
+                onDragEnd = {
+                    if (totalDrag > 96f) onBack()
+                },
+                onDragCancel = { totalDrag = 0f }
+            )
+        }
+    ) { metrics ->
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(18), metrics.dp(72))
+                .size(metrics.dp(38))
+                .clip(CircleShape)
+                .clickable(onClick = onBack),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "‹",
+                fontSize = metrics.sp(30),
+                lineHeight = metrics.sp(30),
+                color = V3Color.TextPrimary,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Text(
+            modifier = Modifier
+                .offset(metrics.dp(66), metrics.dp(V3Spec.HeaderEyebrowY))
+                .width(metrics.dp(280)),
+            text = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)}",
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(16),
+            color = V3Color.TextMuted,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Text(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(174)).width(metrics.dp(316)),
+            modifier = Modifier
+                .offset(metrics.dp(66), metrics.dp(V3Spec.HeaderTitleY))
+                .width(metrics.dp(280)),
+            text = card.title,
+            fontSize = metrics.sp(22),
+            lineHeight = metrics.sp(26),
+            color = V3Color.TextPrimary,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(176)).width(metrics.dp(316)),
             text = "原文",
             fontSize = metrics.sp(12),
             lineHeight = metrics.sp(16),
@@ -1865,55 +1942,51 @@ private fun PrototypeIdeaDetailPage(
             fontWeight = FontWeight.Bold
         )
         BasicTextField(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(202)).size(metrics.dp(346), metrics.dp(96)),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(204)).size(metrics.dp(346), metrics.dp(162)),
             value = draftText,
-            onValueChange = { draftText = it },
+            onValueChange = {
+                draftText = it
+                onOriginalChange(it)
+            },
             textStyle = androidx.compose.ui.text.TextStyle(
                 fontSize = metrics.sp(14),
                 lineHeight = metrics.sp(23),
                 color = V3Color.TextPrimary
             )
         )
-        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(328)).size(metrics.dp(346), metrics.dp(1)).background(V3Color.Line))
+        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(392)).size(metrics.dp(346), metrics.dp(1)).background(V3Color.Line))
         PrototypeChip(
             metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(352)).width(metrics.dp(64)),
-            text = "编辑",
-            selected = true,
-            onClick = { onOriginalChange(draftText) }
-        )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(92), metrics.dp(352)).width(metrics.dp(64)),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(416)).width(metrics.dp(64)),
             text = if (runningAction == PostProcessAction.Polish) "生成" else "润色",
-            onClick = { onPostProcess(PostProcessAction.Polish) },
+            onClick = { onPostProcess(PostProcessAction.Polish, draftText) },
             enabled = runningAction == null
         )
         PrototypeChip(
             metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(164), metrics.dp(352)).width(metrics.dp(64)),
+            modifier = Modifier.offset(metrics.dp(94), metrics.dp(416)).width(metrics.dp(64)),
             text = if (runningAction == PostProcessAction.Summarize) "生成" else "要点",
-            onClick = { onPostProcess(PostProcessAction.Summarize) },
+            onClick = { onPostProcess(PostProcessAction.Summarize, draftText) },
             enabled = runningAction == null
         )
         PrototypeChip(
             metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(236), metrics.dp(352)).width(metrics.dp(64)),
+            modifier = Modifier.offset(metrics.dp(166), metrics.dp(416)).width(metrics.dp(64)),
             text = "删除",
             danger = true,
             onClick = onDeleteCard
         )
         Text(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(414)).width(metrics.dp(316)),
+            modifier = Modifier.offset(metrics.dp(22), metrics.dp(478)).width(metrics.dp(316)),
             text = result?.title ?: runningAction?.resultTitle ?: "处理结果",
             fontSize = metrics.sp(12),
             lineHeight = metrics.sp(16),
             color = V3Color.Secondary,
             fontWeight = FontWeight.Bold
         )
-        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(446)).size(metrics.dp(3), metrics.dp(84)).clip(RoundedCornerShape(metrics.dp(2))).background(Color(0xFFD9CBB8)))
+        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(510)).size(metrics.dp(3), metrics.dp(84)).clip(RoundedCornerShape(metrics.dp(2))).background(Color(0xFFD9CBB8)))
         BasicTextField(
-            modifier = Modifier.offset(metrics.dp(36), metrics.dp(442)).size(metrics.dp(326), metrics.dp(76)),
+            modifier = Modifier.offset(metrics.dp(36), metrics.dp(506)).size(metrics.dp(326), metrics.dp(76)),
             value = if (runningAction != null) "${runningAction.label}生成中..." else resultDraft.ifBlank { "点击润色或要点后，处理结果会作为独立版本显示在这里。" },
             onValueChange = { nextContent ->
                 resultDraft = nextContent
@@ -1928,28 +2001,27 @@ private fun PrototypeIdeaDetailPage(
         )
         PrototypeChip(
             metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(36), metrics.dp(544)).width(metrics.dp(64)),
+            modifier = Modifier.offset(metrics.dp(36), metrics.dp(604)).width(metrics.dp(64)),
             text = "复制",
             onClick = { result?.let(onCopyResult) ?: onCopyOriginal() }
         )
         PrototypeChip(
             metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(106), metrics.dp(544)).width(metrics.dp(88)),
+            modifier = Modifier.offset(metrics.dp(106), metrics.dp(604)).width(metrics.dp(88)),
             text = "替换原文",
             selected = true,
             enabled = result != null,
-            onClick = { if (resultDraft.isNotBlank()) onOriginalChange(resultDraft) }
-        )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(604)).width(metrics.dp(64)),
-            text = "返回",
-            onClick = onBack
+            onClick = {
+                if (resultDraft.isNotBlank()) {
+                    draftText = resultDraft
+                    onOriginalChange(resultDraft)
+                }
+            }
         )
         if (result != null) {
             PrototypeChip(
                 metrics = metrics,
-                modifier = Modifier.offset(metrics.dp(92), metrics.dp(604)).width(metrics.dp(64)),
+                modifier = Modifier.offset(metrics.dp(204), metrics.dp(604)).width(metrics.dp(64)),
                 text = "删版本",
                 danger = true,
                 onClick = { onDeleteResult(result) }
