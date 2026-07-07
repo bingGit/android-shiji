@@ -27,7 +27,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -215,6 +215,12 @@ private enum class PostProcessAction(
         resultTitle = "短视频口播稿",
         instruction = "把原文改写成短视频口播稿，句子短，节奏明确，适合直接朗读。"
     )
+}
+
+private enum class PrototypeDetailSheet {
+    Menu,
+    Result,
+    DeleteConfirm
 }
 
 private data class ProcessingResult(
@@ -850,9 +856,13 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                             updateIdeaCardOriginal(card.id, sourceText)
                             runPostProcess(action, sourceText, card.id)
                         },
+                        onReplaceResult = { result, nextContent ->
+                            updateIdeaCardOriginal(card.id, nextContent)
+                            deleteProcessingResult(result.id)
+                        },
                         onContentChange = ::updateProcessingResult,
                         onDeleteResult = { pendingDeleteResult = it },
-                        onDeleteCard = { pendingDeleteCard = card }
+                        onDeleteCard = { deleteIdeaCard(card.id) }
                     )
                 } ?: run {
                     PrototypeIdeaListPage(
@@ -863,8 +873,7 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                             val copied = copyText("VoiceFlow idea", item.originalTranscript)
                             copiedNotice = if (copied) "灵感原文已复制" else "灵感原文为空"
                         },
-                        onDelete = { item -> pendingDeleteCard = item },
-                        onNewRecord = { selectTab(VoiceFlowTab.Record) }
+                        onDelete = { item -> pendingDeleteCard = item }
                     )
                 }
             }
@@ -942,10 +951,12 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                 )
             }
         }
-        PrototypeBottomNavigation(
-            selectedTab = selectedTab,
-            onTabSelected = ::selectTab
-        )
+        if (!(selectedTab == VoiceFlowTab.Cards && selectedIdeaCard != null)) {
+            PrototypeBottomNavigation(
+                selectedTab = selectedTab,
+                onTabSelected = ::selectTab
+            )
+        }
     }
 
     pendingDeleteCard?.let { card ->
@@ -1702,8 +1713,7 @@ private fun PrototypeIdeaListPage(
     selectedIdeaCardId: Long?,
     onSelect: (IdeaCard) -> Unit,
     onCopy: (IdeaCard) -> Unit,
-    onDelete: (IdeaCard) -> Unit,
-    onNewRecord: () -> Unit
+    onDelete: (IdeaCard) -> Unit
 ) {
     PrototypePage { metrics ->
         PrototypeHeader(
@@ -1765,20 +1775,6 @@ private fun PrototypeIdeaListPage(
                         onDelete = { onDelete(item) }
                     )
                 }
-            }
-        }
-        Surface(
-            modifier = Modifier
-                .offset(metrics.dp(302), metrics.dp(560))
-                .size(metrics.dp(52))
-                .clip(CircleShape)
-                .clickable(onClick = onNewRecord),
-            shape = CircleShape,
-            color = V3Color.Green,
-            shadowElevation = metrics.dp(6)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Text("+", fontSize = metrics.sp(26), color = Color.White, fontWeight = FontWeight.Medium)
             }
         }
     }
@@ -1872,159 +1868,600 @@ private fun PrototypeIdeaDetailPage(
     onCopyResult: (ProcessingResult) -> Unit,
     onOriginalChange: (String) -> Unit,
     onPostProcess: (PostProcessAction, String) -> Unit,
+    onReplaceResult: (ProcessingResult, String) -> Unit,
     onContentChange: (Long, String) -> Unit,
     onDeleteResult: (ProcessingResult) -> Unit,
     onDeleteCard: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    var activeSheet by remember(card.id) { mutableStateOf<PrototypeDetailSheet?>(null) }
+    BackHandler {
+        if (activeSheet != null) {
+            activeSheet = null
+        } else {
+            onBack()
+        }
+    }
     var draftText by remember(card.id) { mutableStateOf(card.originalTranscript) }
     val result = card.processingResults.firstOrNull()
     var resultDraft by remember(result?.id, result?.content) { mutableStateOf(result?.content.orEmpty()) }
+    var lastSeenResultId by remember(card.id) { mutableStateOf<Long?>(result?.id) }
+    var undoText by remember(card.id) { mutableStateOf<String?>(null) }
+    var showReplaceNotice by remember(card.id) { mutableStateOf(false) }
+
+    LaunchedEffect(runningAction, result?.id) {
+        if (runningAction != null) {
+            activeSheet = PrototypeDetailSheet.Result
+        } else if (result != null && result.id != lastSeenResultId) {
+            resultDraft = result.content
+            lastSeenResultId = result.id
+            activeSheet = PrototypeDetailSheet.Result
+        }
+    }
+
     PrototypePage(
         modifier = Modifier.pointerInput(card.id) {
-            var totalDrag = 0f
-            detectHorizontalDragGestures(
-                onDragStart = { totalDrag = 0f },
-                onHorizontalDrag = { _, dragAmount -> totalDrag += dragAmount },
-                onDragEnd = {
-                    if (totalDrag > 96f) onBack()
+            var totalDragX = 0f
+            var totalDragY = 0f
+            detectDragGestures(
+                onDragStart = {
+                    totalDragX = 0f
+                    totalDragY = 0f
                 },
-                onDragCancel = { totalDrag = 0f }
+                onDrag = { _, dragAmount ->
+                    totalDragX += dragAmount.x
+                    totalDragY += dragAmount.y
+                },
+                onDragEnd = {
+                    val mostlyHorizontal = totalDragX > abs(totalDragY) * 1.8f
+                    if (totalDragX > 140f && mostlyHorizontal && activeSheet == null) onBack()
+                },
+                onDragCancel = {
+                    totalDragX = 0f
+                    totalDragY = 0f
+                }
             )
         }
     ) { metrics ->
         Box(
             modifier = Modifier
-                .offset(metrics.dp(18), metrics.dp(72))
-                .size(metrics.dp(38))
+                .offset(metrics.dp(20), metrics.dp(72))
+                .size(metrics.dp(28))
                 .clip(CircleShape)
                 .clickable(onClick = onBack),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "‹",
-                fontSize = metrics.sp(30),
-                lineHeight = metrics.sp(30),
+                fontSize = metrics.sp(28),
+                lineHeight = metrics.sp(28),
+                color = V3Color.TextPrimary,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(344), metrics.dp(72))
+                .size(metrics.dp(24))
+                .clip(CircleShape)
+                .clickable { activeSheet = PrototypeDetailSheet.Menu },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "⋯",
+                fontSize = metrics.sp(24),
+                lineHeight = metrics.sp(24),
                 color = V3Color.TextPrimary,
                 fontWeight = FontWeight.Medium
             )
         }
         Text(
             modifier = Modifier
-                .offset(metrics.dp(66), metrics.dp(V3Spec.HeaderEyebrowY))
-                .width(metrics.dp(280)),
-            text = "${formatDisplayTime(card.createdAt)} · ${formatDuration(card.durationMs / 1000f)}",
+                .offset(metrics.dp(22), metrics.dp(120))
+                .width(metrics.dp(346)),
+            text = formatDisplayTime(card.createdAt),
             fontSize = metrics.sp(12),
-            lineHeight = metrics.sp(16),
-            color = V3Color.TextMuted,
+            lineHeight = metrics.sp(15.6f),
+            color = Color(0xFF77837C),
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
-            modifier = Modifier
-                .offset(metrics.dp(66), metrics.dp(V3Spec.HeaderTitleY))
-                .width(metrics.dp(280)),
-            text = card.title,
-            fontSize = metrics.sp(22),
-            lineHeight = metrics.sp(26),
-            color = V3Color.TextPrimary,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(176)).width(metrics.dp(316)),
-            text = "原文",
-            fontSize = metrics.sp(12),
-            lineHeight = metrics.sp(16),
-            color = V3Color.TextMuted,
-            fontWeight = FontWeight.Bold
-        )
         BasicTextField(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(204)).size(metrics.dp(346), metrics.dp(162)),
+            modifier = Modifier
+                .offset(metrics.dp(22), metrics.dp(154))
+                .size(metrics.dp(346), metrics.dp(420)),
             value = draftText,
             onValueChange = {
                 draftText = it
                 onOriginalChange(it)
             },
             textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = metrics.sp(14),
-                lineHeight = metrics.sp(23),
-                color = V3Color.TextPrimary
+                fontSize = metrics.sp(18),
+                lineHeight = metrics.sp(29.16f),
+                color = Color(0xFF2F3A35),
+                fontWeight = FontWeight.Normal
             )
         )
-        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(392)).size(metrics.dp(346), metrics.dp(1)).background(V3Color.Line))
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(416)).width(metrics.dp(64)),
-            text = if (runningAction == PostProcessAction.Polish) "生成" else "润色",
-            onClick = { onPostProcess(PostProcessAction.Polish, draftText) },
-            enabled = runningAction == null
-        )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(94), metrics.dp(416)).width(metrics.dp(64)),
-            text = if (runningAction == PostProcessAction.Summarize) "生成" else "要点",
-            onClick = { onPostProcess(PostProcessAction.Summarize, draftText) },
-            enabled = runningAction == null
-        )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(166), metrics.dp(416)).width(metrics.dp(64)),
-            text = "删除",
-            danger = true,
-            onClick = onDeleteCard
-        )
+
+        if (activeSheet == null && showReplaceNotice) {
+            PrototypeDetailToast(
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(48), metrics.dp(626)),
+                onUndo = {
+                    undoText?.let { previous ->
+                        draftText = previous
+                        onOriginalChange(previous)
+                    }
+                    showReplaceNotice = false
+                }
+            )
+        }
+
+        when (activeSheet) {
+            PrototypeDetailSheet.Menu -> PrototypeDetailMenuDrawer(
+                metrics = metrics,
+                runningAction = runningAction,
+                onDismiss = { activeSheet = null },
+                onPolish = {
+                    activeSheet = PrototypeDetailSheet.Result
+                    onPostProcess(PostProcessAction.Polish, draftText)
+                },
+                onSummarize = {
+                    activeSheet = PrototypeDetailSheet.Result
+                    onPostProcess(PostProcessAction.Summarize, draftText)
+                },
+                onCopyOriginal = {
+                    onCopyOriginal()
+                    activeSheet = null
+                },
+                onDeleteCard = { activeSheet = PrototypeDetailSheet.DeleteConfirm }
+            )
+            PrototypeDetailSheet.Result -> PrototypeDetailResultDrawer(
+                metrics = metrics,
+                runningAction = runningAction,
+                result = result,
+                resultDraft = resultDraft,
+                onResultDraftChange = { nextContent ->
+                    resultDraft = nextContent
+                    result?.let { current -> onContentChange(current.id, nextContent) }
+                },
+                onReplaceOriginal = {
+                    val current = result ?: return@PrototypeDetailResultDrawer
+                    val replacement = resultDraft.trim()
+                    if (replacement.isBlank()) return@PrototypeDetailResultDrawer
+                    undoText = draftText
+                    draftText = replacement
+                    onReplaceResult(current, replacement)
+                    activeSheet = null
+                    showReplaceNotice = true
+                },
+                onCopyResult = { result?.let(onCopyResult) },
+                onRegenerate = {
+                    val currentAction = result?.type ?: runningAction ?: PostProcessAction.Polish
+                    onPostProcess(currentAction, draftText)
+                }
+            )
+            PrototypeDetailSheet.DeleteConfirm -> PrototypeDetailDeleteConfirm(
+                metrics = metrics,
+                onCancel = { activeSheet = PrototypeDetailSheet.Menu },
+                onDelete = {
+                    activeSheet = null
+                    onDeleteCard()
+                }
+            )
+            null -> Unit
+        }
+    }
+}
+
+@Composable
+private fun PrototypeDetailMenuDrawer(
+    metrics: PrototypeMetrics,
+    runningAction: PostProcessAction?,
+    onDismiss: () -> Unit,
+    onPolish: () -> Unit,
+    onSummarize: () -> Unit,
+    onCopyOriginal: () -> Unit,
+    onDeleteCard: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(metrics.dp(390), metrics.dp(720))
+            .background(Color(0x1825312C))
+            .clickable(onClick = onDismiss)
+    )
+    Surface(
+        modifier = Modifier
+            .offset(metrics.dp(0), metrics.dp(370))
+            .size(metrics.dp(390), metrics.dp(350)),
+        shape = RoundedCornerShape(
+            topStart = metrics.dp(28),
+            topEnd = metrics.dp(28)
+        ),
+        color = Color(0xFFFFFDF8),
+        border = BorderStroke(metrics.dp(1), V3Color.Line),
+        shadowElevation = metrics.dp(10)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(168), metrics.dp(12))
+                    .size(metrics.dp(54), metrics.dp(4))
+                    .clip(RoundedCornerShape(metrics.dp(999)))
+                    .background(Color(0xFFD9D1C5))
+            )
+            Text(
+                modifier = Modifier.offset(metrics.dp(22), metrics.dp(42)).width(metrics.dp(346)),
+                text = "处理这条灵感",
+                fontSize = metrics.sp(15),
+                lineHeight = metrics.sp(18),
+                color = Color(0xFF28342E),
+                fontWeight = FontWeight.Bold
+            )
+            PrototypeDetailDrawerRow(
+                metrics = metrics,
+                y = 78,
+                mark = "✦",
+                title = "润色表达",
+                subtitle = "整理表达，但保留原意",
+                enabled = runningAction == null,
+                onClick = onPolish
+            )
+            PrototypeDetailDrawerRow(
+                metrics = metrics,
+                y = 138,
+                mark = "✓",
+                title = "提炼要点",
+                subtitle = "提取可以直接行动的核心信息",
+                enabled = runningAction == null,
+                onClick = onSummarize
+            )
+            Text(
+                modifier = Modifier.offset(metrics.dp(22), metrics.dp(218)).width(metrics.dp(346)),
+                text = "记录操作",
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(14.4f),
+                color = V3Color.Secondary,
+                fontWeight = FontWeight.Bold
+            )
+            PrototypeDetailDrawerRow(
+                metrics = metrics,
+                y = 250,
+                mark = "⧉",
+                title = "复制原文",
+                subtitle = "",
+                enabled = true,
+                onClick = onCopyOriginal
+            )
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(22), metrics.dp(312))
+                    .size(metrics.dp(346), metrics.dp(30))
+                    .clip(RoundedCornerShape(metrics.dp(15)))
+                    .clickable(onClick = onDeleteCard),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "删除记录",
+                    fontSize = metrics.sp(13),
+                    lineHeight = metrics.sp(13),
+                    color = V3Color.Warm,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrototypeDetailDrawerRow(
+    metrics: PrototypeMetrics,
+    y: Int,
+    mark: String,
+    title: String,
+    subtitle: String,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    val alpha = if (enabled) 1f else 0.45f
+    Box(
+        modifier = Modifier
+            .offset(metrics.dp(22), metrics.dp(y))
+            .size(metrics.dp(346), metrics.dp(56))
+            .clickable(enabled = enabled, onClick = onClick)
+    ) {
         Text(
-            modifier = Modifier.offset(metrics.dp(22), metrics.dp(478)).width(metrics.dp(316)),
-            text = result?.title ?: runningAction?.resultTitle ?: "处理结果",
-            fontSize = metrics.sp(12),
-            lineHeight = metrics.sp(16),
-            color = V3Color.Secondary,
+            modifier = Modifier.offset(metrics.dp(0), metrics.dp(13)).width(metrics.dp(18)),
+            text = mark,
+            fontSize = metrics.sp(15),
+            lineHeight = metrics.sp(18),
+            color = V3Color.Green.copy(alpha = alpha),
             fontWeight = FontWeight.Bold
         )
-        Box(modifier = Modifier.offset(metrics.dp(22), metrics.dp(510)).size(metrics.dp(3), metrics.dp(84)).clip(RoundedCornerShape(metrics.dp(2))).background(Color(0xFFD9CBB8)))
-        BasicTextField(
-            modifier = Modifier.offset(metrics.dp(36), metrics.dp(506)).size(metrics.dp(326), metrics.dp(76)),
-            value = if (runningAction != null) "${runningAction.label}生成中..." else resultDraft.ifBlank { "点击润色或要点后，处理结果会作为独立版本显示在这里。" },
-            onValueChange = { nextContent ->
-                resultDraft = nextContent
-                result?.let { current -> onContentChange(current.id, nextContent) }
-            },
-            enabled = result != null && runningAction == null,
-            textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = metrics.sp(14),
-                lineHeight = metrics.sp(21),
-                color = V3Color.TextSecondary
+        Text(
+            modifier = Modifier.offset(metrics.dp(32), metrics.dp(if (subtitle.isBlank()) 17 else 8)).width(metrics.dp(260)),
+            text = title,
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(16.8f),
+            color = Color(0xFF2F3A35).copy(alpha = alpha),
+            fontWeight = FontWeight.Medium
+        )
+        if (subtitle.isNotBlank()) {
+            Text(
+                modifier = Modifier.offset(metrics.dp(32), metrics.dp(31)).width(metrics.dp(260)),
+                text = subtitle,
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(14.4f),
+                color = Color(0xFF7C8982).copy(alpha = alpha),
+                fontWeight = FontWeight.Medium
             )
+        }
+        Text(
+            modifier = Modifier.offset(metrics.dp(328), metrics.dp(16)).width(metrics.dp(16)),
+            text = "›",
+            fontSize = metrics.sp(18),
+            lineHeight = metrics.sp(18),
+            color = Color(0xFF9AA39D).copy(alpha = alpha)
         )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(36), metrics.dp(604)).width(metrics.dp(64)),
-            text = "复制",
-            onClick = { result?.let(onCopyResult) ?: onCopyOriginal() }
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(0), metrics.dp(55))
+                .size(metrics.dp(346), metrics.dp(1))
+                .background(V3Color.Line.copy(alpha = alpha))
         )
-        PrototypeChip(
-            metrics = metrics,
-            modifier = Modifier.offset(metrics.dp(106), metrics.dp(604)).width(metrics.dp(88)),
-            text = "替换原文",
-            selected = true,
-            enabled = result != null,
-            onClick = {
-                if (resultDraft.isNotBlank()) {
-                    draftText = resultDraft
-                    onOriginalChange(resultDraft)
-                }
+    }
+}
+
+@Composable
+private fun PrototypeDetailResultDrawer(
+    metrics: PrototypeMetrics,
+    runningAction: PostProcessAction?,
+    result: ProcessingResult?,
+    resultDraft: String,
+    onResultDraftChange: (String) -> Unit,
+    onReplaceOriginal: () -> Unit,
+    onCopyResult: () -> Unit,
+    onRegenerate: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(metrics.dp(390), metrics.dp(720))
+            .background(Color(0x1825312C))
+    )
+    Surface(
+        modifier = Modifier
+            .offset(metrics.dp(0), metrics.dp(322))
+            .size(metrics.dp(390), metrics.dp(398)),
+        shape = RoundedCornerShape(
+            topStart = metrics.dp(28),
+            topEnd = metrics.dp(28)
+        ),
+        color = Color(0xFFFFFDF8),
+        border = BorderStroke(metrics.dp(1), V3Color.Line),
+        shadowElevation = metrics.dp(10)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(168), metrics.dp(12))
+                    .size(metrics.dp(54), metrics.dp(4))
+                    .clip(RoundedCornerShape(metrics.dp(999)))
+                    .background(Color(0xFFD9D1C5))
+            )
+            val title = when {
+                runningAction != null -> "${runningAction.label}中"
+                result?.type == PostProcessAction.Summarize -> "提炼要点"
+                else -> "润色版本"
             }
-        )
-        if (result != null) {
-            PrototypeChip(
+            val subtitle = when {
+                runningAction == PostProcessAction.Summarize -> "正在提取核心信息..."
+                runningAction != null -> "正在保留你的原意，整理表达..."
+                else -> "候选内容不会自动覆盖原文"
+            }
+            Text(
+                modifier = Modifier.offset(metrics.dp(22), metrics.dp(42)).width(metrics.dp(346)),
+                text = title,
+                fontSize = metrics.sp(15),
+                lineHeight = metrics.sp(18),
+                color = Color(0xFF28342E),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                modifier = Modifier.offset(metrics.dp(22), metrics.dp(66)).width(metrics.dp(346)),
+                text = subtitle,
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(14.4f),
+                color = Color(0xFF7C8982),
+                fontWeight = FontWeight.Medium
+            )
+            Box(
+                modifier = Modifier
+                    .offset(metrics.dp(22), metrics.dp(104))
+                    .size(metrics.dp(3), metrics.dp(124))
+                    .clip(RoundedCornerShape(metrics.dp(2)))
+                    .background(Color(0xFFD9CBB8))
+            )
+            BasicTextField(
+                modifier = Modifier
+                    .offset(metrics.dp(36), metrics.dp(99))
+                    .size(metrics.dp(326), metrics.dp(132)),
+                value = if (runningAction != null) "" else resultDraft,
+                onValueChange = onResultDraftChange,
+                enabled = runningAction == null && result != null,
+                textStyle = androidx.compose.ui.text.TextStyle(
+                    fontSize = metrics.sp(14),
+                    lineHeight = metrics.sp(21),
+                    color = Color(0xFF4F5D55),
+                    fontWeight = FontWeight.Normal
+                ),
+                decorationBox = { innerTextField ->
+                    if (runningAction != null) {
+                        Text(
+                            text = subtitle,
+                            fontSize = metrics.sp(14),
+                            lineHeight = metrics.sp(21),
+                            color = Color(0xFF4F5D55)
+                        )
+                    } else if (resultDraft.isBlank()) {
+                        Text(
+                            text = "生成后的内容会出现在这里。",
+                            fontSize = metrics.sp(14),
+                            lineHeight = metrics.sp(21),
+                            color = V3Color.TextMuted
+                        )
+                    } else {
+                        innerTextField()
+                    }
+                }
+            )
+            PrototypeDetailPill(
                 metrics = metrics,
-                modifier = Modifier.offset(metrics.dp(204), metrics.dp(604)).width(metrics.dp(64)),
-                text = "删版本",
+                modifier = Modifier.offset(metrics.dp(36), metrics.dp(258)).width(metrics.dp(112)),
+                text = "替换原文",
+                primary = true,
+                enabled = result != null && runningAction == null && resultDraft.isNotBlank(),
+                onClick = onReplaceOriginal
+            )
+            PrototypeDetailPill(
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(154), metrics.dp(258)).width(metrics.dp(86)),
+                text = "复制结果",
+                enabled = result != null && runningAction == null,
+                onClick = onCopyResult
+            )
+            PrototypeDetailPill(
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(252), metrics.dp(258)).width(metrics.dp(86)),
+                text = "重新生成",
+                enabled = runningAction == null,
+                onClick = onRegenerate
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrototypeDetailPill(
+    metrics: PrototypeMetrics,
+    modifier: Modifier,
+    text: String,
+    primary: Boolean = false,
+    danger: Boolean = false,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    val bg = when {
+        primary -> Color(0xFF6F9276)
+        danger -> V3Color.Warm
+        else -> V3Color.Sand
+    }
+    val fg = if (primary || danger) Color.White else V3Color.Secondary
+    Surface(
+        modifier = modifier
+            .height(metrics.dp(38))
+            .clip(RoundedCornerShape(metrics.dp(19)))
+            .clickable(enabled = enabled, onClick = onClick),
+        shape = RoundedCornerShape(metrics.dp(19)),
+        color = if (enabled) bg else bg.copy(alpha = 0.48f)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = text,
+                fontSize = metrics.sp(12),
+                lineHeight = metrics.sp(12),
+                color = if (enabled) fg else fg.copy(alpha = 0.55f),
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrototypeDetailToast(
+    metrics: PrototypeMetrics,
+    modifier: Modifier,
+    onUndo: () -> Unit
+) {
+    Surface(
+        modifier = modifier.size(metrics.dp(294), metrics.dp(46)),
+        shape = RoundedCornerShape(metrics.dp(23)),
+        color = Color(0xFF25312C),
+        shadowElevation = metrics.dp(8)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "已替换原文 ·",
+                fontSize = metrics.sp(13),
+                lineHeight = metrics.sp(13),
+                color = V3Color.Background,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.width(metrics.dp(16)))
+            Text(
+                modifier = Modifier.clickable(onClick = onUndo),
+                text = "撤销",
+                fontSize = metrics.sp(13),
+                lineHeight = metrics.sp(13),
+                color = Color(0xFFBBD1B5),
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrototypeDetailDeleteConfirm(
+    metrics: PrototypeMetrics,
+    onCancel: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(metrics.dp(390), metrics.dp(720))
+            .background(Color(0x3025312C))
+    )
+    Surface(
+        modifier = Modifier
+            .offset(metrics.dp(42), metrics.dp(280))
+            .size(metrics.dp(306), metrics.dp(176)),
+        shape = RoundedCornerShape(metrics.dp(24)),
+        color = Color(0xFFFFFDF8),
+        border = BorderStroke(metrics.dp(1), V3Color.Line),
+        shadowElevation = metrics.dp(12)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                modifier = Modifier.offset(metrics.dp(24), metrics.dp(26)).width(metrics.dp(258)),
+                text = "删除这条记录？",
+                fontSize = metrics.sp(16),
+                lineHeight = metrics.sp(19.2f),
+                color = Color(0xFF28342E),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                modifier = Modifier.offset(metrics.dp(24), metrics.dp(58)).width(metrics.dp(258)),
+                text = "删除后无法恢复。",
+                fontSize = metrics.sp(13),
+                lineHeight = metrics.sp(17.55f),
+                color = Color(0xFF7C8982)
+            )
+            PrototypeDetailPill(
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(24), metrics.dp(116)).width(metrics.dp(116)),
+                text = "取消",
+                onClick = onCancel
+            )
+            PrototypeDetailPill(
+                metrics = metrics,
+                modifier = Modifier.offset(metrics.dp(166), metrics.dp(116)).width(metrics.dp(116)),
+                text = "删除",
                 danger = true,
-                onClick = { onDeleteResult(result) }
+                onClick = onDelete
             )
         }
     }
