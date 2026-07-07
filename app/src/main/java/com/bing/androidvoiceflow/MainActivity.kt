@@ -223,6 +223,12 @@ private enum class PrototypeDetailSheet {
     DeleteConfirm
 }
 
+private enum class PrototypeDrawerIcon {
+    Sparkle,
+    Check,
+    Copy
+}
+
 private data class ProcessingResult(
     val id: Long,
     val type: PostProcessAction,
@@ -1760,7 +1766,7 @@ private fun PrototypeIdeaListPage(
             Column(
                 modifier = Modifier
                     .offset(metrics.dp(22), metrics.dp(218))
-                    .size(metrics.dp(346), metrics.dp(326))
+                    .size(metrics.dp(346), metrics.dp(V3Spec.BaseHeight - 218f))
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(metrics.dp(12))
             ) {
@@ -1775,6 +1781,7 @@ private fun PrototypeIdeaListPage(
                         onDelete = { onDelete(item) }
                     )
                 }
+                Spacer(modifier = Modifier.height(metrics.dp(132)))
             }
         }
     }
@@ -1807,7 +1814,7 @@ private fun PrototypeIdeaRow(
         Text(
             modifier = Modifier.offset(metrics.dp(18), metrics.dp(4)),
             text = formatDisplayTime(item.createdAt),
-            fontSize = metrics.sp(11),
+            fontSize = metrics.sp(10.5f),
             color = Color(0xFF929D96),
             fontWeight = FontWeight.Medium,
             maxLines = 1
@@ -1815,12 +1822,12 @@ private fun PrototypeIdeaRow(
         Text(
             modifier = Modifier
                 .offset(metrics.dp(18), metrics.dp(24))
-                .width(metrics.dp(280)),
+                .width(metrics.dp(292)),
             text = item.title,
-            fontSize = metrics.sp(15),
-            lineHeight = metrics.sp(19),
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(18),
             color = Color(0xFF28342E),
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -1829,21 +1836,21 @@ private fun PrototypeIdeaRow(
                 .offset(metrics.dp(18), metrics.dp(50))
                 .width(metrics.dp(304)),
             text = item.originalTranscript,
-            fontSize = metrics.sp(13),
-            lineHeight = metrics.sp(18),
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(17),
             color = V3Color.TextSecondary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
+        Box(
             modifier = Modifier
-                .offset(metrics.dp(312), metrics.dp(16))
-                .size(metrics.dp(28))
+                .offset(metrics.dp(314), metrics.dp(15))
+                .size(metrics.dp(24))
                 .clickable(onClick = onCopy),
-            text = "复制",
-            fontSize = metrics.sp(11),
-            color = Color(0xFF9AA49E)
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            PrototypeCopyGlyph(metrics = metrics, color = Color(0xFFB0BAB4))
+        }
         Box(
             modifier = Modifier
                 .offset(metrics.dp(0), metrics.dp(90))
@@ -1976,8 +1983,8 @@ private fun PrototypeIdeaDetailPage(
                 onOriginalChange(it)
             },
             textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = metrics.sp(18),
-                lineHeight = metrics.sp(29.16f),
+                fontSize = metrics.sp(17),
+                lineHeight = metrics.sp(28.05f),
                 color = Color(0xFF2F3A35),
                 fontWeight = FontWeight.Normal
             )
@@ -2066,23 +2073,24 @@ private fun PrototypeDetailMenuDrawer(
 ) {
     Box(
         modifier = Modifier
-            .size(metrics.dp(390), metrics.dp(720))
+            .fillMaxSize()
             .background(Color(0x1825312C))
-            .clickable(onClick = onDismiss)
-    )
-    Surface(
-        modifier = Modifier
-            .offset(metrics.dp(0), metrics.dp(370))
-            .size(metrics.dp(390), metrics.dp(350)),
-        shape = RoundedCornerShape(
-            topStart = metrics.dp(28),
-            topEnd = metrics.dp(28)
-        ),
-        color = Color(0xFFFFFDF8),
-        border = BorderStroke(metrics.dp(1), V3Color.Line),
-        shadowElevation = metrics.dp(10)
+            .clickable(onClick = onDismiss),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(metrics.dp(350)),
+            shape = RoundedCornerShape(
+                topStart = metrics.dp(28),
+                topEnd = metrics.dp(28)
+            ),
+            color = Color(0xFFFFFDF8),
+            border = BorderStroke(metrics.dp(1), V3Color.Line),
+            shadowElevation = metrics.dp(10)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
                     .offset(metrics.dp(168), metrics.dp(12))
@@ -2101,7 +2109,7 @@ private fun PrototypeDetailMenuDrawer(
             PrototypeDetailDrawerRow(
                 metrics = metrics,
                 y = 78,
-                mark = "✦",
+                icon = PrototypeDrawerIcon.Sparkle,
                 title = "润色表达",
                 subtitle = "整理表达，但保留原意",
                 enabled = runningAction == null,
@@ -2110,7 +2118,7 @@ private fun PrototypeDetailMenuDrawer(
             PrototypeDetailDrawerRow(
                 metrics = metrics,
                 y = 138,
-                mark = "✓",
+                icon = PrototypeDrawerIcon.Check,
                 title = "提炼要点",
                 subtitle = "提取可以直接行动的核心信息",
                 enabled = runningAction == null,
@@ -2127,7 +2135,7 @@ private fun PrototypeDetailMenuDrawer(
             PrototypeDetailDrawerRow(
                 metrics = metrics,
                 y = 250,
-                mark = "⧉",
+                icon = PrototypeDrawerIcon.Copy,
                 title = "复制原文",
                 subtitle = "",
                 enabled = true,
@@ -2149,6 +2157,7 @@ private fun PrototypeDetailMenuDrawer(
                     fontWeight = FontWeight.Medium
                 )
             }
+            }
         }
     }
 }
@@ -2157,7 +2166,7 @@ private fun PrototypeDetailMenuDrawer(
 private fun PrototypeDetailDrawerRow(
     metrics: PrototypeMetrics,
     y: Int,
-    mark: String,
+    icon: PrototypeDrawerIcon,
     title: String,
     subtitle: String,
     enabled: Boolean,
@@ -2170,19 +2179,17 @@ private fun PrototypeDetailDrawerRow(
             .size(metrics.dp(346), metrics.dp(56))
             .clickable(enabled = enabled, onClick = onClick)
     ) {
-        Text(
-            modifier = Modifier.offset(metrics.dp(0), metrics.dp(13)).width(metrics.dp(18)),
-            text = mark,
-            fontSize = metrics.sp(15),
-            lineHeight = metrics.sp(18),
+        PrototypeDrawerIconGlyph(
+            metrics = metrics,
+            icon = icon,
             color = V3Color.Green.copy(alpha = alpha),
-            fontWeight = FontWeight.Bold
+            modifier = Modifier.offset(metrics.dp(0), metrics.dp(14))
         )
         Text(
             modifier = Modifier.offset(metrics.dp(32), metrics.dp(if (subtitle.isBlank()) 17 else 8)).width(metrics.dp(260)),
             text = title,
-            fontSize = metrics.sp(14),
-            lineHeight = metrics.sp(16.8f),
+            fontSize = metrics.sp(13.5f),
+            lineHeight = metrics.sp(16.2f),
             color = Color(0xFF2F3A35).copy(alpha = alpha),
             fontWeight = FontWeight.Medium
         )
@@ -2190,8 +2197,8 @@ private fun PrototypeDetailDrawerRow(
             Text(
                 modifier = Modifier.offset(metrics.dp(32), metrics.dp(31)).width(metrics.dp(260)),
                 text = subtitle,
-                fontSize = metrics.sp(12),
-                lineHeight = metrics.sp(14.4f),
+                fontSize = metrics.sp(11.5f),
+                lineHeight = metrics.sp(13.8f),
                 color = Color(0xFF7C8982).copy(alpha = alpha),
                 fontWeight = FontWeight.Medium
             )
@@ -2213,6 +2220,68 @@ private fun PrototypeDetailDrawerRow(
 }
 
 @Composable
+private fun PrototypeDrawerIconGlyph(
+    metrics: PrototypeMetrics,
+    icon: PrototypeDrawerIcon,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier.size(metrics.dp(18))) {
+        val strokeWidth = metrics.dp(1.8f).toPx()
+        val stroke = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+        when (icon) {
+            PrototypeDrawerIcon.Sparkle -> {
+                drawLine(color, Offset(size.width * 0.5f, size.height * 0.08f), Offset(size.width * 0.5f, size.height * 0.92f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.08f, size.height * 0.5f), Offset(size.width * 0.92f, size.height * 0.5f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+                drawLine(color.copy(alpha = color.alpha * 0.72f), Offset(size.width * 0.26f, size.height * 0.26f), Offset(size.width * 0.74f, size.height * 0.74f), strokeWidth = metrics.dp(1.2f).toPx(), cap = StrokeCap.Round)
+                drawLine(color.copy(alpha = color.alpha * 0.72f), Offset(size.width * 0.74f, size.height * 0.26f), Offset(size.width * 0.26f, size.height * 0.74f), strokeWidth = metrics.dp(1.2f).toPx(), cap = StrokeCap.Round)
+            }
+            PrototypeDrawerIcon.Check -> {
+                drawLine(color, Offset(size.width * 0.2f, size.height * 0.55f), Offset(size.width * 0.42f, size.height * 0.76f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+                drawLine(color, Offset(size.width * 0.42f, size.height * 0.76f), Offset(size.width * 0.82f, size.height * 0.24f), strokeWidth = strokeWidth, cap = StrokeCap.Round)
+            }
+            PrototypeDrawerIcon.Copy -> {
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(size.width * 0.18f, size.height * 0.28f),
+                    size = Size(size.width * 0.48f, size.height * 0.48f),
+                    cornerRadius = CornerRadius(metrics.dp(2.5f).toPx(), metrics.dp(2.5f).toPx()),
+                    style = stroke
+                )
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(size.width * 0.34f, size.height * 0.12f),
+                    size = Size(size.width * 0.48f, size.height * 0.48f),
+                    cornerRadius = CornerRadius(metrics.dp(2.5f).toPx(), metrics.dp(2.5f).toPx()),
+                    style = stroke
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrototypeCopyGlyph(metrics: PrototypeMetrics, color: Color) {
+    Canvas(modifier = Modifier.size(metrics.dp(16))) {
+        val stroke = Stroke(width = metrics.dp(1.5f).toPx(), cap = StrokeCap.Round)
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(size.width * 0.18f, size.height * 0.3f),
+            size = Size(size.width * 0.46f, size.height * 0.46f),
+            cornerRadius = CornerRadius(metrics.dp(2f).toPx(), metrics.dp(2f).toPx()),
+            style = stroke
+        )
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(size.width * 0.34f, size.height * 0.14f),
+            size = Size(size.width * 0.46f, size.height * 0.46f),
+            cornerRadius = CornerRadius(metrics.dp(2f).toPx(), metrics.dp(2f).toPx()),
+            style = stroke
+        )
+    }
+}
+
+@Composable
 private fun PrototypeDetailResultDrawer(
     metrics: PrototypeMetrics,
     runningAction: PostProcessAction?,
@@ -2225,22 +2294,23 @@ private fun PrototypeDetailResultDrawer(
 ) {
     Box(
         modifier = Modifier
-            .size(metrics.dp(390), metrics.dp(720))
-            .background(Color(0x1825312C))
-    )
-    Surface(
-        modifier = Modifier
-            .offset(metrics.dp(0), metrics.dp(322))
-            .size(metrics.dp(390), metrics.dp(398)),
-        shape = RoundedCornerShape(
-            topStart = metrics.dp(28),
-            topEnd = metrics.dp(28)
-        ),
-        color = Color(0xFFFFFDF8),
-        border = BorderStroke(metrics.dp(1), V3Color.Line),
-        shadowElevation = metrics.dp(10)
+            .fillMaxSize()
+            .background(Color(0x1825312C)),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(metrics.dp(398)),
+            shape = RoundedCornerShape(
+                topStart = metrics.dp(28),
+                topEnd = metrics.dp(28)
+            ),
+            color = Color(0xFFFFFDF8),
+            border = BorderStroke(metrics.dp(1), V3Color.Line),
+            shadowElevation = metrics.dp(10)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
                     .offset(metrics.dp(168), metrics.dp(12))
@@ -2336,6 +2406,7 @@ private fun PrototypeDetailResultDrawer(
                 enabled = runningAction == null,
                 onClick = onRegenerate
             )
+            }
         }
     }
 }
@@ -2422,19 +2493,18 @@ private fun PrototypeDetailDeleteConfirm(
 ) {
     Box(
         modifier = Modifier
-            .size(metrics.dp(390), metrics.dp(720))
-            .background(Color(0x3025312C))
-    )
-    Surface(
-        modifier = Modifier
-            .offset(metrics.dp(42), metrics.dp(280))
-            .size(metrics.dp(306), metrics.dp(176)),
-        shape = RoundedCornerShape(metrics.dp(24)),
-        color = Color(0xFFFFFDF8),
-        border = BorderStroke(metrics.dp(1), V3Color.Line),
-        shadowElevation = metrics.dp(12)
+            .fillMaxSize()
+            .background(Color(0x3025312C)),
+        contentAlignment = Alignment.Center
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.size(metrics.dp(306), metrics.dp(176)),
+            shape = RoundedCornerShape(metrics.dp(24)),
+            color = Color(0xFFFFFDF8),
+            border = BorderStroke(metrics.dp(1), V3Color.Line),
+            shadowElevation = metrics.dp(12)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
             Text(
                 modifier = Modifier.offset(metrics.dp(24), metrics.dp(26)).width(metrics.dp(258)),
                 text = "删除这条记录？",
@@ -2463,6 +2533,7 @@ private fun PrototypeDetailDeleteConfirm(
                 danger = true,
                 onClick = onDelete
             )
+            }
         }
     }
 }
