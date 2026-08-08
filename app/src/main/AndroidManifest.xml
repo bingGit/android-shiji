@@ -1,25 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
+        android:name=".VoiceFlowApplication"
         android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidVoiceFlow">
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
+            android:name=".capture.entry.ShareReceiverActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
-            android:windowSoftInputMode="adjustNothing">
+            android:label="@string/capture_action_label"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".capture.entry.ProcessTextActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/capture_action_label"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".capture.ui.CaptureCommentActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="补一句"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture" />
+
+        <activity
+            android:name=".capture.ui.CaptureTagPickerActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture.TagSheet" />
+
+        <activity
+            android:name=".capture.ui.CaptureTagManagementActivity"
+            android:exported="false"
+            android:label="标签管理"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture" />
+
+        <activity
+            android:name=".capture.ui.CaptureInboxActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
         </activity>
+
+        <activity
+            android:name=".capture.ui.ManualCaptureActivity"
+            android:exported="false"
+            android:label="手动记录"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".capture.ui.LockScreenCaptureActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:showWhenLocked="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".capture.entry.QuickRecordShortcutActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture.Transparent" />
+
+        <activity
+            android:name=".capture.ui.StartReadingActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="开始摘录"
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture" />
+
+        <activity
+            android:name=".capture.clipboard.ClipboardCaptureActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/capture_tile_label"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AndroidVoiceFlow.Capture.Transparent" />
+
+        <service
+            android:name=".capture.clipboard.CaptureTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_capture_tile"
+            android:label="@string/capture_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".capture.accessibility.VolumeQuickCaptureService"
+            android:exported="true"
+            android:label="@string/volume_quick_capture_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/volume_quick_capture_accessibility_service" />
+        </service>
+
+        <receiver
+            android:name=".capture.notification.CaptureActionReceiver"
+            android:exported="false" />
     </application>
 </manifest>

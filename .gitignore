@@ -10,6 +10,9 @@ release-signing.properties
 keystores/
 gradle/gradle-daemon-jvm.properties
 app/build/
+output/
+app/src/debug/
+.claude/
 
 # Local agent planning notes
 task_plan.md

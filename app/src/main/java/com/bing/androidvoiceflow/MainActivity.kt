@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -97,6 +98,7 @@ import com.bing.androidvoiceflow.core.ProviderConfig
 import com.bing.androidvoiceflow.core.RealtimeProviderProtocol
 import com.bing.androidvoiceflow.core.RealtimeSession
 import com.bing.androidvoiceflow.core.TranscriptionEvent
+import com.bing.androidvoiceflow.capture.ui.CaptureInboxActivity
 import com.bing.androidvoiceflow.provider.OpenAiCompatibleTextPostProcessProvider
 import com.bing.androidvoiceflow.provider.RealtimeProviderFactory
 import kotlinx.coroutines.CancellationException
@@ -955,6 +957,9 @@ private fun VoiceFlowScreen(initialQuickRecordMode: Boolean) {
                                 listOfNotNull(result.summary, result.detail).joinToString("：")
                             }
                         }
+                    },
+                    onOpenCaptureInbox = {
+                        context.startActivity(Intent(context, CaptureInboxActivity::class.java))
                     }
                 )
             }
@@ -2608,7 +2613,8 @@ private fun PrototypeSettingsPage(
     onHotwordsChange: (String) -> Unit,
     onStreamingEnabledChange: (Boolean) -> Unit,
     onTestRealtimeConnection: () -> Unit,
-    onTestPostProcessConnection: () -> Unit
+    onTestPostProcessConnection: () -> Unit,
+    onOpenCaptureInbox: () -> Unit
 ) {
     val realtimeReady = apiKey.isNotBlank() && (
         realtimeProtocol == RealtimeProviderProtocol.AliyunParaformer ||
@@ -2679,6 +2685,60 @@ private fun PrototypeSettingsPage(
             PrototypeChip(metrics = metrics, text = "测转写", onClick = onTestRealtimeConnection)
             PrototypeChip(metrics = metrics, text = "测文本", onClick = onTestPostProcessConnection)
         }
+        PrototypeNavigationSettingRow(
+            metrics = metrics,
+            y = 660,
+            title = "阅读捕获",
+            description = "本地缓冲、摘录会话和通知",
+            onClick = onOpenCaptureInbox
+        )
+    }
+}
+
+@Composable
+private fun PrototypeNavigationSettingRow(
+    metrics: PrototypeMetrics,
+    y: Int,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .offset(metrics.dp(22), metrics.dp(y))
+            .size(metrics.dp(346), metrics.dp(56))
+            .clickable(onClick = onClick)
+    ) {
+        Text(
+            modifier = Modifier.offset(metrics.dp(32), metrics.dp(8)).width(metrics.dp(270)),
+            text = title,
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(20),
+            color = V3Color.TextPrimary,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1
+        )
+        Text(
+            modifier = Modifier.offset(metrics.dp(32), metrics.dp(30)).width(metrics.dp(270)),
+            text = description,
+            fontSize = metrics.sp(12),
+            lineHeight = metrics.sp(17),
+            color = V3Color.TextSecondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            modifier = Modifier.offset(metrics.dp(328), metrics.dp(18)),
+            text = ">",
+            fontSize = metrics.sp(16),
+            color = V3Color.TextMuted
+        )
+        Box(
+            modifier = Modifier
+                .offset(metrics.dp(0), metrics.dp(55))
+                .size(metrics.dp(346), metrics.dp(1))
+                .background(V3Color.Line)
+        )
     }
 }
 

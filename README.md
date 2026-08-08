@@ -1,48 +1,53 @@
-# Android VoiceFlow
+# 拾记 Android
 
-Android VoiceFlow 是一个面向 Android 的实时语音转文字工具。第一版目标是打开即用、边说边显示转写结果、停止后生成最终文本并复制到剪贴板，同时保留总结、润色和自动改写入口。
+拾记是一个低摩擦内容捕获应用：从其他应用分享文字、处理选中文本、读取剪贴板，或通过系统快捷入口快速记录内容，并在本地保存后提交到 Capture Service。
 
-## 当前状态
+## 当前能力
 
-当前仓库已创建 Android App 骨架：
+- 接收系统分享和“处理文本”入口。
+- 支持单条捕获、连续阅读摘录和手动补充内容。
+- 支持剪贴板保存、通知栏操作、快捷设置 Tile 和音量键快捷记录。
+- 支持标签选择、标签管理、复制、重新同步和删除同步任务。
+- 使用 Room 持久化本地记录和同步队列。
+- 使用 WorkManager 在满足网络条件时执行同步，并维护已完成记录。
+- 使用 Android Keystore 加密保存 Capture Service 的本地认证信息。
+- 保留原有实时语音转写及文本后处理实现，但当前主入口以内容捕获为主。
 
-- Kotlin + Jetpack Compose。
-- 单模块 `:app`。
-- 录音权限声明和运行时权限请求。
-- VoiceFlow 核心接口抽象。
-- `AudioRecord` 本地 PCM16 mono 音频采集。
-- 主界面录音状态、音量波形、采集统计、剪贴板复制、后处理、Provider 设置和最近历史。
-- OpenAI-compatible 文本模型后处理，用于提炼要点、润色表达、整理成文和创作者内容改写。
+## 技术栈
 
-Realtime provider 已有 OpenAI-compatible Realtime 和阿里云 Paraformer WebSocket 初版；当前录音主流程会真实打开麦克风、读取 PCM chunk，并发送给所选实时转写 provider。
+- Kotlin
+- Jetpack Compose
+- Room
+- WorkManager
+- OkHttp
+- Android Gradle Plugin 9.1.0
+- Kotlin 2.2.10
+- compileSdk 35，minSdk 26
 
-## 技术基线
+## 配置
 
-项目沿用 `/Users/bing/project/me/mobile-git-sync` 的 Android 工程基线：
+首次使用时，在 APP 的捕获设置中填写 Capture Service 的 Base URL、用户名和密码。认证信息只保存在设备本地，不应写入源码、资源、日志或 Git。
 
-- Android Gradle Plugin `9.1.0`
-- Kotlin Compose plugin `2.2.10`
-- Compose BOM `2025.12.00`
-- compileSdk `35`
-- minSdk `26`
+项目不包含服务端代码。服务端地址和凭据属于运行时配置，提交代码时使用示例地址或占位符。
 
-与 Mobile Git Sync 相同的是 Android/Kotlin/Compose 壳；不同的是业务核心。Android VoiceFlow 不复用 JGit、Termux、WebView 编辑器和后台 Git 同步逻辑。
+## 开发
 
-## 当前里程碑
-
-- M1：Android 项目骨架与 VoiceFlow 主界面已完成。
-- M2：本地麦克风采集已接入，默认使用 PCM16、mono、24 kHz、400 ms chunk。
-- M3：OpenAI-compatible Realtime 和阿里云 Paraformer 实时转写 provider 已接入初版。
-- M4：后续文本处理已接入 OpenAI-compatible Chat Completions，并扩展创作者常用处理动作。
-
-## 本地构建
+编译 Kotlin：
 
 ```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
-生成 debug APK：
+构建 Debug APK：
 
 ```bash
 ./gradlew :app:assembleDebug
 ```
+
+## 原型参考
+
+当前实现参考原型文件：
+
+`docs/prototype/voiceflow-v1.pen`
+
+该文件是 Pencil 原文件。导出截图、设计探索过程和验收文档不属于源码提交范围。

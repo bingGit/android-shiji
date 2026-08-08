@@ -6,5 +6,27 @@
         <item name="android:statusBarColor">#F7F7F2</item>
         <item name="android:navigationBarColor">#F7F7F2</item>
     </style>
-</resources>
 
+    <style name="Theme.AndroidVoiceFlow.CaptureBase" parent="Theme.AndroidVoiceFlow">
+        <item name="android:windowBackground">#101118</item>
+        <item name="android:statusBarColor">#101118</item>
+        <item name="android:navigationBarColor">#101118</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="Theme.AndroidVoiceFlow.Capture" parent="Theme.AndroidVoiceFlow.CaptureBase" />
+
+    <style name="Theme.AndroidVoiceFlow.Capture.Transparent" parent="Theme.AndroidVoiceFlow.Capture">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.AndroidVoiceFlow.Capture.TagSheet" parent="Theme.AndroidVoiceFlow.Capture.Transparent">
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.48</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+</resources>

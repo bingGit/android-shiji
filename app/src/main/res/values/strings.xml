@@ -1,6 +1,9 @@
 <resources>
-    <string name="app_name">Android VoiceFlow</string>
+    <string name="app_name">拾记</string>
     <string name="shortcut_quick_record_short">快速记录</string>
     <string name="shortcut_quick_record_long">快速记录灵感</string>
+    <string name="capture_action_label">保存到拾记</string>
+    <string name="capture_tile_label">保存到拾记</string>
+    <string name="volume_quick_capture_service_label">拾记音量键快速记录</string>
+    <string name="volume_quick_capture_accessibility_description">识别音量减三击并打开快速记录，亮屏锁定时也可新增内容，不读取屏幕内容。</string>
 </resources>
-

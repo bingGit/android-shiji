@@ -1,0 +1,546 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "5a6e5a09990d7162b7b75f6065f1ab51",
+    "entities": [
+      {
+        "tableName": "single_captures",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`capture_id` TEXT NOT NULL, `capture_type` TEXT NOT NULL, `raw_text` TEXT NOT NULL, `comment` TEXT, `source_url` TEXT, `title_hint` TEXT, `source_package` TEXT, `received_at` INTEGER NOT NULL, `grace_deadline_at` INTEGER NOT NULL, `state` TEXT NOT NULL, PRIMARY KEY(`capture_id`))",
+        "fields": [
+          {
+            "fieldPath": "captureId",
+            "columnName": "capture_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "captureType",
+            "columnName": "capture_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawText",
+            "columnName": "raw_text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comment",
+            "columnName": "comment",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "source_url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "titleHint",
+            "columnName": "title_hint",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourcePackage",
+            "columnName": "source_package",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "receivedAt",
+            "columnName": "received_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "graceDeadlineAt",
+            "columnName": "grace_deadline_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "capture_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_single_captures_state_grace_deadline_at",
+            "unique": false,
+            "columnNames": [
+              "state",
+              "grace_deadline_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_single_captures_state_grace_deadline_at` ON `${TABLE_NAME}` (`state`, `grace_deadline_at`)"
+          }
+        ]
+      },
+      {
+        "tableName": "reading_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` TEXT NOT NULL, `source_url` TEXT, `title_hint` TEXT, `source_package` TEXT, `raw_share_text` TEXT, `state` TEXT NOT NULL, `started_at` INTEGER NOT NULL, `last_activity_at` INTEGER NOT NULL, `inactivity_deadline_at` INTEGER NOT NULL, PRIMARY KEY(`session_id`))",
+        "fields": [
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "source_url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "titleHint",
+            "columnName": "title_hint",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourcePackage",
+            "columnName": "source_package",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rawShareText",
+            "columnName": "raw_share_text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastActivityAt",
+            "columnName": "last_activity_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inactivityDeadlineAt",
+            "columnName": "inactivity_deadline_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "session_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_reading_sessions_state_last_activity_at",
+            "unique": false,
+            "columnNames": [
+              "state",
+              "last_activity_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reading_sessions_state_last_activity_at` ON `${TABLE_NAME}` (`state`, `last_activity_at`)"
+          },
+          {
+            "name": "index_reading_sessions_source_package_state",
+            "unique": false,
+            "columnNames": [
+              "source_package",
+              "state"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reading_sessions_source_package_state` ON `${TABLE_NAME}` (`source_package`, `state`)"
+          }
+        ]
+      },
+      {
+        "tableName": "reading_blocks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`block_id` TEXT NOT NULL, `session_id` TEXT NOT NULL, `position` INTEGER NOT NULL, `type` TEXT NOT NULL, `content` TEXT NOT NULL, `created_at` INTEGER NOT NULL, PRIMARY KEY(`block_id`), FOREIGN KEY(`session_id`) REFERENCES `reading_sessions`(`session_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "blockId",
+            "columnName": "block_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "block_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_reading_blocks_session_id",
+            "unique": false,
+            "columnNames": [
+              "session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reading_blocks_session_id` ON `${TABLE_NAME}` (`session_id`)"
+          },
+          {
+            "name": "index_reading_blocks_session_id_position",
+            "unique": true,
+            "columnNames": [
+              "session_id",
+              "position"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_reading_blocks_session_id_position` ON `${TABLE_NAME}` (`session_id`, `position`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "reading_sessions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "session_id"
+            ],
+            "referencedColumns": [
+              "session_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "outbound_capture_requests",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`client_id` TEXT NOT NULL, `origin_type` TEXT NOT NULL, `origin_id` TEXT NOT NULL, `content` TEXT NOT NULL, `payload_json` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `client_platform` TEXT NOT NULL, `state` TEXT NOT NULL, `attempt_count` INTEGER NOT NULL, `next_retry_at` INTEGER, `send_started_at` INTEGER, `last_error` TEXT, PRIMARY KEY(`client_id`))",
+        "fields": [
+          {
+            "fieldPath": "clientId",
+            "columnName": "client_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originType",
+            "columnName": "origin_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originId",
+            "columnName": "origin_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payloadJson",
+            "columnName": "payload_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientPlatform",
+            "columnName": "client_platform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attemptCount",
+            "columnName": "attempt_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextRetryAt",
+            "columnName": "next_retry_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sendStartedAt",
+            "columnName": "send_started_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastError",
+            "columnName": "last_error",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "client_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_outbound_capture_requests_origin_type_origin_id",
+            "unique": true,
+            "columnNames": [
+              "origin_type",
+              "origin_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_outbound_capture_requests_origin_type_origin_id` ON `${TABLE_NAME}` (`origin_type`, `origin_id`)"
+          },
+          {
+            "name": "index_outbound_capture_requests_state_next_retry_at",
+            "unique": false,
+            "columnNames": [
+              "state",
+              "next_retry_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_outbound_capture_requests_state_next_retry_at` ON `${TABLE_NAME}` (`state`, `next_retry_at`)"
+          }
+        ]
+      },
+      {
+        "tableName": "capture_retention",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`origin_type` TEXT NOT NULL, `origin_id` TEXT NOT NULL, `retained_at` INTEGER NOT NULL, `delete_after` INTEGER NOT NULL, `reason` TEXT NOT NULL, PRIMARY KEY(`origin_type`, `origin_id`))",
+        "fields": [
+          {
+            "fieldPath": "originType",
+            "columnName": "origin_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originId",
+            "columnName": "origin_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retainedAt",
+            "columnName": "retained_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deleteAfter",
+            "columnName": "delete_after",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason",
+            "columnName": "reason",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "origin_type",
+            "origin_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_capture_retention_delete_after",
+            "unique": false,
+            "columnNames": [
+              "delete_after"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_capture_retention_delete_after` ON `${TABLE_NAME}` (`delete_after`)"
+          }
+        ]
+      },
+      {
+        "tableName": "capture_tags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tag_id` TEXT NOT NULL, `name` TEXT NOT NULL, `normalized_name` TEXT NOT NULL, `is_pinned` INTEGER NOT NULL, `sort_order` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`tag_id`))",
+        "fields": [
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalizedName",
+            "columnName": "normalized_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPinned",
+            "columnName": "is_pinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sort_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tag_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_capture_tags_normalized_name",
+            "unique": true,
+            "columnNames": [
+              "normalized_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_capture_tags_normalized_name` ON `${TABLE_NAME}` (`normalized_name`)"
+          }
+        ]
+      },
+      {
+        "tableName": "capture_tag_refs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`origin_type` TEXT NOT NULL, `origin_id` TEXT NOT NULL, `tag_id` TEXT NOT NULL, `tag_name_snapshot` TEXT NOT NULL, `added_at` INTEGER NOT NULL, PRIMARY KEY(`origin_type`, `origin_id`, `tag_id`))",
+        "fields": [
+          {
+            "fieldPath": "originType",
+            "columnName": "origin_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originId",
+            "columnName": "origin_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagNameSnapshot",
+            "columnName": "tag_name_snapshot",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "added_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "origin_type",
+            "origin_id",
+            "tag_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_capture_tag_refs_origin_type_origin_id",
+            "unique": false,
+            "columnNames": [
+              "origin_type",
+              "origin_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_capture_tag_refs_origin_type_origin_id` ON `${TABLE_NAME}` (`origin_type`, `origin_id`)"
+          },
+          {
+            "name": "index_capture_tag_refs_tag_id",
+            "unique": false,
+            "columnNames": [
+              "tag_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_capture_tag_refs_tag_id` ON `${TABLE_NAME}` (`tag_id`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5a6e5a09990d7162b7b75f6065f1ab51')"
+    ]
+  }
+}
