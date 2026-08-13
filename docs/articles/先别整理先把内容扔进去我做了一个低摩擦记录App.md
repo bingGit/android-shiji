@@ -108,7 +108,7 @@ AI 可以负责转写、清理、打标签、归类和初步提取。人则应�
 
 拾记目前已经开源，代码和后续进展可以在 GitHub 查看：[bingGit/android-shiji](https://github.com/bingGit/android-shiji)。
 
-如果你主要在电脑上阅读，也可以试试拾记 Chrome 扩展：[下载 Chrome 扩展 v0.1.0](https://github.com/bingGit/android-shiji/raw/main/docs/assets/shiji-chrome-extension-0.1.0-chrome.zip)。扩展源码和安装说明见：[bingGit/shiji-chrome-extension](https://github.com/bingGit/shiji-chrome-extension)。
+如果你主要在电脑上阅读，也可以试试拾记 Chrome 扩展：[下载已编译的 Chrome 扩展 v0.1.0](https://github.com/bingGit/android-shiji/raw/main/docs/assets/shiji-chrome-extension-0.1.0-chrome.zip)。
 
 Android 版本的体验包也放在 GitHub Release 中：[下载拾记 Android v0.1.0](https://github.com/bingGit/android-shiji/releases/tag/v0.1.0)。
 
