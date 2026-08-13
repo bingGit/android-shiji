@@ -8,7 +8,7 @@
 
 所以我最近做了一个 App，叫拾记。它只解决一件事：让你先把内容存下来。至于分类、打标签、提取重点和后续整理，交给 AI 在后面处理。
 
-![交互场景示意：阅读现场捕获内容，并在记录时间流中继续回看](https://i.ibb.co/F4HKKmZY/shiji-article-overview-art-1.png)
+![交互场景示意：阅读现场捕获内容，并在记录时间流中继续回看](https://i.ibb.co/5PL2VGG/shiji-article-overview-art-1-rehosted.png)
 
 ## 省流版
 
@@ -92,7 +92,7 @@
 
 未来可以支持本地模式和同步模式，让不同的人按自己的需求选择。对我来说，产品的边界也很明确：它首先要保证内容不丢，其次才是让内容流动起来。
 
-![内容先保存在手机本地，网络恢复后由后台队列自动完成同步](https://i.ibb.co/TDh93vVg/shiji-local-first-sync-art-5.png)
+![内容先保存在手机本地，网络恢复后由后台队列自动完成同步](https://i.ibb.co/gZB18Mdq/shiji-local-first-sync-art-5-repacked.png)
 
 ## 记录只是开始
 
